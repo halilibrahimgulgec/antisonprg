@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Yakıt Kayıtları{% endblock %}
+{% block topbar_title %}Yakıt Kayıtları{% endblock %}
+
+{% block extra_head %}
+<style>
+.export-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Yakıt Kayıtları</h1>
+    <p>{{ veriler|length }} kayıt listeleniyor (max 200)</p>
+</div>
+
+<form method="GET" class="filter-bar">
+    <div class="form-group">
+        <label class="form-label">Plaka</label>
+        <select name="plaka" class="form-control">
+            <option value="">Tümü</option>
+            {% for p in plakalar %}
+            <option value="{{ p.plaka }}" {% if filters.plaka == p.plaka %}selected{% endif %}>{{ p.plaka }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Araç Tipi</label>
+        <select name="arac_tipi" class="form-control">
+            <option value="">Tümü</option>
+            <option value="Kargo" {% if filters.arac_tipi == 'Kargo' %}selected{% endif %}>Kargo</option>
+            <option value="Binek" {% if filters.arac_tipi == 'Binek' %}selected{% endif %}>Binek</option>
+            <option value="Is Makinesi" {% if filters.arac_tipi == 'Is Makinesi' %}selected{% endif %}>İş Makinesi</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label class="form-label">Başlangıç</label>
+        <input type="date" name="baslangic" class="form-control" value="{{ filters.baslangic or '' }}">
+    </div>
+    <div class="form-group">
+        <label class="form-label">Bitiş</label>
+        <input type="date" name="bitis" class="form-control" value="{{ filters.bitis or '' }}">
+    </div>
+    <div class="form-group" style="display:flex;align-items:flex-end;gap:8px;">
+        <button type="submit" class="btn btn-primary">Filtrele</button>
+        <a href="/yakit" class="btn btn-outline">Temizle</a>
+    </div>
+</form>
+
+<div class="export-bar">
+    <a href="/export/excel?tip=yakit{% if filters.plaka %}&plaka={{ filters.plaka }}{% endif %}{% if filters.baslangic %}&baslangic={{ filters.baslangic }}{% endif %}{% if filters.bitis %}&bitis={{ filters.bitis }}{% endif %}" class="btn btn-success btn-sm">
+        Excel İndir
+    </a>
+    <a href="/export/pdf?tip=yakit{% if filters.plaka %}&plaka={{ filters.plaka }}{% endif %}{% if filters.baslangic %}&baslangic={{ filters.baslangic }}{% endif %}{% if filters.bitis %}&bitis={{ filters.bitis }}{% endif %}" class="btn btn-outline btn-sm">
+        PDF İndir
+    </a>
+</div>
+
+{% if aylik %}
+<div class="card" style="margin-bottom:20px;">
+    <div class="card-header"><div class="card-title">Aylık Özet</div></div>
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Ay</th>
+                        <th class="text-right">Plaka</th>
+                        <th class="text-right">İşlem</th>
+                        <th class="text-right">Yakıt (L)</th>
+                        <th class="text-right">Tutar (₺)</th>
+                        <th class="text-right">Ort. Birim (₺)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for a in aylik %}
+                <tr>
+                    <td><strong>{{ a.ay }}</strong></td>
+                    <td class="text-right">{{ a.plaka_sayisi }}</td>
+                    <td class="text-right">{{ a.islem_sayisi }}</td>
+                    <td class="text-right">{{ "{:,.1f}".format(a.toplam_yakit or 0) }}</td>
+                    <td class="text-right"><strong>{{ "{:,.2f}".format(a.toplam_tutar or 0) }}</strong></td>
+                    <td class="text-right">{{ "{:.2f}".format(a.ort_birim_fiyat or 0) }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">İşlem Detayları</div>
+        <div style="font-size:12px;color:var(--neutral-500);">En fazla 200 kayıt</div>
+    </div>
+    <div class="card-body" style="padding:0;">
+        {% if veriler %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plaka</th>
+                        <th>Tarih</th>
+                        <th>Saat</th>
+                        <th class="text-right">Yakıt (L)</th>
+                        <th class="text-right">Birim (₺)</th>
+                        <th class="text-right">Tutar (₺)</th>
+                        <th>Stok</th>
+                        <th class="text-right">KM</th>
+                        <th>Tip</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for v in veriler %}
+                <tr>
+                    <td><a href="/araclar/{{ v.plaka }}" style="color:var(--primary);font-weight:600;">{{ v.plaka }}</a></td>
+                    <td>{{ v.islem_tarihi or '-' }}</td>
+                    <td>{{ v.saat or '-' }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(v.yakit_miktari or 0) }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(v.birim_fiyat or 0) }}</td>
+                    <td class="text-right"><strong>{{ "{:,.2f}".format(v.satir_tutari or 0) }}</strong></td>
+                    <td>{{ v.stok_adi or '-' }}</td>
+                    <td class="text-right">{{ "{:,.0f}".format(v.km_bilgisi or 0) if v.km_bilgisi else '-' }}</td>
+                    <td>
+                        {% if v.arac_tipi %}
+                        <span class="badge badge-info">{{ v.arac_tipi }}</span>
+                        {% else %}
+                        <span class="badge badge-neutral">-</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding:40px;text-align:center;color:var(--neutral-500);">
+            <div style="font-size:32px;margin-bottom:12px;">&#9875;</div>
+            <div style="font-weight:600;">Kayıt bulunamadı</div>
+            <div style="font-size:12px;margin-top:6px;">Filtreleri değiştirin veya veri yükleyin.</div>
+            <a href="/upload" class="btn btn-primary" style="margin-top:16px;">Veri Yükle</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

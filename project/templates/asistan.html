@@ -1,0 +1,357 @@
+{% extends "base.html" %}
+{% block title %}AI Asistan{% endblock %}
+{% block topbar_title %}AI Asistan — Ollama{% endblock %}
+
+{% block extra_head %}
+<style>
+.chat-layout { display: grid; grid-template-columns: 1fr 300px; gap: 20px; height: calc(100vh - 130px); }
+.chat-area { display: flex; flex-direction: column; background: white; border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+.chat-header { padding: 16px 20px; border-bottom: 1px solid var(--neutral-100); display: flex; align-items: center; justify-content: space-between; }
+.chat-messages { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+.message { display: flex; gap: 10px; max-width: 90%; }
+.message.user { flex-direction: row-reverse; align-self: flex-end; }
+.message.assistant { align-self: flex-start; }
+.msg-avatar {
+    width: 34px; height: 34px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 700; flex-shrink: 0;
+}
+.message.user .msg-avatar { background: var(--primary); color: white; }
+.message.assistant .msg-avatar { background: var(--neutral-200); color: var(--neutral-700); }
+.msg-bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 13.5px;
+    line-height: 1.6;
+    max-width: 520px;
+}
+.message.user .msg-bubble {
+    background: var(--primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+.message.assistant .msg-bubble {
+    background: var(--neutral-100);
+    color: var(--neutral-800);
+    border-bottom-left-radius: 4px;
+    white-space: pre-wrap;
+}
+.message.assistant.error .msg-bubble { background: var(--error-light); color: #7b1a14; }
+.chat-input-area {
+    padding: 16px 20px;
+    border-top: 1px solid var(--neutral-100);
+    display: flex; gap: 10px;
+}
+.chat-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid var(--neutral-300);
+    border-radius: 8px;
+    font-size: 13.5px;
+    resize: none;
+    font-family: inherit;
+    min-height: 44px; max-height: 100px;
+    transition: border-color var(--transition);
+}
+.chat-input:focus { outline: none; border-color: var(--primary-light); }
+.send-btn {
+    padding: 10px 18px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all var(--transition);
+    align-self: flex-end;
+}
+.send-btn:hover:not(:disabled) { background: var(--primary-light); }
+.send-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.typing-dots { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+.typing-dots span {
+    width: 7px; height: 7px; background: var(--neutral-400);
+    border-radius: 50%; animation: bounce 1.4s infinite ease-in-out;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); }
+    30% { transform: translateY(-6px); }
+}
+
+.sidebar-panel { display: flex; flex-direction: column; gap: 16px; overflow-y: auto; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.online { background: var(--success); box-shadow: 0 0 6px var(--success); }
+.status-dot.offline { background: var(--error); }
+.quick-q {
+    padding: 8px 12px;
+    background: var(--neutral-50);
+    border: 1px solid var(--neutral-200);
+    border-radius: 8px;
+    font-size: 12px;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: all var(--transition);
+    color: var(--neutral-700);
+}
+.quick-q:hover { background: var(--info-light); border-color: var(--primary-light); color: var(--primary); }
+
+@media (max-width: 900px) {
+    .chat-layout { grid-template-columns: 1fr; height: auto; }
+    .chat-area { height: 60vh; }
+    .sidebar-panel { display: none; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-layout">
+    <div class="chat-area">
+        <div class="chat-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="status-dot {% if ollama_status.available %}online{% else %}offline{% endif %}" id="statusDot"></div>
+                <div>
+                    <div style="font-weight:700;font-size:14px;">AI Asistan</div>
+                    <div style="font-size:11px;color:var(--neutral-500);" id="statusText">
+                        {% if ollama_status.available %}
+                            Çevrimiçi — {{ ollama_status.models | join(', ') }}
+                        {% else %}
+                            Çevrimdışı — Ollama servisi bulunamadı
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;">
+                {% if ollama_status.available and ollama_status.models %}
+                <select id="modelSelect" class="form-control" style="width:160px;font-size:12px;">
+                    {% for m in ollama_status.models %}
+                    <option value="{{ m }}">{{ m }}</option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+                <button onclick="clearChat()" class="btn btn-outline btn-sm">Temizle</button>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message assistant">
+                <div class="msg-avatar">AI</div>
+                <div class="msg-bubble">
+                    Merhaba! Ben kargo filo analiz asistanınım. Veritabanınızdaki yakıt tüketimi, araç performansı ve maliyet verileri hakkında sorularınızı yanıtlayabilirim.
+
+Örneğin: "Bu ay en çok yakıt hangi araç tüketti?" veya "Hangi plaka verimsiz?" diye sorabilirsiniz.
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <textarea
+                id="chatInput"
+                class="chat-input"
+                placeholder="Sorunuzu yazın... (Enter ile gönder, Shift+Enter yeni satır)"
+                rows="1"
+                {% if not ollama_status.available %}disabled{% endif %}
+            ></textarea>
+            <button id="sendBtn" class="send-btn" onclick="sendMessage()" {% if not ollama_status.available %}disabled{% endif %}>
+                Gönder
+            </button>
+        </div>
+    </div>
+
+    <div class="sidebar-panel">
+        <div class="card">
+            <div class="card-header"><div class="card-title">Ollama Durumu</div></div>
+            <div class="card-body">
+                {% if ollama_status.available %}
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <div class="status-dot online"></div>
+                    <span style="font-size:13px;color:var(--success);font-weight:600;">Çevrimiçi</span>
+                </div>
+                <div style="font-size:12px;color:var(--neutral-600);">
+                    Mevcut modeller:
+                    {% for m in ollama_status.models %}
+                    <div style="padding:4px 8px;background:var(--neutral-100);border-radius:4px;margin-top:4px;font-family:monospace;font-size:11px;">{{ m }}</div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                    <div class="status-dot offline"></div>
+                    <span style="font-size:13px;color:var(--error);font-weight:600;">Çevrimdışı</span>
+                </div>
+                <div style="font-size:12px;color:var(--neutral-600);line-height:1.6;">
+                    <strong>Ollama başlatmak için:</strong><br>
+                    <code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;display:block;margin-top:6px;">ollama serve</code>
+                    <div style="margin-top:8px;">Sonra model yükleyin:</div>
+                    <code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;display:block;margin-top:4px;">ollama pull llama3</code>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header"><div class="card-title">Hızlı Sorular</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:6px;">
+                <button class="quick-q" onclick="setQuestion(this.textContent)">Bu ay en çok yakıt hangi araç tüketti?</button>
+                <button class="quick-q" onclick="setQuestion(this.textContent)">Hangi plakalar verimsiz çalışıyor?</button>
+                <button class="quick-q" onclick="setQuestion(this.textContent)">Toplam yakıt maliyetini özetle.</button>
+                <button class="quick-q" onclick="setQuestion(this.textContent)">Kargo araçlarının ortalama tüketimi nedir?</button>
+                <button class="quick-q" onclick="setQuestion(this.textContent)">Aylık maliyet trendi nasıl değişiyor?</button>
+                <button class="quick-q" onclick="setQuestion(this.textContent)">En verimli 3 aracı listele.</button>
+            </div>
+        </div>
+
+        {% if insights %}
+        <div class="card">
+            <div class="card-header"><div class="card-title">Otomatik Bulgular</div></div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:8px;">
+                {% for ins in insights %}
+                <div class="insight-card {{ ins.tip }}">
+                    <div class="insight-icon">{% if ins.tip == 'uyari' %}&#9888;{% else %}&#9432;{% endif %}</div>
+                    <div class="insight-body">
+                        <div class="insight-title">{{ ins.baslik }}</div>
+                        <div class="insight-text">{{ ins.icerik }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let conversationHistory = [];
+
+const chatInput = document.getElementById('chatInput');
+const chatMessages = document.getElementById('chatMessages');
+const sendBtn = document.getElementById('sendBtn');
+
+chatInput.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+
+function setQuestion(text) {
+    chatInput.value = text;
+    chatInput.focus();
+}
+
+function addMessage(role, content, isError = false) {
+    const div = document.createElement('div');
+    div.className = 'message ' + role + (isError ? ' error' : '');
+
+    const avatarText = role === 'user' ? 'Siz' : 'AI';
+    div.innerHTML = `
+        <div class="msg-avatar">${avatarText}</div>
+        <div class="msg-bubble">${escapeHtml(content)}</div>
+    `;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return div;
+}
+
+function addTyping() {
+    const div = document.createElement('div');
+    div.className = 'message assistant';
+    div.id = 'typingIndicator';
+    div.innerHTML = `
+        <div class="msg-avatar">AI</div>
+        <div class="msg-bubble"><div class="typing-dots"><span></span><span></span><span></span></div></div>
+    `;
+    chatMessages.appendChild(div);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function removeTyping() {
+    const el = document.getElementById('typingIndicator');
+    if (el) el.remove();
+}
+
+function escapeHtml(text) {
+    return text
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/\n/g, '<br>');
+}
+
+async function sendMessage() {
+    const soru = chatInput.value.trim();
+    if (!soru) return;
+
+    addMessage('user', soru);
+    chatInput.value = '';
+    sendBtn.disabled = true;
+    addTyping();
+
+    const modelEl = document.getElementById('modelSelect');
+    const model = modelEl ? modelEl.value : null;
+
+    try {
+        const resp = await fetch('/api/asistan/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                soru: soru,
+                model: model,
+                gecmis: conversationHistory
+            })
+        });
+
+        const data = await resp.json();
+        removeTyping();
+
+        if (data.success) {
+            conversationHistory.push({ role: 'user', content: soru });
+            conversationHistory.push({ role: 'assistant', content: data.answer });
+            if (conversationHistory.length > 12) conversationHistory = conversationHistory.slice(-12);
+            addMessage('assistant', data.answer);
+        } else {
+            addMessage('assistant', data.answer, true);
+        }
+    } catch (e) {
+        removeTyping();
+        addMessage('assistant', 'Bağlantı hatası. Lütfen tekrar deneyin.', true);
+    }
+
+    sendBtn.disabled = false;
+    chatInput.focus();
+}
+
+function clearChat() {
+    const messages = document.getElementById('chatMessages');
+    messages.innerHTML = `
+        <div class="message assistant">
+            <div class="msg-avatar">AI</div>
+            <div class="msg-bubble">Sohbet temizlendi. Yeni sorularınızı bekliyorum.</div>
+        </div>
+    `;
+    conversationHistory = [];
+}
+
+async function checkStatus() {
+    try {
+        const resp = await fetch('/api/ollama/status');
+        const data = await resp.json();
+        const dot = document.getElementById('statusDot');
+        const text = document.getElementById('statusText');
+        if (data.available) {
+            dot.className = 'status-dot online';
+            text.textContent = 'Çevrimiçi — ' + data.models.join(', ');
+            sendBtn.disabled = false;
+            chatInput.disabled = false;
+        } else {
+            dot.className = 'status-dot offline';
+            text.textContent = 'Çevrimdışı — Ollama bulunamadı';
+        }
+    } catch (e) {}
+}
+
+setInterval(checkStatus, 15000);
+</script>
+{% endblock %}

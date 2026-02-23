@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}Veritabanı Durumu{% endblock %}
+{% block topbar_title %}Veritabanı Durumu{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Veritabanı Durumu</h1>
+    <p>kargo_data.db — SQLite yerel veritabanı</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Yakıt Kaydı</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.yakit_kayit or 0) }}</div>
+        <div class="stat-sub">yakit tablosu</div>
+    </div>
+    <div class="stat-card accent">
+        <div class="stat-label">Toplam Yakıt</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.toplam_yakit or 0) }}</div>
+        <div class="stat-sub">litre</div>
+    </div>
+    <div class="stat-card info">
+        <div class="stat-label">Plaka Sayısı</div>
+        <div class="stat-value">{{ stats.plaka_sayisi or 0 }}</div>
+        <div class="stat-sub">farklı araç</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-label">Aktif Araç</div>
+        <div class="stat-value">{{ stats.aktif_arac or 0 }}</div>
+        <div class="stat-sub">araclar tablosu</div>
+    </div>
+    <div class="stat-card warning">
+        <div class="stat-label">Ağırlık Kaydı</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.agirlik_kayit or 0) }}</div>
+        <div class="stat-sub">kantar verisi</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Bakım Kaydı</div>
+        <div class="stat-value">{{ stats.bakim_kayit or 0 }}</div>
+        <div class="stat-sub">{{ "{:,.0f}".format(stats.toplam_bakim_maliyet or 0) }} ₺ toplam</div>
+    </div>
+</div>
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header"><div class="card-title">Tablolar</div></div>
+        <div class="card-body" style="padding:0;">
+            <table>
+                <thead>
+                    <tr><th>Tablo</th><th>Açıklama</th><th class="text-right">Kayıt</th></tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;">yakit</code></td>
+                        <td>Yakıt alım işlemleri</td>
+                        <td class="text-right"><strong>{{ "{:,.0f}".format(stats.yakit_kayit or 0) }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td><code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;">agirlik</code></td>
+                        <td>Kantar / tonaj verileri</td>
+                        <td class="text-right"><strong>{{ "{:,.0f}".format(stats.agirlik_kayit or 0) }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td><code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;">araclar</code></td>
+                        <td>Araç yönetim bilgileri</td>
+                        <td class="text-right"><strong>{{ stats.aktif_arac or 0 }}+</strong></td>
+                    </tr>
+                    <tr>
+                        <td><code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;">bakim</code></td>
+                        <td>Bakım ve onarım kayıtları</td>
+                        <td class="text-right"><strong>{{ stats.bakim_kayit or 0 }}</strong></td>
+                    </tr>
+                    <tr>
+                        <td><code style="background:var(--neutral-100);padding:2px 6px;border-radius:3px;">takip</code></td>
+                        <td>Araç takip raporları</td>
+                        <td class="text-right"><strong>—</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><div class="card-title">Hizli Islemler</div></div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+            <a href="/upload" class="btn btn-primary btn-lg">Yeni Veri Yükle</a>
+            <a href="/yakit" class="btn btn-outline">Yakıt Kayıtlarını Görüntüle</a>
+            <a href="/analiz" class="btn btn-outline">Analiz Paneline Git</a>
+            <a href="/araclar" class="btn btn-outline">Araç Yönetimi</a>
+            <a href="/asistan" class="btn btn-outline">AI Asistana Sor</a>
+            <a href="/export/excel?tip=yakit" class="btn btn-success">Yakıt Verisini Excel'e Aktar</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

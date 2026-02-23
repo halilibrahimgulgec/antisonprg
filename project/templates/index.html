@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+{% block title %}Dashboard{% endblock %}
+{% block topbar_title %}Dashboard{% endblock %}
+
+{% block extra_head %}
+<style>
+.hero-banner {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-light) 100%);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    color: white;
+    margin-bottom: 24px;
+    display: flex; justify-content: space-between; align-items: center;
+}
+.hero-text h2 { font-size: 22px; font-weight: 700; }
+.hero-text p { font-size: 13px; opacity: 0.8; margin-top: 6px; }
+.hero-actions { display: flex; gap: 10px; }
+.btn-white { background: white; color: var(--primary); font-weight: 700; }
+.btn-white:hover { background: var(--neutral-100); }
+.btn-ghost { background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); }
+.btn-ghost:hover { background: rgba(255,255,255,0.25); }
+
+.chart-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 20px; }
+.insights-col { display: flex; flex-direction: column; gap: 12px; }
+
+@media (max-width: 1100px) { .chart-grid { grid-template-columns: 1fr; } }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+    <div class="hero-text">
+        <h2>Kargo Filo Analiz Merkezi</h2>
+        <p>Yakıt tüketimi, kantar verileri ve maliyet takibi tek platformda.</p>
+    </div>
+    <div class="hero-actions">
+        <a href="/upload" class="btn btn-white btn-lg">Veri Yükle</a>
+        <a href="/asistan" class="btn btn-ghost btn-lg">AI Asistan</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-label">Toplam Yakıt</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.toplam_yakit or 0) }}</div>
+        <div class="stat-sub">litre tüketim</div>
+    </div>
+    <div class="stat-card accent">
+        <div class="stat-label">Toplam Maliyet</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.toplam_maliyet or 0) }}</div>
+        <div class="stat-sub">₺ yakıt gideri</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-label">Aktif Araç</div>
+        <div class="stat-value">{{ stats.aktif_arac or 0 }}</div>
+        <div class="stat-sub">{{ stats.plaka_sayisi or 0 }} plaka kayıtlı</div>
+    </div>
+    <div class="stat-card info">
+        <div class="stat-label">Yakıt Kaydı</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.yakit_kayit or 0) }}</div>
+        <div class="stat-sub">işlem</div>
+    </div>
+    <div class="stat-card warning">
+        <div class="stat-label">Taşınan Yük</div>
+        <div class="stat-value">{{ "{:,.1f}".format(stats.toplam_agirlik or 0) }}</div>
+        <div class="stat-sub">ton ({{ stats.agirlik_kayit or 0 }} kayıt)</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-label">Bakım Maliyeti</div>
+        <div class="stat-value">{{ "{:,.0f}".format(stats.toplam_bakim_maliyet or 0) }}</div>
+        <div class="stat-sub">₺ ({{ stats.bakim_kayit or 0 }} kayıt)</div>
+    </div>
+</div>
+
+<div class="chart-grid">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Aylık Yakıt ve Maliyet Trendi</div>
+            <div style="display:flex;gap:8px;">
+                <select id="chartTipFilter" class="form-control" style="width:160px;">
+                    <option value="">Tüm Araçlar</option>
+                    <option value="Kargo">Kargo</option>
+                    <option value="Binek">Binek</option>
+                    <option value="Is Makinesi">İş Makinesi</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="height:260px;">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="insights-col">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Otomatik Analizler</div>
+            </div>
+            <div class="card-body" style="display:flex;flex-direction:column;gap:10px;">
+                {% if insights %}
+                    {% for ins in insights %}
+                    <div class="insight-card {{ ins.tip }}">
+                        <div class="insight-icon">{% if ins.tip == 'uyari' %}&#9888;{% else %}&#9432;{% endif %}</div>
+                        <div class="insight-body">
+                            <div class="insight-title">{{ ins.baslik }}</div>
+                            <div class="insight-text">{{ ins.icerik }}</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div style="color:var(--neutral-500);font-size:13px;">Veri yüklendikten sonra otomatik analizler burada görünür.</div>
+                {% endif %}
+                <a href="/asistan" class="btn btn-primary" style="margin-top:6px;">AI ile Sor</a>
+            </div>
+        </div>
+
+        {% if aylik %}
+        <div class="card">
+            <div class="card-header"><div class="card-title">Son Aylar</div></div>
+            <div class="card-body" style="padding:0;">
+                <table>
+                    <thead><tr><th>Ay</th><th class="text-right">Yakıt (L)</th><th class="text-right">Maliyet (₺)</th></tr></thead>
+                    <tbody>
+                    {% for a in aylik[:5] %}
+                    <tr>
+                        <td>{{ a.ay }}</td>
+                        <td class="text-right">{{ "{:,.1f}".format(a.toplam_yakit or 0) }}</td>
+                        <td class="text-right">{{ "{:,.2f}".format(a.toplam_tutar or 0) }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+let trendChart = null;
+
+async function loadChart(tip) {
+    const resp = await fetch('/api/yakit/chart' + (tip ? '?arac_tipi=' + encodeURIComponent(tip) : ''));
+    const data = await resp.json();
+
+    if (trendChart) trendChart.destroy();
+
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    trendChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: data.labels,
+            datasets: [
+                {
+                    label: 'Yakıt (L)',
+                    data: data.yakit,
+                    backgroundColor: 'rgba(15,76,117,0.75)',
+                    borderRadius: 4,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Maliyet (₺)',
+                    data: data.tutar,
+                    type: 'line',
+                    borderColor: '#e8502a',
+                    backgroundColor: 'rgba(232,80,42,0.1)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    fill: true,
+                    tension: 0.3,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: { type: 'linear', position: 'left', grid: { color: 'rgba(0,0,0,0.06)' } },
+                y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false } }
+            }
+        }
+    });
+}
+
+document.getElementById('chartTipFilter').addEventListener('change', function() {
+    loadChart(this.value);
+});
+
+loadChart('');
+</script>
+{% endblock %}

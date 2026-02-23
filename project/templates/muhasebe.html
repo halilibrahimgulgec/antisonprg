@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% block title %}Muhasebe{% endblock %}
+{% block topbar_title %}Muhasebe Raporu{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Muhasebe Raporu</h1>
+    <p>Araç tiplerine göre aylık maliyet dökümü</p>
+</div>
+
+<form method="GET" class="filter-bar" style="margin-bottom:20px;">
+    <div class="form-group">
+        <label class="form-label">Dönem Seç</label>
+        <select name="ay" class="form-control">
+            <option value="">Tüm Dönemler</option>
+            {% for a in aylar %}
+            <option value="{{ a }}" {% if secili_ay == a %}selected{% endif %}>{{ a }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group" style="display:flex;align-items:flex-end;">
+        <button type="submit" class="btn btn-primary">Görüntüle</button>
+    </div>
+</form>
+
+{% if secili_ay %}
+<div class="stats-grid" style="margin-bottom:20px;">
+    {% for tip in ozet.yakit_tipler %}
+    <div class="stat-card {% if tip.arac_tipi == 'Kargo' %}accent{% elif tip.arac_tipi == 'Binek' %}info{% else %}warning{% endif %}">
+        <div class="stat-label">{{ tip.arac_tipi or 'Tanımsız' }}</div>
+        <div class="stat-value">{{ "{:,.2f}".format(tip.tutar or 0) }}</div>
+        <div class="stat-sub">₺ &bull; {{ "{:,.1f}".format(tip.yakit or 0) }} litre &bull; {{ tip.islem }} işlem</div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Araç Tipi Bazlı Yakıt Maliyetleri</div>
+            {% if secili_ay %}
+            <span class="badge badge-info">{{ secili_ay }}</span>
+            {% endif %}
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if ozet.yakit_tipler %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Araç Tipi</th>
+                            <th class="text-right">İşlem</th>
+                            <th class="text-right">Yakıt (L)</th>
+                            <th class="text-right">Toplam (₺)</th>
+                            <th>Pay</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% set genel_toplam = ozet.yakit_tipler | sum(attribute='tutar') %}
+                    {% for tip in ozet.yakit_tipler %}
+                    <tr>
+                        <td>
+                            <span class="badge badge-info">{{ tip.arac_tipi or 'Tanımsız' }}</span>
+                        </td>
+                        <td class="text-right">{{ tip.islem }}</td>
+                        <td class="text-right">{{ "{:,.1f}".format(tip.yakit or 0) }}</td>
+                        <td class="text-right"><strong>{{ "{:,.2f}".format(tip.tutar or 0) }}</strong></td>
+                        <td>
+                            {% if genel_toplam and genel_toplam > 0 %}
+                            <div style="font-size:11px;color:var(--neutral-600);">{{ "{:.1f}".format((tip.tutar or 0) / genel_toplam * 100) }}%</div>
+                            <div style="height:6px;background:var(--neutral-200);border-radius:3px;margin-top:3px;overflow:hidden;">
+                                <div style="height:100%;background:var(--primary);border-radius:3px;width:{{ ((tip.tutar or 0) / genel_toplam * 100)|int }}%;"></div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr style="background:var(--neutral-50);">
+                            <td colspan="3"><strong>GENEL TOPLAM</strong></td>
+                            <td class="text-right"><strong>{{ "{:,.2f}".format(genel_toplam or 0) }} ₺</strong></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+            {% else %}
+            <div style="padding:30px;text-align:center;color:var(--neutral-500);">Dönem için veri yok.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Bakım Kayıtları</div>
+            <span style="font-size:12px;color:var(--neutral-500);">Toplam: {{ "{:,.2f}".format(toplam_bakim) }} ₺</span>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if bakim %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plaka</th>
+                            <th>Tür</th>
+                            <th>Tarih</th>
+                            <th class="text-right">Maliyet (₺)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for b in bakim %}
+                    <tr>
+                        <td><strong>{{ b.plaka }}</strong></td>
+                        <td>{{ b.bakim_tipi }}</td>
+                        <td>{{ b.tarih or '-' }}</td>
+                        <td class="text-right">{{ "{:,.2f}".format(b.maliyet or 0) }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="padding:30px;text-align:center;color:var(--neutral-500);">
+                Bakım kaydı yok.
+                <br><a href="/araclar" style="color:var(--primary);">Araç Yönetimi'nden ekleyin.</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if ozet.yakit_tipler %}
+<div class="card" style="margin-top:20px;">
+    <div class="card-header"><div class="card-title">Dağılım Grafiği</div></div>
+    <div class="card-body" style="display:flex;justify-content:center;">
+        <div style="height:300px;width:400px;">
+            <canvas id="muhasebeChart"></canvas>
+        </div>
+    </div>
+</div>
+<script>
+const tipler = {{ ozet.yakit_tipler | tojson }};
+const ctx = document.getElementById('muhasebeChart').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: tipler.map(t => t.arac_tipi || 'Tanımsız'),
+        datasets: [{
+            data: tipler.map(t => t.tutar || 0),
+            backgroundColor: ['#0f4c75','#e8502a','#1b8a4f','#c27a10','#1565c0'],
+            borderWidth: 2,
+            borderColor: 'white'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { position: 'bottom' },
+            tooltip: {
+                callbacks: {
+                    label: function(ctx) {
+                        return ctx.label + ': ' + ctx.parsed.toLocaleString('tr-TR', {style:'currency',currency:'TRY'});
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+{% endif %}
+
+{% endblock %}

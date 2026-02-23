@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block title %}{{ plaka }} Detay{% endblock %}
+{% block topbar_title %}{{ plaka }} — Araç Detayı{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+        <h1>{{ plaka }}</h1>
+        <p>Araç yakıt ve bakım geçmişi</p>
+    </div>
+    <a href="/araclar" class="btn btn-outline">← Geri</a>
+</div>
+
+<div class="stats-grid" style="margin-bottom:20px;">
+    <div class="stat-card">
+        <div class="stat-label">Toplam Yakıt</div>
+        <div class="stat-value">{{ "{:,.1f}".format(ozet.yakit.toplam_yakit or 0) }}</div>
+        <div class="stat-sub">litre</div>
+    </div>
+    <div class="stat-card accent">
+        <div class="stat-label">Toplam Maliyet</div>
+        <div class="stat-value">{{ "{:,.0f}".format(ozet.yakit.toplam_maliyet or 0) }}</div>
+        <div class="stat-sub">₺</div>
+    </div>
+    <div class="stat-card info">
+        <div class="stat-label">İşlem Sayısı</div>
+        <div class="stat-value">{{ ozet.yakit.islem_sayisi or 0 }}</div>
+        <div class="stat-sub">yakıt alımı</div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-label">Taşınan Yük</div>
+        <div class="stat-value">{{ "{:,.1f}".format(ozet.agirlik.toplam_agirlik or 0) }}</div>
+        <div class="stat-sub">ton ({{ ozet.agirlik.sefer_sayisi or 0 }} sefer)</div>
+    </div>
+</div>
+
+{% if ozet.yakit.ilk_tarih %}
+<div style="margin-bottom:20px;font-size:13px;color:var(--neutral-600);">
+    Kayıt aralığı: <strong>{{ ozet.yakit.ilk_tarih }}</strong> — <strong>{{ ozet.yakit.son_tarih }}</strong>
+</div>
+{% endif %}
+
+<div class="grid-2">
+    <div class="card">
+        <div class="card-header"><div class="card-title">Son Yakıt Alımları</div></div>
+        <div class="card-body" style="padding:0;">
+            {% if yakit %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th class="text-right">Yakıt (L)</th>
+                            <th class="text-right">Birim (₺)</th>
+                            <th class="text-right">Tutar (₺)</th>
+                            <th>Stok</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for v in yakit %}
+                    <tr>
+                        <td>{{ v.islem_tarihi or '-' }}</td>
+                        <td class="text-right">{{ "{:,.2f}".format(v.yakit_miktari or 0) }}</td>
+                        <td class="text-right">{{ "{:,.2f}".format(v.birim_fiyat or 0) }}</td>
+                        <td class="text-right"><strong>{{ "{:,.2f}".format(v.satir_tutari or 0) }}</strong></td>
+                        <td>{{ v.stok_adi or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="padding:20px;text-align:center;color:var(--neutral-500);">Kayıt yok.</div>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header"><div class="card-title">Bakım Geçmişi</div></div>
+        <div class="card-body" style="padding:0;">
+            {% if bakim %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Tür</th>
+                            <th class="text-right">Maliyet (₺)</th>
+                            <th>Açıklama</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for b in bakim %}
+                    <tr>
+                        <td>{{ b.tarih or '-' }}</td>
+                        <td>{{ b.bakim_tipi }}</td>
+                        <td class="text-right">{{ "{:,.2f}".format(b.maliyet or 0) }}</td>
+                        <td>{{ b.aciklama or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="padding:20px;text-align:center;color:var(--neutral-500);">Bakım kaydı yok.</div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

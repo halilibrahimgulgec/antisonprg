@@ -1,0 +1,241 @@
+{% extends "base.html" %}
+{% block title %}Araç Yönetimi{% endblock %}
+{% block topbar_title %}Araç Yönetimi{% endblock %}
+
+{% block extra_head %}
+<style>
+.modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1000; align-items: center; justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+    background: white; border-radius: 12px;
+    padding: 24px; width: 460px; max-width: 95vw;
+    box-shadow: var(--shadow-lg); max-height: 90vh; overflow-y: auto;
+}
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.modal-title { font-size: 16px; font-weight: 700; }
+.modal-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--neutral-500); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header" style="display:flex;justify-content:space-between;align-items:center;">
+    <div>
+        <h1>Araç Yönetimi</h1>
+        <p>{{ araclar|length }} araç kayıtlı</p>
+    </div>
+    <div style="display:flex;gap:8px;">
+        <button onclick="openModal('bakim')" class="btn btn-accent">+ Bakım Ekle</button>
+        <a href="/export/excel?tip=araclar" class="btn btn-success">Excel</a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header"><div class="card-title">Araç Listesi</div></div>
+    <div class="card-body" style="padding:0;">
+        {% if araclar %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Plaka</th>
+                        <th>Sahip</th>
+                        <th>Araç Tipi</th>
+                        <th>Durum</th>
+                        <th class="text-right">İşlem</th>
+                        <th class="text-right">Toplam Yakıt (L)</th>
+                        <th class="text-right">Toplam Maliyet (₺)</th>
+                        <th>İşlem</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for a in araclar %}
+                <tr>
+                    <td>
+                        <a href="/araclar/{{ a.plaka }}" style="color:var(--primary);font-weight:700;">{{ a.plaka }}</a>
+                    </td>
+                    <td>
+                        <span class="badge {% if a.sahip == 'Bizim' %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ a.sahip }}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="badge badge-info">{{ a.arac_tipi }}</span>
+                    </td>
+                    <td>
+                        {% if a.aktif %}
+                        <span class="badge badge-success">Aktif</span>
+                        {% else %}
+                        <span class="badge badge-neutral">Pasif</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-right">{{ a.yakit_islem }}</td>
+                    <td class="text-right">{{ "{:,.1f}".format(a.toplam_yakit or 0) }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(a.toplam_maliyet or 0) }}</td>
+                    <td>
+                        <button class="btn btn-outline btn-sm" onclick="openEditModal('{{ a.plaka }}', '{{ a.sahip }}', '{{ a.arac_tipi }}', {{ a.aktif }}, '{{ a.notlar or '' }}')">
+                            Düzenle
+                        </button>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding:40px;text-align:center;color:var(--neutral-500);">
+            Araç kaydı yok. <a href="/upload">Veri yükleyin.</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card" style="margin-top:20px;">
+    <div class="card-header"><div class="card-title">Son Bakım Kayıtları</div></div>
+    <div class="card-body" style="padding:0;">
+        {% if bakim %}
+        <div class="table-wrap">
+            <table>
+                <thead>
+                    <tr><th>Plaka</th><th>Bakım Türü</th><th>Tarih</th><th class="text-right">Maliyet (₺)</th><th>Açıklama</th></tr>
+                </thead>
+                <tbody>
+                {% for b in bakim %}
+                <tr>
+                    <td><strong>{{ b.plaka }}</strong></td>
+                    <td>{{ b.bakim_tipi }}</td>
+                    <td>{{ b.tarih or '-' }}</td>
+                    <td class="text-right">{{ "{:,.2f}".format(b.maliyet or 0) }}</td>
+                    <td>{{ b.aciklama or '-' }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div style="padding:20px;text-align:center;color:var(--neutral-500);">Bakım kaydı yok.</div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="modal-overlay" id="editModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Araç Düzenle</div>
+            <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="action" value="update">
+            <input type="hidden" name="plaka" id="editPlaka">
+            <div class="form-group">
+                <label class="form-label">Plaka</label>
+                <input type="text" id="editPlakaDisplay" class="form-control" disabled>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Sahip</label>
+                <select name="sahip" id="editSahip" class="form-control">
+                    <option value="Bizim">Bizim</option>
+                    <option value="Kiralik">Kiralık</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Araç Tipi</label>
+                <select name="arac_tipi" id="editTip" class="form-control">
+                    <option value="Kargo">Kargo</option>
+                    <option value="Binek">Binek</option>
+                    <option value="Is Makinesi">İş Makinesi</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Durum</label>
+                <select name="aktif" id="editAktif" class="form-control">
+                    <option value="1">Aktif</option>
+                    <option value="0">Pasif</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Notlar</label>
+                <textarea name="notlar" id="editNotlar" class="form-control" rows="2"></textarea>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+                <button type="button" onclick="closeModal('editModal')" class="btn btn-outline">İptal</button>
+                <button type="submit" class="btn btn-primary">Kaydet</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="modal-overlay" id="bakimModal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">Bakım Kaydı Ekle</div>
+            <button class="modal-close" onclick="closeModal('bakimModal')">&times;</button>
+        </div>
+        <form method="POST">
+            <input type="hidden" name="action" value="bakim">
+            <div class="form-group">
+                <label class="form-label">Plaka</label>
+                <select name="plaka" class="form-control" required>
+                    {% for a in araclar %}
+                    <option value="{{ a.plaka }}">{{ a.plaka }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Bakım Türü</label>
+                <select name="bakim_tipi" class="form-control" required>
+                    <option>Yağ Değişimi</option>
+                    <option>Lastik Değişimi</option>
+                    <option>Fren Bakımı</option>
+                    <option>Filtre Değişimi</option>
+                    <option>Genel Bakım</option>
+                    <option>Arıza Onarımı</option>
+                    <option>Diğer</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Maliyet (₺)</label>
+                <input type="number" name="maliyet" class="form-control" step="0.01" min="0" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tarih</label>
+                <input type="date" name="tarih" class="form-control" required value="{{ now }}">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Açıklama</label>
+                <textarea name="aciklama" class="form-control" rows="2"></textarea>
+            </div>
+            <div style="display:flex;gap:8px;justify-content:flex-end;">
+                <button type="button" onclick="closeModal('bakimModal')" class="btn btn-outline">İptal</button>
+                <button type="submit" class="btn btn-accent">Ekle</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openModal(name) {
+    document.getElementById(name + 'Modal').classList.add('open');
+}
+function closeModal(id) {
+    document.getElementById(id).classList.remove('open');
+}
+function openEditModal(plaka, sahip, tip, aktif, notlar) {
+    document.getElementById('editPlaka').value = plaka;
+    document.getElementById('editPlakaDisplay').value = plaka;
+    document.getElementById('editSahip').value = sahip;
+    document.getElementById('editTip').value = tip;
+    document.getElementById('editAktif').value = aktif;
+    document.getElementById('editNotlar').value = notlar;
+    openModal('edit');
+}
+document.querySelectorAll('.modal-overlay').forEach(el => {
+    el.addEventListener('click', function(e) {
+        if (e.target === this) this.classList.remove('open');
+    });
+});
+</script>
+{% endblock %}

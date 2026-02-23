@@ -1,0 +1,212 @@
+{% extends "base.html" %}
+{% block title %}Analiz{% endblock %}
+{% block topbar_title %}Analiz Paneli{% endblock %}
+
+{% block extra_head %}
+<style>
+.analiz-tabs { display: flex; gap: 0; margin-bottom: 20px; border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
+.tab-btn {
+    flex: 1; padding: 12px; background: white; border: none;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    color: var(--neutral-600); transition: all var(--transition);
+    border-bottom: 3px solid transparent;
+}
+.tab-btn:hover { background: var(--neutral-50); color: var(--primary); }
+.tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); background: var(--info-light); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.verimlilik-bar {
+    height: 8px; border-radius: 4px; background: var(--neutral-200);
+    margin-top: 4px; overflow: hidden;
+}
+.verimlilik-fill { height: 100%; border-radius: 4px; background: var(--primary); }
+.verimlilik-fill.yuksek { background: var(--error); }
+.verimlilik-fill.orta { background: var(--warning); }
+.verimlilik-fill.iyi { background: var(--success); }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Analiz Paneli</h1>
+    <p>Araç performansı, yakıt verimliliği ve maliyet analizleri</p>
+</div>
+
+<div class="analiz-tabs">
+    <button class="tab-btn active" onclick="showTab('plaka')">Plaka Analizi</button>
+    <button class="tab-btn" onclick="showTab('verimlilik')">Verimlilik (L/Ton)</button>
+    <button class="tab-btn" onclick="showTab('trend')">Trend Grafiği</button>
+</div>
+
+<div id="tab-plaka" class="tab-panel active">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Plaka Bazlı Yakıt Analizi</div>
+            <a href="/export/excel?tip=yakit" class="btn btn-success btn-sm">Excel</a>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if plaka_analiz %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plaka</th>
+                            <th class="text-right">Toplam Yakıt (L)</th>
+                            <th class="text-right">Toplam Maliyet (₺)</th>
+                            <th class="text-right">İşlem Sayısı</th>
+                            <th class="text-right">Ort. Birim Fiyat</th>
+                            <th>Dağılım</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% set max_yakit = plaka_analiz[0].toplam_yakit if plaka_analiz else 1 %}
+                    {% for p in plaka_analiz %}
+                    <tr>
+                        <td><a href="/araclar/{{ p.plaka }}" style="color:var(--primary);font-weight:600;">{{ p.plaka }}</a></td>
+                        <td class="text-right"><strong>{{ "{:,.1f}".format(p.toplam_yakit or 0) }}</strong></td>
+                        <td class="text-right">{{ "{:,.2f}".format(p.toplam_maliyet or 0) }}</td>
+                        <td class="text-right">{{ p.islem_sayisi }}</td>
+                        <td class="text-right">{{ "{:.2f}".format(p.ort_birim_fiyat or 0) }}</td>
+                        <td style="min-width:100px;">
+                            <div class="verimlilik-bar">
+                                <div class="verimlilik-fill" style="width:{{ ((p.toplam_yakit or 0) / (max_yakit or 1) * 100)|int }}%"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="padding:40px;text-align:center;color:var(--neutral-500);">
+                Veri yok. <a href="/upload">Veri yükleyin.</a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="tab-verimlilik" class="tab-panel">
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">Kargo Araçları Verimlilik (Litre / Ton)</div>
+            <div style="font-size:12px;color:var(--neutral-500);">Düşük değer = daha verimli</div>
+        </div>
+        <div class="card-body" style="padding:0;">
+            {% if verimlilik %}
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plaka</th>
+                            <th class="text-right">Toplam Yakıt (L)</th>
+                            <th class="text-right">Toplam Tonaj</th>
+                            <th class="text-right">L / Ton</th>
+                            <th>Performans</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for v in verimlilik %}
+                    <tr>
+                        <td><a href="/araclar/{{ v.plaka }}" style="color:var(--primary);font-weight:600;">{{ v.plaka }}</a></td>
+                        <td class="text-right">{{ "{:,.1f}".format(v.toplam_yakit or 0) }}</td>
+                        <td class="text-right">{{ "{:,.1f}".format(v.toplam_agirlik or 0) if v.toplam_agirlik else '-' }}</td>
+                        <td class="text-right">
+                            {% if v.litre_per_ton %}
+                                <strong style="color:{% if v.litre_per_ton > 0.5 %}var(--error){% elif v.litre_per_ton > 0.3 %}var(--warning){% else %}var(--success){% endif %};">
+                                    {{ "{:.4f}".format(v.litre_per_ton) }}
+                                </strong>
+                            {% else %}
+                                <span class="badge badge-neutral">Tonaj Yok</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if v.litre_per_ton %}
+                                {% if v.litre_per_ton > 0.5 %}
+                                    <span class="badge badge-error">Verimsiz</span>
+                                {% elif v.litre_per_ton > 0.3 %}
+                                    <span class="badge badge-warning">Orta</span>
+                                {% else %}
+                                    <span class="badge badge-success">Verimli</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div style="padding:40px;text-align:center;color:var(--neutral-500);">
+                Kargo araçları için hem yakıt hem de kantar verisi gereklidir.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div id="tab-trend" class="tab-panel">
+    <div class="card">
+        <div class="card-header"><div class="card-title">Aylık Trend</div></div>
+        <div class="card-body">
+            <div style="height:340px;">
+                <canvas id="analizChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function showTab(name) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    event.target.classList.add('active');
+    if (name === 'trend') initTrendChart();
+}
+
+let trendChart = null;
+function initTrendChart() {
+    if (trendChart) return;
+    const trend = {{ trend | tojson }};
+    const ctx = document.getElementById('analizChart').getContext('2d');
+    trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: trend.map(t => t.ay),
+            datasets: [
+                {
+                    label: 'Yakıt (L)',
+                    data: trend.map(t => t.yakit || 0),
+                    borderColor: '#0f4c75',
+                    backgroundColor: 'rgba(15,76,117,0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    yAxisID: 'y'
+                },
+                {
+                    label: 'Maliyet (₺)',
+                    data: trend.map(t => t.maliyet || 0),
+                    borderColor: '#e8502a',
+                    backgroundColor: 'rgba(232,80,42,0.08)',
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 5,
+                    yAxisID: 'y1'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'top' } },
+            scales: {
+                y: { type: 'linear', position: 'left', grid: { color: 'rgba(0,0,0,0.06)' } },
+                y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false } }
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

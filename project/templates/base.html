@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}KargoAnaliz{% endblock %} — KargoAnaliz</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --primary: #0f4c75;
+            --primary-light: #1b6ca8;
+            --primary-dark: #0a3254;
+            --accent: #e8502a;
+            --accent-light: #f07050;
+            --success: #1b8a4f;
+            --success-light: #d4f0e0;
+            --warning: #c27a10;
+            --warning-light: #fef3db;
+            --error: #c0392b;
+            --error-light: #fde8e6;
+            --info: #1565c0;
+            --info-light: #e3f0fb;
+            --neutral-50: #f8f9fa;
+            --neutral-100: #f1f3f5;
+            --neutral-200: #e9ecef;
+            --neutral-300: #dee2e6;
+            --neutral-400: #ced4da;
+            --neutral-500: #adb5bd;
+            --neutral-600: #6c757d;
+            --neutral-700: #495057;
+            --neutral-800: #343a40;
+            --neutral-900: #212529;
+            --bg: #f0f4f8;
+            --sidebar-w: 240px;
+            --radius: 10px;
+            --shadow: 0 2px 12px rgba(15,76,117,0.10);
+            --shadow-lg: 0 8px 32px rgba(15,76,117,0.14);
+            --transition: 0.2s ease;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--neutral-800);
+            display: flex;
+            min-height: 100vh;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: var(--sidebar-w);
+            background: linear-gradient(180deg, var(--primary-dark) 0%, var(--primary) 100%);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0; left: 0; bottom: 0;
+            z-index: 100;
+            box-shadow: 3px 0 16px rgba(0,0,0,0.18);
+        }
+
+        .sidebar-logo {
+            padding: 20px 20px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sidebar-logo .brand {
+            display: flex; align-items: center; gap: 10px;
+            text-decoration: none;
+        }
+        .logo-icon {
+            width: 38px; height: 38px;
+            background: var(--accent);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; font-weight: 700; color: white;
+            flex-shrink: 0;
+        }
+        .brand-text { color: white; }
+        .brand-name { font-size: 16px; font-weight: 700; line-height: 1.2; }
+        .brand-sub { font-size: 10px; opacity: 0.65; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; }
+        .nav-group { margin-bottom: 4px; }
+        .nav-group-label {
+            padding: 6px 20px 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: rgba(255,255,255,0.4);
+        }
+        .nav-item {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 20px;
+            color: rgba(255,255,255,0.78);
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .nav-item:hover {
+            background: rgba(255,255,255,0.08);
+            color: white;
+        }
+        .nav-item.active {
+            background: rgba(255,255,255,0.13);
+            color: white;
+            border-left-color: var(--accent);
+        }
+        .nav-icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+
+        .sidebar-footer {
+            padding: 14px 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 11px;
+            color: rgba(255,255,255,0.4);
+        }
+
+        /* MAIN CONTENT */
+        .main-wrapper {
+            margin-left: var(--sidebar-w);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: white;
+            padding: 0 28px;
+            height: 56px;
+            display: flex; align-items: center; justify-content: space-between;
+            border-bottom: 1px solid var(--neutral-200);
+            position: sticky; top: 0; z-index: 50;
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+        }
+        .topbar-title { font-size: 16px; font-weight: 600; color: var(--neutral-800); }
+        .topbar-right { display: flex; align-items: center; gap: 14px; }
+        .topbar-badge {
+            background: var(--primary-light);
+            color: white;
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+
+        .content { padding: 24px 28px; flex: 1; }
+
+        /* FLASH MESSAGES */
+        .flash-container { margin-bottom: 16px; }
+        .flash {
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            font-size: 13.5px;
+            display: flex; align-items: center; gap: 8px;
+            border-left: 4px solid;
+        }
+        .flash.success { background: var(--success-light); border-color: var(--success); color: #0d5c33; }
+        .flash.error { background: var(--error-light); border-color: var(--error); color: #7b1a14; }
+        .flash.info { background: var(--info-light); border-color: var(--info); color: #0d3d7a; }
+        .flash.warning { background: var(--warning-light); border-color: var(--warning); color: #7a4c00; }
+
+        /* CARDS */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--neutral-100);
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .card-title { font-size: 14px; font-weight: 600; color: var(--neutral-800); }
+        .card-body { padding: 20px; }
+
+        /* STAT CARDS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 18px 20px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+            transition: transform var(--transition), box-shadow var(--transition);
+        }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .stat-card.accent { border-left-color: var(--accent); }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.info { border-left-color: var(--info); }
+        .stat-label { font-size: 11px; color: var(--neutral-600); text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .stat-value { font-size: 24px; font-weight: 700; color: var(--neutral-900); margin: 4px 0 0; line-height: 1.2; }
+        .stat-sub { font-size: 11px; color: var(--neutral-500); margin-top: 2px; }
+
+        /* TABLES */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        thead th {
+            background: var(--neutral-50);
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: var(--neutral-600);
+            border-bottom: 2px solid var(--neutral-200);
+            white-space: nowrap;
+        }
+        tbody tr { border-bottom: 1px solid var(--neutral-100); transition: background var(--transition); }
+        tbody tr:hover { background: var(--neutral-50); }
+        tbody td { padding: 9px 12px; color: var(--neutral-800); }
+        .text-right { text-align: right; }
+        .text-center { text-align: center; }
+
+        /* BADGES */
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .badge-success { background: var(--success-light); color: #0d5c33; }
+        .badge-warning { background: var(--warning-light); color: #7a4c00; }
+        .badge-error { background: var(--error-light); color: #7b1a14; }
+        .badge-info { background: var(--info-light); color: #0d3d7a; }
+        .badge-neutral { background: var(--neutral-200); color: var(--neutral-700); }
+
+        /* FORMS */
+        .form-group { margin-bottom: 14px; }
+        .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--neutral-700); margin-bottom: 5px; }
+        .form-control {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid var(--neutral-300);
+            border-radius: 6px;
+            font-size: 13px;
+            color: var(--neutral-800);
+            background: white;
+            transition: border-color var(--transition), box-shadow var(--transition);
+        }
+        .form-control:focus { outline: none; border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(27,108,168,0.12); }
+        select.form-control { cursor: pointer; }
+
+        /* BUTTONS */
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+        .btn:hover { transform: translateY(-1px); }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); box-shadow: 0 4px 12px rgba(15,76,117,0.3); }
+        .btn-accent { background: var(--accent); color: white; }
+        .btn-accent:hover { background: var(--accent-light); }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--neutral-300); color: var(--neutral-700); }
+        .btn-outline:hover { background: var(--neutral-100); border-color: var(--neutral-400); }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-lg { padding: 11px 22px; font-size: 14px; }
+
+        /* GRID */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+        .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; }
+
+        /* FILTER BAR */
+        .filter-bar {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+            display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end;
+        }
+        .filter-bar .form-group { margin-bottom: 0; min-width: 160px; }
+
+        /* CHART */
+        .chart-container { position: relative; }
+
+        /* PAGE HEADER */
+        .page-header { margin-bottom: 22px; }
+        .page-header h1 { font-size: 22px; font-weight: 700; color: var(--neutral-900); }
+        .page-header p { font-size: 13px; color: var(--neutral-600); margin-top: 3px; }
+
+        /* INSIGHT CARDS */
+        .insight-card {
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex; gap: 10px; align-items: flex-start;
+        }
+        .insight-card.uyari { background: var(--warning-light); border-left: 4px solid var(--warning); }
+        .insight-card.bilgi { background: var(--info-light); border-left: 4px solid var(--info); }
+        .insight-card .insight-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+        .insight-card .insight-body {}
+        .insight-card .insight-title { font-size: 12px; font-weight: 700; }
+        .insight-card .insight-text { font-size: 12px; color: var(--neutral-700); margin-top: 2px; }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 56px; }
+            .brand-text, .nav-group-label, .nav-item span { display: none; }
+            .main-wrapper { margin-left: 56px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+<nav class="sidebar">
+    <div class="sidebar-logo">
+        <a href="/" class="brand">
+            <div class="logo-icon">K</div>
+            <div class="brand-text">
+                <div class="brand-name">KargoAnaliz</div>
+                <div class="brand-sub">Filo Yönetim</div>
+            </div>
+        </a>
+    </div>
+    <div class="sidebar-nav">
+        <div class="nav-group">
+            <div class="nav-group-label">Genel</div>
+            <a href="/" class="nav-item {% if request.path == '/' %}active{% endif %}">
+                <span class="nav-icon">&#9632;</span>
+                <span>Dashboard</span>
+            </a>
+            <a href="/veritabani" class="nav-item {% if request.path == '/veritabani' %}active{% endif %}">
+                <span class="nav-icon">&#9830;</span>
+                <span>Veritabanı</span>
+            </a>
+        </div>
+        <div class="nav-group">
+            <div class="nav-group-label">Veri</div>
+            <a href="/upload" class="nav-item {% if request.path == '/upload' %}active{% endif %}">
+                <span class="nav-icon">&#8679;</span>
+                <span>Veri Yükle</span>
+            </a>
+            <a href="/yakit" class="nav-item {% if request.path == '/yakit' %}active{% endif %}">
+                <span class="nav-icon">&#9875;</span>
+                <span>Yakıt Kayıtları</span>
+            </a>
+        </div>
+        <div class="nav-group">
+            <div class="nav-group-label">Analiz</div>
+            <a href="/analiz" class="nav-item {% if request.path == '/analiz' %}active{% endif %}">
+                <span class="nav-icon">&#9636;</span>
+                <span>Analiz</span>
+            </a>
+            <a href="/muhasebe" class="nav-item {% if request.path == '/muhasebe' %}active{% endif %}">
+                <span class="nav-icon">&#9633;</span>
+                <span>Muhasebe</span>
+            </a>
+            <a href="/araclar" class="nav-item {% if request.path.startswith('/araclar') %}active{% endif %}">
+                <span class="nav-icon">&#9650;</span>
+                <span>Araç Yönetimi</span>
+            </a>
+        </div>
+        <div class="nav-group">
+            <div class="nav-group-label">AI</div>
+            <a href="/asistan" class="nav-item {% if request.path == '/asistan' %}active{% endif %}">
+                <span class="nav-icon">&#9679;</span>
+                <span>AI Asistan</span>
+            </a>
+        </div>
+    </div>
+    <div class="sidebar-footer">
+        <span>v2.0 &bull; Flask</span>
+    </div>
+</nav>
+
+<div class="main-wrapper">
+    <div class="topbar">
+        <div class="topbar-title">{% block topbar_title %}KargoAnaliz{% endblock %}</div>
+        <div class="topbar-right">
+            <span class="topbar-badge">SQLite</span>
+            <a href="/upload" class="btn btn-primary btn-sm">+ Veri Yükle</a>
+        </div>
+    </div>
+
+    <div class="content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div class="flash-container">
+            {% for category, message in messages %}
+            <div class="flash {{ category }}">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+</div>
+</body>
+</html>
