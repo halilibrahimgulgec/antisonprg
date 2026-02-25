@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Analiz - Kargo Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .back-link:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            flex-wrap: wrap;
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+
+        .feature-box {
+            background: #f7fafc;
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature-box h3 {
+            color: #2d3748;
+            margin-bottom: 12px;
+            font-size: 1.25rem;
+        }
+
+        .feature-box p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.75rem;
+            }
+
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Ana Sayfaya Dön</a>
+
+        <div class="header">
+            <h1>🤖 AI Yakıt Analiz Sistemi</h1>
+            <p>Yapay zeka ile yakıt tüketim tahmini ve anomali tespiti</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <h2>🎯 AI Özellikleri</h2>
+            <div class="grid-2">
+                <div class="feature-box">
+                    <h3>📈 Yakıt Tüketim Tahmini</h3>
+                    <p>Random Forest algoritması ile araçların gelecekteki yakıt tüketimini tahmin edin. Geçmiş verilerden öğrenerek doğru tahminler üretin.</p>
+                </div>
+                <div class="feature-box">
+                    <h3>🔍 Anomali Tespiti</h3>
+                    <p>Isolation Forest algoritması ile anormal yakıt tüketimlerini tespit edin. Olası sorunları erken fark edin.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📊 Yakıt Tüketim Tahmini</h2>
+            <form method="POST" action="/ai-predict">
+                <div class="form-group">
+                    <label for="plaka">Araç Plakası</label>
+                    <input type="text" name="plaka" id="plaka" class="form-control" placeholder="Plaka numarası yazın..." required autocomplete="off" list="plaka-list">
+                    <datalist id="plaka-list">
+                        {% for plaka in plakalar %}
+                            <option value="{{ plaka }}">
+                        {% endfor %}
+                    </datalist>
+                </div>
+
+                <div class="form-group">
+                    <label for="tahmin_tipi">Tahmin Tipi</label>
+                    <select name="tahmin_tipi" id="tahmin_tipi" class="form-control">
+                        <option value="tek">Tek Gün Tahmini</option>
+                        <option value="gelecek_ay">Gelecek 30 Gün Tahmini</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="tarih_group">
+                    <label for="tarih">Tarih</label>
+                    <input type="date" name="tarih" id="tarih" class="form-control" value="{{ today }}">
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    🔮 Tahmin Yap
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>🔍 Anomali Tespiti</h2>
+            <p style="color: #718096; margin-bottom: 20px;">
+                Tüm yakıt kayıtlarında anormal tüketimleri tespit edin. Sistem otomatik olarak beklenenden farklı yakıt tüketimlerini bulur.
+            </p>
+            <div class="btn-group">
+                <form method="POST" action="/ai-anomaly" style="margin: 0;">
+                    <button type="submit" class="btn btn-danger">
+                        🚨 Anomalileri Tespit Et
+                    </button>
+                </form>
+                <a href="/anomaly-dashboard" class="btn btn-primary">
+                    📊 Anomali Dashboard
+                </a>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📦 Toplu Tahmin</h2>
+            <p style="color: #718096; margin-bottom: 20px;">
+                Tüm araçlar için gelecek ay yakıt tüketim tahmini yapın. Toplam bütçe planlaması için ideal.
+            </p>
+            <form method="POST" action="/ai-bulk-predict">
+                <button type="submit" class="btn btn-success">
+                    📊 Tüm Araçları Tahmin Et
+                </button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>⚡ Performans Analizi</h2>
+            <p style="color: #718096; margin-bottom: 20px;">
+                Araçların yakıt/km oranı, tonaj bilgisi ve verimlilik skorlarını analiz edin. En verimli ve verimsiz araçları tespit edin.
+            </p>
+            <a href="/performans-analizi" class="btn btn-primary">
+                📊 Performans Analizi
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const tahminTipi = document.getElementById('tahmin_tipi');
+        const tarihGroup = document.getElementById('tarih_group');
+
+        tahminTipi.addEventListener('change', function() {
+            if (this.value === 'gelecek_ay') {
+                tarihGroup.style.display = 'none';
+            } else {
+                tarihGroup.style.display = 'block';
+            }
+        });
+
+        // Bugünün tarihi
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('tarih').value = today;
+    </script>
+</body>
+</html>

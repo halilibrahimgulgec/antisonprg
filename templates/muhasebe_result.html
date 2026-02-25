@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhasebe Raporu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .summary-item {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 24px;
+            border-radius: 12px;
+            border-left: 4px solid #48bb78;
+        }
+
+        .summary-item.negative {
+            border-left-color: #f56565;
+        }
+
+        .summary-item.positive {
+            border-left-color: #48bb78;
+        }
+
+        .summary-item h3 {
+            color: #718096;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .summary-item .value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .summary-item .value.negative {
+            color: #f56565;
+        }
+
+        .summary-item .value.positive {
+            color: #48bb78;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f7fafc;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        td {
+            color: #2d3748;
+        }
+
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .positive-value {
+            color: #48bb78;
+            font-weight: 600;
+        }
+
+        .negative-value {
+            color: #f56565;
+            font-weight: 600;
+        }
+
+        .date-info {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .date-info span {
+            font-weight: 600;
+            margin: 0 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/muhasebe" class="back-button">
+            ← Geri Dön
+        </a>
+
+        <div class="header">
+            <h1>💰 Muhasebe Raporu</h1>
+            <p>Gelir-Gider Analizi</p>
+        </div>
+
+        <div class="date-info">
+            📅 <span>{{ baslangic_tarihi }}</span> - <span>{{ bitis_tarihi }}</span>
+            {% if plaka != 'Tümü' %}
+            | 🚛 <span>{{ plaka }}</span>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="summary-grid">
+                <div class="summary-item positive">
+                    <h3>💵 Toplam Gelir</h3>
+                    <div class="value positive">{{ "%.2f"|format(toplam_gelir) }} ₺</div>
+                </div>
+
+                <div class="summary-item negative">
+                    <h3>💸 Toplam Gider</h3>
+                    <div class="value negative">{{ "%.2f"|format(toplam_gider) }} ₺</div>
+                </div>
+
+                <div class="summary-item {% if net_kar >= 0 %}positive{% else %}negative{% endif %}">
+                    <h3>📊 Net Kar/Zarar</h3>
+                    <div class="value {% if net_kar >= 0 %}positive{% else %}negative{% endif %}">
+                        {{ "%.2f"|format(net_kar) }} ₺
+                    </div>
+                </div>
+
+                <div class="summary-item {% if kar_marji >= 0 %}positive{% else %}negative{% endif %}">
+                    <h3>📈 Kar Marjı</h3>
+                    <div class="value {% if kar_marji >= 0 %}positive{% else %}negative{% endif %}">
+                        {{ "%.1f"|format(kar_marji) }}%
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2 style="margin-bottom: 24px; color: #2d3748;">🚛 Plaka Bazlı Detay</h2>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plaka</th>
+                            <th>Ana Malzeme</th>
+                            <th>Gelir</th>
+                            <th>Gider</th>
+                            <th>Net Kar/Zarar</th>
+                            <th>Kar Marjı</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in plaka_bazli %}
+                        <tr>
+                            <td><strong>{{ item.plaka }}</strong></td>
+                            <td>
+                                {% if item.ana_malzeme == 'KUM' %}
+                                    <span style="background: #FEF3C7; color: #92400E; padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">🟡 KUM</span>
+                                {% elif item.ana_malzeme == 'BETON' %}
+                                    <span style="background: #FEE2E2; color: #991B1B; padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">🔴 BETON</span>
+                                {% elif item.ana_malzeme == 'PARKE' %}
+                                    <span style="background: #E9D5FF; color: #6B21A8; padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">🟣 PARKE</span>
+                                {% else %}
+                                    <span style="background: #E5E7EB; color: #374151; padding: 4px 10px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;">{{ item.ana_malzeme }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="positive-value">{{ "%.2f"|format(item.gelir) }} ₺</td>
+                            <td class="negative-value">{{ "%.2f"|format(item.gider) }} ₺</td>
+                            <td class="{% if item.net_kar >= 0 %}positive-value{% else %}negative-value{% endif %}">
+                                {{ "%.2f"|format(item.net_kar) }} ₺
+                            </td>
+                            <td class="{% if item.kar_marji >= 0 %}positive-value{% else %}negative-value{% endif %}">
+                                {{ "%.1f"|format(item.kar_marji) }}%
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

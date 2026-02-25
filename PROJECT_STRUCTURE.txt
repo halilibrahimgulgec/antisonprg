@@ -1,0 +1,99 @@
+KARGO YAKIT TAHMİN SİSTEMİ - PROJE YAPISI
+==========================================
+
+Tarih: 12 Ekim 2025
+Durum: Temizlenmiş ve basitleştirilmiş
+Versiyon: 2.0
+
+DOSYA AĞACI
+-----------
+project/
+├── app.py                      # Flask ana uygulama (160 satır)
+├── database.py                 # SQLite veritabanı işlemleri
+├── model_analyzer.py           # Veri analiz modülü
+├── excel_to_sqlite.py          # Excel → SQLite aktarım aracı
+├── requirements.txt            # Python bağımlılıkları
+├── kargo_data.db              # SQLite veritabanı (28KB, 21 kayıt)
+├── .gitignore                 # Git ignore kuralları
+├── .env                       # Ortam değişkenleri
+├── README.md                  # Ana dokümantasyon
+├── QUICK_START.md             # Hızlı başlangıç rehberi
+└── templates/
+    ├── index.html             # Ana sayfa
+    ├── muhasebe.html          # Muhasebe sayfası
+    ├── result.html            # Yakıt analiz sonuçları
+    ├── muhasebe_result.html   # Muhasebe sonuçları
+    └── database_status.html   # Veritabanı durum sayfası
+
+FLASK ROUTE'LAR
+---------------
+GET  /                         # Ana sayfa
+GET  /muhasebe                 # Muhasebe sayfası
+POST /upload                   # Yakıt analizi yap
+POST /muhasebe-upload          # Muhasebe analizi yap
+GET  /database-status          # Veritabanı durumu (HTML)
+GET  /debug-info              # Debug bilgisi (JSON)
+
+VERİTABANI TABLOLARI
+--------------------
+- yakit (9 kayıt)             # Yakıt tüketim kayıtları
+- agirlik (6 kayıt)           # Kantar/ağırlık kayıtları
+- arac_takip (6 kayıt)        # GPS araç takip kayıtları
+
+ÖZELLIKLER
+----------
+✅ SQLite yerel veritabanı
+✅ Excel dosyalarından veri aktarımı
+✅ Plaka bazlı yakıt analizi
+✅ Muhasebe ve maliyet takibi
+✅ Chart.js ile grafikler
+✅ Veritabanı durum kontrolü
+✅ Debug endpoint'leri
+✅ Hata yönetimi ve logging
+
+SİLİNEN GEREKSIZ DOSYALAR
+--------------------------
+❌ React/Node.js dosyaları (src/, node_modules/, package.json, vite.config.ts, vs.)
+❌ Supabase dosyaları (supabase/, .bolt/)
+❌ Root HTML dosyaları (index.html, muhasebe.html, vs.)
+❌ Kullanılmayan Python dosyaları (excel_to_supabase.py)
+❌ Eski dokümantasyon (README_PYTHON.md, START_FLASK_SQLITE.md)
+❌ Kullanılmayan template'ler (scheduler.html, uploaded_files.html)
+❌ Boş klasörler (uploads/, excel_files/, logs/)
+
+TOPLAM İSTATİSTİK
+-----------------
+Python dosyası: 4
+HTML template: 5
+Markdown: 2
+Veritabanı: 1
+Toplam: 12 dosya
+
+TEMİZLEME ÖNCESİ vs SONRASI
+---------------------------
+Öncesi: ~40+ dosya, 5+ klasör, Node.js + React + Supabase
+Sonrası: 12 dosya, 1 klasör (templates), Sadece Flask + SQLite
+
+AVANTAJLAR
+----------
+✨ Sadece gerekli dosyalar
+✨ Basit ve anlaşılır yapı
+✨ Kolay bakım ve güncelleme
+✨ Hızlı başlatma
+✨ Az bağımlılık (4 Python paketi)
+✨ Yerel çalışma (internet gerektirmez)
+
+BAŞLATMA
+--------
+1. pip install -r requirements.txt
+2. python app.py
+3. http://localhost:5000
+
+YEDEKLEME
+---------
+Sadece şu dosyaları yedekleyin:
+- kargo_data.db (veritabanı)
+- .env (ayarlar)
+- Excel dosyalarınız (varsa)
+
+NOT: Veritabanı .gitignore'da, Git'e eklenmez!

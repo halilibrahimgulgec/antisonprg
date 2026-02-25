@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomali Tespiti - AI Analiz</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #e53e3e;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        thead {
+            background: #f7fafc;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .anomaly-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .score-indicator {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .score-high {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .score-medium {
+            background: #feebc8;
+            color: #c05621;
+        }
+
+        .score-low {
+            background: #fef5e7;
+            color: #975a16;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/ai-analysis" class="back-link">← AI Analiz Sayfası</a>
+
+        <div class="header">
+            <h1>🚨 Anomali Tespiti Sonuçları</h1>
+            <p>AI ile tespit edilen anormal yakıt tüketimleri</p>
+        </div>
+
+        <div class="card">
+            <h2>📊 Genel Durum</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Toplam Anomali</div>
+                    <div class="stat-value">{{ result.toplam_anomali }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Gösterilen</div>
+                    <div class="stat-value">{{ result.anomaliler|length }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Risk Durumu</div>
+                    <div class="stat-value">
+                        {% if result.toplam_anomali > 50 %}
+                            Yüksek
+                        {% elif result.toplam_anomali > 20 %}
+                            Orta
+                        {% else %}
+                            Düşük
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>⚠️ Tespit Edilen Anomaliler</h2>
+            {% if result.anomaliler %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plaka</th>
+                            <th>Tarih</th>
+                            <th>Yakıt (L)</th>
+                            <th>KM</th>
+                            <th>Birim Fiyat</th>
+                            <th>Anomali Skoru</th>
+                            <th>Sebep</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for anomali in result.anomaliler %}
+                        <tr>
+                            <td><span class="anomaly-badge">{{ anomali.plaka }}</span></td>
+                            <td>{{ anomali.tarih }}</td>
+                            <td>{{ "%.2f"|format(anomali.yakit_miktari) }}</td>
+                            <td>{{ "%.0f"|format(anomali.km_bilgisi) }}</td>
+                            <td>{{ "%.2f"|format(anomali.birim_fiyat) }} TL</td>
+                            <td>
+                                {% if anomali.anomali_skoru < -0.5 %}
+                                    <span class="score-indicator score-high">Yüksek ({{ "%.3f"|format(anomali.anomali_skoru) }})</span>
+                                {% elif anomali.anomali_skoru < -0.3 %}
+                                    <span class="score-indicator score-medium">Orta ({{ "%.3f"|format(anomali.anomali_skoru) }})</span>
+                                {% else %}
+                                    <span class="score-indicator score-low">Düşük ({{ "%.3f"|format(anomali.anomali_skoru) }})</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ anomali.sebep }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="color: #718096; text-align: center; padding: 40px;">
+                🎉 Hiç anomali tespit edilmedi! Tüm yakıt tüketimleri normal görünüyor.
+            </p>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <h3 style="color: #2d3748; margin-bottom: 16px;">💡 Anomali Skoru Hakkında</h3>
+            <p style="color: #718096; line-height: 1.6;">
+                Anomali skoru ne kadar düşükse, kayıt o kadar anormaldir. Negatif değerler, kaydın normal davranıştan saptığını gösterir.
+                Yüksek risk skorlu kayıtları öncelikli olarak inceleyin.
+            </p>
+        </div>
+
+        <div class="card">
+            <a href="/ai-analysis" style="display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 8px;">
+                Yeni Analiz Yap
+            </a>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performans Karşılaştırma - AI Analiz</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+        }
+
+        .stat-card.success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .chart-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .chart-container h3 {
+            color: #2d3748;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background: #f7fafc;
+        }
+
+        th {
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #2d3748;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e2e8f0;
+            color: #4a5568;
+        }
+
+        tbody tr:hover {
+            background: #f7fafc;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(52, 152, 219, 0.4);
+        }
+
+        .badge-success {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-danger {
+            background: #fed7d7;
+            color: #c53030;
+        }
+
+        .top-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .vehicle-list {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        .vehicle-list h3 {
+            color: #2d3748;
+            margin-bottom: 16px;
+        }
+
+        .vehicle-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .vehicle-plaka {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .vehicle-score {
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="/performans-analizi" class="back-link">← Performans Analizi</a>
+
+        {% if selected_arac_tipi == 'KARGO ARACI' %}
+        <div class="header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
+            <h1>🚛 Kargo Araçları Performans Analizi</h1>
+            <p>Ana malzeme bazlı tonaj ve verimlilik karşılaştırması</p>
+        </div>
+        {% elif selected_arac_tipi == 'İŞ MAKİNESİ' %}
+        <div class="header" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
+            <h1>🏭 İş Makineleri Performans Analizi</h1>
+            <p>Yakıt verimliliği ve operasyonel performans karşılaştırması</p>
+        </div>
+        {% elif selected_arac_tipi == 'BİNEK ARAÇ' %}
+        <div class="header" style="background: linear-gradient(135deg, #16a085 0%, #27ae60 100%);">
+            <h1>🚗 Binek Araçlar Performans Analizi</h1>
+            <p>KM/Litre oranı ve yakıt ekonomisi karşılaştırması</p>
+        </div>
+        {% else %}
+        <div class="header">
+            <h1>📊 Araç Performans Karşılaştırması</h1>
+            <p>Tüm araçların yakıt verimliliği ve performans metrikleri</p>
+        </div>
+        {% endif %}
+
+        {% if selected_arac_tipi == 'KARGO ARACI' %}
+        <div class="card">
+            <h3 style="color: #2d3748; margin-bottom: 20px;">🔍 Ana Malzeme Filtresi</h3>
+            <form method="POST" action="/performans-karsilastirma" style="display: flex; gap: 16px; align-items: end;">
+                <input type="hidden" name="arac_tipi" value="KARGO ARACI">
+                <div class="form-group" style="flex: 1; margin-bottom: 0;">
+                    <label for="ana_malzeme">Ana Malzeme Türü</label>
+                    <select name="ana_malzeme" id="ana_malzeme" class="form-control">
+                        <option value="" {% if not selected_malzeme %}selected{% endif %}>Tüm Malzemeler</option>
+                        <option value="KUM" {% if selected_malzeme=='KUM' %}selected{% endif %}>🟡 KUM</option>
+                        <option value="BETON" {% if selected_malzeme=='BETON' %}selected{% endif %}>🔴 BETON</option>
+                        <option value="PARKE" {% if selected_malzeme=='PARKE' %}selected{% endif %}>🟣 PARKE</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 0;">Filtrele</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+            <h3 style="color: white; margin-bottom: 16px;">📥 Rapor İndirme</h3>
+            <div style="display: flex; gap: 12px;">
+                <form method="POST" action="/performans-export-pdf" style="display: inline;">
+                    <input type="hidden" name="arac_tipi" value="{{ selected_arac_tipi or '' }}">
+                    <input type="hidden" name="ana_malzeme" value="{{ selected_malzeme or '' }}">
+                    <button type="submit" class="btn btn-danger"
+                        style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
+                        📄 PDF İndir
+                    </button>
+                </form>
+                <form method="POST" action="/performans-export-excel" style="display: inline;">
+                    <input type="hidden" name="arac_tipi" value="{{ selected_arac_tipi or '' }}">
+                    <input type="hidden" name="ana_malzeme" value="{{ selected_malzeme or '' }}">
+                    <button type="submit" class="btn btn-success"
+                        style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
+                        📊 Excel İndir
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Ortalama KM/Litre</div>
+                <div class="stat-value">{{ "{:,.2f}".format(result.ortalama_km_litre).replace(',', 'X').replace('.',
+                    ',').replace('X', '.') }} km/L</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-label">Ortalama KM Başına Maliyet</div>
+                <div class="stat-value">{{ "{:,.2f}".format(result.ortalama_km_maliyet).replace(',', 'X').replace('.',
+                    ',').replace('X', '.') }} TL/KM</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Toplam Araç</div>
+                <div class="stat-value">{{ result.tum_araclar|length }}</div>
+            </div>
+        </div>
+
+        <div class="top-section">
+            <div class="vehicle-list">
+                <h3>🏆 En Verimli Araçlar (Top 5)</h3>
+                {% for arac in result.en_verimli %}
+                <div class="vehicle-item">
+                    <span class="vehicle-plaka">{{ arac.plaka }}</span>
+                    <span class="vehicle-score" style="color: #27ae60;">{{
+                        "{:,.2f}".format(arac.km_litre_orani).replace(',', 'X').replace('.', ',').replace('X', '.') }}
+                        km/L</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="vehicle-list">
+                <h3>⚠️ En Verimsiz Araçlar (Top 5)</h3>
+                {% for arac in result.en_verimsiz %}
+                <div class="vehicle-item">
+                    <span class="vehicle-plaka">{{ arac.plaka }}</span>
+                    <span class="vehicle-score" style="color: #e74c3c;">{{
+                        "{:,.2f}".format(arac.km_litre_orani).replace(',', 'X').replace('.', ',').replace('X', '.') }}
+                        km/L</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="chart-grid">
+            <div class="chart-container">
+                <h3>KM/Litre Oranı (Top 15)</h3>
+                <canvas id="yakitKmChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>KM Başına Maliyet (Top 15)</h3>
+                <canvas id="maliyetChart"></canvas>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Detaylı Performans Tablosu</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Plaka</th>
+                            <th>Ana Malzeme</th>
+                            <th>Toplam Yakıt (L)</th>
+                            <th>Toplam KM</th>
+                            <th>Taşıma Miktarı</th>
+                            <th>KM/Litre</th>
+                            <th>KM/Maliyet</th>
+                            <th>Verimlilik (Yük/L)</th>
+                            <th>Verimlilik</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for arac in result.tum_araclar %}
+                        <tr>
+                            <td><strong>{{ arac.plaka }}</strong></td>
+                            <td>
+                                {% if arac.ana_malzeme == 'KUM' %}
+                                <span class="badge" style="background: #FEF3C7; color: #92400E;">🟡 KUM</span>
+                                {% elif arac.ana_malzeme == 'BETON' %}
+                                <span class="badge" style="background: #FEE2E2; color: #991B1B;">🔴 BETON</span>
+                                {% elif arac.ana_malzeme == 'PARKE' %}
+                                <span class="badge" style="background: #E9D5FF; color: #6B21A8;">🟣 PARKE</span>
+                                {% else %}
+                                <span class="badge" style="background: #E5E7EB; color: #374151;">{{ arac.ana_malzeme
+                                    }}</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ "{:,.1f}".format(arac.yakit_miktari).replace(',', 'X').replace('.', ',').replace('X',
+                                '.') }}</td>
+                            <td>{{ "{:,.0f}".format(arac.km_fark).replace(',', 'X').replace('.', ',').replace('X', '.')
+                                }}</td>
+                            <td>{{ "{:,.1f}".format(arac.toplam_tonaj).replace(',', 'X').replace('.', ',').replace('X',
+                                '.') }} <span style="font-size: 0.8rem; color: #718096;">{{ 'Ton' if
+                                    arac.kantar_birimi.lower() ==
+                                    'kg' else arac.kantar_birimi }}</span></td>
+                            <td>{{ "{:,.2f}".format(arac.km_litre_orani).replace(',', 'X').replace('.',
+                                ',').replace('X', '.') }} km/L</td>
+                            <td>{{ "{:,.2f}".format(arac.km_basina_maliyet).replace(',', 'X').replace('.',
+                                ',').replace('X', '.') }} TL</td>
+                            <td>{{ "{:,.2f}".format(arac.ton_basina_yakit).replace(',', 'X').replace('.',
+                                ',').replace('X', '.') if arac.toplam_tonaj > 0 else 'N/A' }}</td>
+                            <td>
+                                {% if arac.verimlilik_skoru < 20 %} <span class="badge badge-success">İyi</span>
+                                    {% else %}
+                                    <span class="badge badge-danger">Kötü</span>
+                                    {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tumAraclar = {{ result.tum_araclar | tojson }};
+
+        // En kötü 15 aracı al (grafik için)
+        const top15 = tumAraclar.slice(0, 15);
+        const plakalar = top15.map(a => a.plaka);
+        const kmLitre = top15.map(a => a.km_litre_orani);
+        const maliyetler = top15.map(a => a.km_basina_maliyet);
+
+        // Yakıt/KM Grafiği
+        const ctx1 = document.getElementById('yakitKmChart').getContext('2d');
+        new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: plakalar,
+                datasets: [{
+                    label: 'KM/Litre',
+                    data: kmLitre,
+                    backgroundColor: '#27ae60'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Maliyet Grafiği
+        const ctx2 = document.getElementById('maliyetChart').getContext('2d');
+        new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: plakalar,
+                datasets: [{
+                    label: 'KM Başına Maliyet (TL)',
+                    data: maliyetler,
+                    backgroundColor: '#f39c12'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>

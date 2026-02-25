@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Asistan - Yakıt Tahmin Sistemi</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .chat-container {
+            max-width: 1000px;
+            margin: 30px auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-header h1 {
+            font-size: 24px;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #28a745;
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(40, 167, 69, 0); }
+        }
+
+        .status-indicator.offline {
+            background: #dc3545;
+            animation: none;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message-content {
+            max-width: 70%;
+            padding: 15px 20px;
+            border-radius: 15px;
+            position: relative;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message.assistant .message-content {
+            background: white;
+            color: #333;
+            border: 1px solid #dee2e6;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 10px;
+            font-size: 18px;
+        }
+
+        .message.user .message-avatar {
+            background: #667eea;
+            color: white;
+        }
+
+        .message.assistant .message-avatar {
+            background: #28a745;
+            color: white;
+        }
+
+        .chat-input-area {
+            padding: 20px 30px;
+            background: white;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        #userInput {
+            border: 2px solid #dee2e6;
+            border-radius: 25px;
+            padding: 15px 100px 15px 20px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        #userInput:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        #sendBtn {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            border-radius: 20px;
+            padding: 10px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        #sendBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #sendBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .quick-questions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .quick-question-btn {
+            padding: 8px 16px;
+            border: 1px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-question-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            padding: 15px 20px;
+            background: white;
+            border-radius: 15px;
+            max-width: 70%;
+        }
+
+        .loading-indicator.active {
+            display: flex;
+        }
+
+        .typing-dots {
+            display: flex;
+            gap: 5px;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-10px); }
+        }
+
+        .welcome-message {
+            text-align: center;
+            padding: 40px 20px;
+            color: #666;
+        }
+
+        .welcome-message i {
+            font-size: 64px;
+            color: #667eea;
+            margin-bottom: 20px;
+        }
+
+        .clear-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s;
+        }
+
+        .clear-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .timestamp {
+            font-size: 11px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .download-btn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .download-btn:hover {
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .download-btn i {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <h1>
+                <i class="fas fa-robot"></i>
+                AI Asistan
+                <span class="status-indicator" id="statusIndicator"></span>
+            </h1>
+            <div>
+                <button class="btn clear-btn" onclick="clearHistory()">
+                    <i class="fas fa-trash"></i> Geçmişi Temizle
+                </button>
+                <a href="/" class="btn clear-btn ms-2">
+                    <i class="fas fa-home"></i> Ana Sayfa
+                </a>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="welcome-message">
+                <i class="fas fa-comments"></i>
+                <h3>Merhaba! Ben AI Asistanınızım</h3>
+                <p>Size yakıt tüketimi, araç performansı, lojistik ve sistem hakkında yardımcı olabilirim.</p>
+                <p class="text-muted">Aşağıdaki hızlı sorulardan birini seçebilir veya kendi sorunuzu yazabilirsiniz.</p>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="quick-questions" id="quickQuestions">
+                <button class="quick-question-btn" onclick="askQuestion('En fazla yakıt tüketen araçlar hangileri?')">
+                    <i class="fas fa-gas-pump"></i> En fazla yakıt tüketenler
+                </button>
+                <button class="quick-question-btn" onclick="askQuestion('Son yakıt alımlarını göster')">
+                    <i class="fas fa-clock"></i> Son yakıt alımları
+                </button>
+                <button class="quick-question-btn" onclick="askQuestion('Sistemde kaç aktif araç var?')">
+                    <i class="fas fa-truck"></i> Aktif araç sayısı
+                </button>
+                <button class="quick-question-btn" onclick="askQuestion('Bugün yapılması gerekenler neler?')">
+                    <i class="fas fa-tasks"></i> Günlük görevler
+                </button>
+            </div>
+            <div class="input-group">
+                <input type="text" class="form-control" id="userInput" placeholder="Sorunuzu yazın..." autocomplete="off">
+                <button class="btn" id="sendBtn" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i> Gönder
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let isWaiting = false;
+
+        document.getElementById('userInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        async function checkStatus() {
+            try {
+                const response = await fetch('/api/assistant/status');
+                const data = await response.json();
+
+                const indicator = document.getElementById('statusIndicator');
+                if (data.status === 'running') {
+                    indicator.classList.remove('offline');
+                } else {
+                    indicator.classList.add('offline');
+                }
+            } catch (error) {
+                document.getElementById('statusIndicator').classList.add('offline');
+            }
+        }
+
+        function addMessage(text, isUser) {
+            const messagesDiv = document.getElementById('chatMessages');
+            const welcomeMsg = messagesDiv.querySelector('.welcome-message');
+            if (welcomeMsg) {
+                welcomeMsg.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user' : 'assistant'}`;
+
+            const now = new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+            messageDiv.innerHTML = `
+                ${!isUser ? `<div class="message-avatar"><i class="fas fa-robot"></i></div>` : ''}
+                <div class="message-content">
+                    ${text}
+                    <div class="timestamp">${now}</div>
+                </div>
+                ${isUser ? `<div class="message-avatar"><i class="fas fa-user"></i></div>` : ''}
+            `;
+
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function showLoading() {
+            const messagesDiv = document.getElementById('chatMessages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'message assistant';
+            loadingDiv.id = 'loadingIndicator';
+            loadingDiv.innerHTML = `
+                <div class="message-avatar"><i class="fas fa-robot"></i></div>
+                <div class="loading-indicator active">
+                    <div class="typing-dots">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <span>Düşünüyorum...</span>
+                </div>
+            `;
+            messagesDiv.appendChild(loadingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function hideLoading() {
+            const loadingDiv = document.getElementById('loadingIndicator');
+            if (loadingDiv) {
+                loadingDiv.remove();
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const question = input.value.trim();
+
+            if (!question || isWaiting) return;
+
+            addMessage(question, true);
+            input.value = '';
+
+            isWaiting = true;
+            document.getElementById('sendBtn').disabled = true;
+            showLoading();
+
+            try {
+                const response = await fetch('/api/assistant/ask', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ question: question })
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.status === 'success') {
+                    let message = data.answer;
+
+                    // Excel veya PDF download linki varsa ekle
+                    if (data.download_url) {
+                        message += `<br><br><a href="${data.download_url}" class="download-btn" download>
+                            <i class="fas fa-download"></i> ${data.export_type === 'excel' ? 'Excel' : 'PDF'} İndir
+                        </a>`;
+                    }
+
+                    addMessage(message, false);
+                } else {
+                    addMessage(`❌ Hata: ${data.message}`, false);
+                }
+            } catch (error) {
+                hideLoading();
+                addMessage('❌ Bağlantı hatası. Ollama servisinin çalıştığından emin olun.', false);
+            } finally {
+                isWaiting = false;
+                document.getElementById('sendBtn').disabled = false;
+                input.focus();
+            }
+        }
+
+        function askQuestion(question) {
+            document.getElementById('userInput').value = question;
+            sendMessage();
+        }
+
+        async function clearHistory() {
+            if (!confirm('Sohbet geçmişini temizlemek istediğinize emin misiniz?')) {
+                return;
+            }
+
+            try {
+                await fetch('/api/assistant/clear', { method: 'POST' });
+                document.getElementById('chatMessages').innerHTML = `
+                    <div class="welcome-message">
+                        <i class="fas fa-comments"></i>
+                        <h3>Merhaba! Ben AI Asistanınızım</h3>
+                        <p>Size yakıt tüketimi, araç performansı, lojistik ve sistem hakkında yardımcı olabilirim.</p>
+                        <p class="text-muted">Aşağıdaki hızlı sorulardan birini seçebilir veya kendi sorunuzu yazabilirsiniz.</p>
+                    </div>
+                `;
+            } catch (error) {
+                alert('Geçmiş temizlenirken hata oluştu.');
+            }
+        }
+
+        checkStatus();
+        setInterval(checkStatus, 30000);
+    </script>
+</body>
+</html>

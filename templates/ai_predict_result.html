@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tahmin Sonuçları - AI Analiz</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .back-link {
+            display: inline-block;
+            color: white;
+            text-decoration: none;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #718096;
+            margin-bottom: 8px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 24px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/ai-analysis" class="back-link">← AI Analiz Sayfası</a>
+
+        <div class="header">
+            <h1>🔮 Yakıt Tüketim Tahmini</h1>
+            <p>{{ result.plaka }} - AI Tahmin Sonuçları</p>
+        </div>
+
+        {% if tahmin_tipi == 'gelecek_ay' %}
+        <div class="card">
+            <h2>📅 Gelecek 30 Gün Tahmini</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Plaka</div>
+                    <div class="stat-value">{{ result.plaka }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Toplam Tahmin (30 Gün)</div>
+                    <div class="stat-value">{{ result.toplam_tahmin }} L</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Günlük Ortalama</div>
+                    <div class="stat-value">{{ "%.1f"|format(result.toplam_tahmin / 30) }} L</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tahmini Maliyet (35 TL/L)</div>
+                    <div class="stat-value">{{ "%.0f"|format(result.toplam_tahmin * 35) }} TL</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="tahminChart"></canvas>
+            </div>
+        </div>
+
+        <script>
+            const tahminData = {{ result.tahminler|tojson }};
+            const ctx = document.getElementById('tahminChart').getContext('2d');
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: tahminData.map(t => `Gün ${t.gun}`),
+                    datasets: [{
+                        label: 'Tahmini Yakıt Tüketimi (L)',
+                        data: tahminData.map(t => t.tahmin),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.parsed.y.toFixed(2) + ' Litre';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Yakıt (Litre)'
+                            }
+                        }
+                    }
+                }
+            });
+        </script>
+
+        {% else %}
+        <div class="card">
+            <h2>📊 Tek Gün Tahmini</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-label">Plaka</div>
+                    <div class="stat-value">{{ result.plaka }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tarih</div>
+                    <div class="stat-value">{{ result.tarih }}</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Tahmini Tüketim</div>
+                    <div class="stat-value">{{ result.tahmin }} L</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Gerçek Ortalama</div>
+                    <div class="stat-value">{{ result.gercek_ortalama }} L</div>
+                </div>
+            </div>
+
+            <div class="card" style="background: #f7fafc; margin-top: 20px;">
+                <h3 style="color: #2d3748; margin-bottom: 16px;">📈 Güven Aralığı</h3>
+                <p style="color: #718096;">
+                    <strong>Minimum:</strong> {{ result.min_tahmin }} L<br>
+                    <strong>Maksimum:</strong> {{ result.max_tahmin }} L
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        <div class="card">
+            <a href="/ai-analysis" style="display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 8px;">
+                Yeni Tahmin Yap
+            </a>
+        </div>
+    </div>
+</body>
+</html>

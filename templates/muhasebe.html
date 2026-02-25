@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muhasebe Analizi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin-bottom: 24px;
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            color: #2d3748;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(72, 187, 120, 0.4);
+        }
+
+        .date-filter {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+
+        .form-group input {
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #48bb78;
+            box-shadow: 0 0 0 3px rgba(72, 187, 120, 0.1);
+        }
+
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border-left: 4px solid #28a745;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border-left: 4px solid #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-button">
+            ← Ana Sayfaya Dön
+        </a>
+
+        <div class="header">
+            <h1>💰 Muhasebe Analizi</h1>
+            <p>Gelir-gider ve kar-zarar analizi</p>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="card">
+            <h2>📊 Veritabanından Muhasebe Analizi</h2>
+            <p style="color: #718096; margin-bottom: 24px;">
+                Tüm yakıt ve maliyet verilerinizi analiz ederek detaylı muhasebe raporu oluşturun.
+            </p>
+            <form method="POST" action="/muhasebe-analyze">
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div class="form-group">
+                        <label for="baslangic_tarihi">📅 Başlangıç Tarihi</label>
+                        <input type="date" id="baslangic_tarihi" name="baslangic_tarihi">
+                    </div>
+                    <div class="form-group">
+                        <label for="bitis_tarihi">📅 Bitiş Tarihi</label>
+                        <input type="date" id="bitis_tarihi" name="bitis_tarihi">
+                    </div>
+                    <div class="form-group">
+                        <label for="plaka">🚗 Plaka</label>
+                        <select id="plaka" name="plaka" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                            <option value="">Tüm Araçlar</option>
+                        </select>
+                    </div>
+                </div>
+                <p style="color: #a0aec0; font-size: 0.85rem; margin-bottom: 16px;">
+                    💡 Filtre seçmezseniz tüm veriler analiz edilir
+                </p>
+                <button type="submit" class="btn">
+                    🔍 Muhasebe Analizi Yap
+                </button>
+            </form>
+
+            <script>
+                // Plaka listesini yükle
+                fetch('/api/plakalar')
+                    .then(res => res.json())
+                    .then(data => {
+                        const select = document.getElementById('plaka');
+                        data.plakalar.forEach(plaka => {
+                            const option = document.createElement('option');
+                            option.value = plaka;
+                            option.textContent = plaka;
+                            select.appendChild(option);
+                        });
+                    })
+                    .catch(err => console.error('Plaka yükleme hatası:', err));
+            </script>
+        </div>
+    </div>
+</body>
+</html>

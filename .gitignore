@@ -1,0 +1,45 @@
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+ENV/
+env/
+
+# Excel & Data
+*.xls
+*.xlsx
+*.csv
+*.db
+*.json
+!debug_*.json # İsteğe bağlı, debug jsonları kalsın mı? Kullanıcı istediği için tutabiliriz ama genellikle ignore edilir.
+# Aslında kargo_data.db ve excel dosyalarını ignore etmek en iyisi.
+
+# Project specific
+debug_*.json
+trash/
+temp/
