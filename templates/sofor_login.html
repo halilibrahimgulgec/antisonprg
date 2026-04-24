@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- PWA Manifest & Icons (Placeholder) -->
+    <meta name="theme-color" content="#2c3e50">
+    <title>Şoför Girişi - Kargo Filo</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #ecf0f1; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .login-card { background: white; width: 90%; max-width: 400px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
+        .logo { font-size: 3rem; margin-bottom: 10px; }
+        h2 { color: #2c3e50; margin-bottom: 20px; font-weight: 700; }
+        .form-group { text-align: left; margin-bottom: 20px; }
+        .form-group label { display: block; font-weight: bold; color: #7f8c8d; margin-bottom: 8px; }
+        .form-group input { width: 100%; padding: 15px; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 1.1rem; box-sizing: border-box; transition: 0.3s; }
+        .form-group input:focus { border-color: #3498db; outline: none; }
+        .btn { width: 100%; padding: 15px; background: #3498db; color: white; border: none; border-radius: 8px; font-size: 1.2rem; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #2980b9; box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4); transform: translateY(-2px); }
+        .flash { padding: 15px; border-radius: 8px; margin-bottom: 20px; font-weight: bold; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <div class="login-card">
+        <div class="logo">🚛</div>
+        <h2>Şoför Paneli</h2>
+        <p style="color: #95a5a6; margin-bottom: 25px; font-size: 0.95rem;">Lütfen sisteme kayıtlı telefon numaranızla giriş yapın.</p>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/sofor-login" method="POST">
+            <div class="form-group">
+                <label>Telefon Numarası</label>
+                <input type="tel" name="telefon" placeholder="05XX XXX XX XX" required pattern="[0-9\s]+" autocomplete="tel">
+            </div>
+            <button type="submit" class="btn">GİRİŞ YAP</button>
+        </form>
+        <div style="margin-top: 25px; font-size: 0.8rem; color: #bdc3c7;">Merkez ofis sistemine dönmek için <a href="/" style="color: #3498db; text-decoration: none;">tıklayın</a></div>
+    </div>
+</body>
+</html>

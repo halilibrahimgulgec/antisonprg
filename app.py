@@ -401,7 +401,34 @@ def muhasebe_analyze():
         bitis_tarihi = request.form.get('bitis_tarihi') or None
         plaka = request.form.get('plaka', '').strip()
 
-        result = get_muhasebe_data(baslangic_tarihi, bitis_tarihi, plaka or None)
+        # Dinamik Ayarları Al
+        hedef_gelir = request.form.get('hedef_gelir', 1000000)
+        hedef_gider = request.form.get('hedef_gider', 750000)
+        motorin_fiyat = request.form.get('motorin_fiyat', '').strip()
+        adblue_fiyat = request.form.get('adblue_fiyat', '').strip()
+        cari_fiyatlar_text = request.form.get('cari_fiyatlar', '').strip()
+        harici_gizle = request.form.get('harici_gizle') == 'on'  # Checkbox boolean
+
+        cari_fiyatlar_dict = {}
+        if cari_fiyatlar_text:
+            for line in cari_fiyatlar_text.split('\n'):
+                if ':' in line:
+                    k, v = line.split(':', 1)
+                    try:
+                        cari_fiyatlar_dict[k.strip()] = float(v.strip())
+                    except:
+                        pass
+
+        settings = {
+            'hedef_gelir': float(hedef_gelir) if hedef_gelir else 1000000.0,
+            'hedef_gider': float(hedef_gider) if hedef_gider else 750000.0,
+            'motorin_fiyat': float(motorin_fiyat) if motorin_fiyat else None,
+            'adblue_fiyat': float(adblue_fiyat) if adblue_fiyat else None,
+            'cari_fiyatlar': cari_fiyatlar_dict,
+            'harici_gizle': harici_gizle
+        }
+
+        result = get_muhasebe_data(baslangic_tarihi, bitis_tarihi, plaka or None, settings)
 
         if result['status'] == 'error':
             flash(f'❌ Hata: {result["message"]}', 'error')
@@ -411,11 +438,19 @@ def muhasebe_analyze():
                              baslangic_tarihi=baslangic_tarihi or 'Başlangıç',
                              bitis_tarihi=bitis_tarihi or 'Bugün',
                              plaka=plaka or 'Tümü',
+                             hedef_gelir=settings['hedef_gelir'],
+                             hedef_gider=settings['hedef_gider'],
                              toplam_gelir=result['toplam_gelir'],
                              toplam_gider=result['toplam_gider'],
+                             toplam_yakit_gider=result.get('toplam_yakit_gider', 0),
+                             toplam_bakim_gider=result.get('toplam_bakim_gider', 0),
+                             toplam_ceza_gider=result.get('toplam_ceza_gider', 0),
+                             toplam_hasar_gider=result.get('toplam_hasar_gider', 0),
                              net_kar=result['net_kar'],
                              kar_marji=result['kar_marji'],
-                             plaka_bazli=result['plaka_bazli'])
+                             plaka_bazli=result['plaka_bazli'],
+                             aylik_trend=result.get('aylik_trend', {}),
+                             cari_bazli=result.get('cari_bazli', []))
 
     except Exception as e:
         flash(f'Hata: {str(e)}', 'error')
@@ -1581,7 +1616,8 @@ def bakim_ekle():
         'iscilik_maliyeti': request.form.get('iscilik_maliyeti'),
         'parca_maliyeti': request.form.get('parca_maliyeti'),
         'fatura_no': request.form.get('fatura_no'),
-        'garanti_durumu': request.form.get('garanti_durumu')
+        'garanti_durumu': request.form.get('garanti_durumu'),
+        'durum': request.form.get('durum')
     }
     
     result = add_bakim_kaydi(data)
@@ -1592,6 +1628,33 @@ def bakim_ekle():
         flash(f'❌ Hata: {result["message"]}', 'error')
         
     return redirect(url_for('bakim_sayfasi', plaka=data['plaka']))
+
+@app.route('/bakim-guncelle/<int:id>', methods=['POST'])
+def bakim_guncelle(id):
+    """Mevcut bir bakım kaydını servis ve maliyet bilgileriyle kapat"""
+    from database import update_bakim_maliyet
+    
+    data = {
+        'servis_adi': request.form.get('servis_adi'),
+        'servis_giris_tarihi': request.form.get('servis_giris_tarihi'),
+        'servis_cikis_tarihi': request.form.get('servis_cikis_tarihi'),
+        'iscilik_maliyeti': request.form.get('iscilik_maliyeti'),
+        'parca_maliyeti': request.form.get('parca_maliyeti'),
+        'maliyet': request.form.get('maliyet'),
+        'fatura_no': request.form.get('fatura_no'),
+        'garanti_durumu': request.form.get('garanti_durumu'),
+        'bir_sonraki_bakim_km': request.form.get('bir_sonraki_bakim_km'),
+        'bir_sonraki_bakim_tarih': request.form.get('bir_sonraki_bakim_tarih')
+    }
+    
+    result = update_bakim_maliyet(id, data)
+    
+    if result['status'] == 'success':
+        flash('✅ Bakım kaydı başarıyla güncellendi ve kapatıldı.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+        
+    return redirect(request.referrer or url_for('bakim_sayfasi'))
 
 @app.route('/bakim-sil/<int:id>', methods=['POST'])
 def bakim_sil(id):
@@ -1620,6 +1683,209 @@ def bakim_analiz_sayfasi():
                          data=analiz_data,
                          plakalar=plakalar,
                          json_data=json.dumps(analiz_data))
+
+
+# -------------------------------------------------------------------------
+# ŞOFÖR YÖNETİMİ (AŞAMA 2)
+# -------------------------------------------------------------------------
+
+@app.route('/soforler')
+def soforler_sayfasi():
+    """Şoför yönetimi sayfası"""
+    from database import get_soforler
+    soforler = get_soforler()
+    return render_template('soforler.html', soforler=soforler)
+
+@app.route('/sofor-ekle', methods=['POST'])
+def view_sofor_ekle():
+    """Yeni şoför ekle"""
+    from database import add_sofor
+    data = {
+        'ad_soyad': request.form.get('ad_soyad'),
+        'telefon': request.form.get('telefon'),
+        'tc_no': request.form.get('tc_no'),
+        'aktif': request.form.get('aktif', 1)
+    }
+    result = add_sofor(data)
+    if result['status'] == 'success':
+        flash('✅ Şoför başarıyla eklendi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('soforler_sayfasi'))
+
+@app.route('/sofor-guncelle/<int:id>', methods=['POST'])
+def view_sofor_guncelle(id):
+    """Şoför bilgilerini güncelle"""
+    from database import update_sofor
+    data = {
+        'ad_soyad': request.form.get('ad_soyad'),
+        'telefon': request.form.get('telefon'),
+        'tc_no': request.form.get('tc_no'),
+        'aktif': request.form.get('aktif', 1)
+    }
+    result = update_sofor(id, data)
+    if result['status'] == 'success':
+        flash('✅ Şoför başarıyla güncellendi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('soforler_sayfasi'))
+
+@app.route('/sofor-sil/<int:id>', methods=['POST'])
+def view_sofor_sil(id):
+    """Şoför sil"""
+    from database import delete_sofor
+    result = delete_sofor(id)
+    if result['status'] == 'success':
+        flash('🗑️ Şoför başarıyla silindi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('soforler_sayfasi'))
+
+
+# -------------------------------------------------------------------------
+# KAZA, CEZA ve HASAR YÖNETİMİ (AŞAMA 3)
+# -------------------------------------------------------------------------
+
+@app.route('/hasar-ceza-yonetimi')
+def hasar_ceza_sayfasi():
+    """Hasar ve Ceza Yönetimi Sayfası"""
+    from database import get_cezalar, get_hasarlar, get_soforler, get_all_plakas
+    cezalar = get_cezalar()
+    hasarlar = get_hasarlar()
+    soforler = get_soforler(aktif_sadece=True)
+    plakalar = get_all_plakas()
+    
+    return render_template('hasar_ceza.html', cezalar=cezalar, hasarlar=hasarlar, soforler=soforler, plakalar=plakalar)
+
+@app.route('/ceza-ekle', methods=['POST'])
+def view_ceza_ekle():
+    from database import add_ceza
+    data = {
+        'plaka': request.form.get('plaka'),
+        'sofor_id': request.form.get('sofor_id') or None,
+        'tarih': request.form.get('tarih'),
+        'tutar': request.form.get('tutar'),
+        'aciklama': request.form.get('aciklama'),
+        'odeme_durumu': request.form.get('odeme_durumu', 'Ödenmedi')
+    }
+    result = add_ceza(data)
+    if result['status'] == 'success':
+        flash('✅ Ceza başarıyla eklendi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('hasar_ceza_sayfasi'))
+
+@app.route('/ceza-sil/<int:id>', methods=['POST'])
+def view_ceza_sil(id):
+    from database import delete_ceza
+    result = delete_ceza(id)
+    if result['status'] == 'success':
+        flash('🗑️ Ceza silindi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('hasar_ceza_sayfasi'))
+
+@app.route('/hasar-ekle', methods=['POST'])
+def view_hasar_ekle():
+    from database import add_hasar
+    data = {
+        'plaka': request.form.get('plaka'),
+        'sofor_id': request.form.get('sofor_id') or None,
+        'tarih': request.form.get('tarih'),
+        'tutar': request.form.get('tutar'),
+        'aciklama': request.form.get('aciklama'),
+        'sigorta_karsiladi_mi': request.form.get('sigorta_karsiladi_mi', 0)
+    }
+    result = add_hasar(data)
+    if result['status'] == 'success':
+        flash('✅ Hasar kaydı eklendi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('hasar_ceza_sayfasi'))
+
+@app.route('/hasar-sil/<int:id>', methods=['POST'])
+def view_hasar_sil(id):
+    from database import delete_hasar
+    result = delete_hasar(id)
+    if result['status'] == 'success':
+        flash('🗑️ Hasar kaydı silindi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('hasar_ceza_sayfasi'))
+
+
+# -------------------------------------------------------------------------
+# LASTİK YÖNETİMİ (AŞAMA 4)
+# -------------------------------------------------------------------------
+
+@app.route('/lastik-yonetimi')
+def lastik_yonetimi_sayfasi():
+    """Lastik Yönetimi Sayfası"""
+    from database import get_lastikler, get_aktif_kargo_araclari
+    lastikler = get_lastikler(aktif_sadece=True)
+    plakalar = get_aktif_kargo_araclari()
+    return render_template('lastik_yonetimi.html', lastikler=lastikler, plakalar=plakalar)
+
+@app.route('/lastik-ekle', methods=['POST'])
+def view_lastik_ekle():
+    from database import add_lastik
+    data = {
+        'marka': request.form.get('marka'),
+        'ebat': request.form.get('ebat'),
+        'seri_no': request.form.get('seri_no'),
+        'fiyat': request.form.get('fiyat'),
+        'alinma_tarihi': request.form.get('alinma_tarihi')
+    }
+    result = add_lastik(data)
+    if result['status'] == 'success':
+        flash('✅ Lastik envantere eklendi.', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('lastik_yonetimi_sayfasi'))
+
+@app.route('/lastik-sil/<int:id>', methods=['POST'])
+def view_lastik_sil(id):
+    from database import delete_lastik
+    result = delete_lastik(id)
+    if result['status'] == 'success':
+        flash('🗑️ Lastik kaydı silindi (pasife çekildi).', 'success')
+    else:
+        flash(f'❌ Hata: {result["message"]}', 'error')
+    return redirect(url_for('lastik_yonetimi_sayfasi'))
+
+@app.route('/api/arac-lastikleri/<plaka>')
+def api_arac_lastikleri(plaka):
+    from database import get_arac_lastikleri
+    lastikler = get_arac_lastikleri(plaka)
+    return jsonify({'status': 'success', 'data': lastikler})
+
+@app.route('/api/lastik-tak', methods=['POST'])
+def api_lastik_tak():
+    try:
+        from database import tak_lastik
+        plaka = request.form.get('plaka')
+        lastik_id = request.form.get('lastik_id')
+        pozisyon = request.form.get('pozisyon')
+        tarih = request.form.get('takilma_tarihi')
+        km = request.form.get('takilma_km')
+        
+        result = tak_lastik(plaka, lastik_id, pozisyon, tarih, km)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/api/lastik-sok', methods=['POST'])
+def api_lastik_sok():
+    try:
+        from database import sok_lastik
+        durum_id = request.form.get('durum_id')
+        tarih = request.form.get('sokulme_tarihi')
+        km = request.form.get('sokulme_km')
+        
+        result = sok_lastik(durum_id, tarih, km)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
 
 
 @app.route('/upload', methods=['POST'])
@@ -1690,6 +1956,186 @@ def upload_files():
         flash(f'❌ Hata: {str(e)}', 'error')
 
     return redirect(url_for('index'))
+
+
+# -------------------------------------------------------------------------
+# ŞOFÖR PANELİ (PWA - AŞAMA 5)
+# -------------------------------------------------------------------------
+
+@app.route('/sofor-login', methods=['GET', 'POST'])
+def sofor_login():
+    if request.method == 'POST':
+        telefon = request.form.get('telefon')
+        from database import get_sofor_by_telefon
+        sofor = get_sofor_by_telefon(telefon)
+        if sofor:
+            session['sofor_id'] = sofor['id']
+            session['sofor_adi'] = sofor['ad_soyad']
+            return redirect(url_for('sofor_paneli'))
+        else:
+            flash('Böyle bir telefon numarasına sahip aktif şoför bulunamadı.', 'error')
+    return render_template('sofor_login.html')
+
+@app.route('/sofor-logout')
+def sofor_logout():
+    session.pop('sofor_id', None)
+    session.pop('sofor_adi', None)
+    return redirect(url_for('sofor_login'))
+
+@app.route('/sofor-paneli')
+def sofor_paneli():
+    if 'sofor_id' not in session:
+        return redirect(url_for('sofor_login'))
+    from database import get_aktif_sefer, get_aktif_kargo_araclari
+    sofor_id = session['sofor_id']
+    aktif_sefer = get_aktif_sefer(sofor_id)
+    plakalar = get_aktif_kargo_araclari()
+    return render_template('sofor_paneli.html', sofor_adi=session['sofor_adi'], aktif_sefer=aktif_sefer, plakalar=plakalar)
+
+@app.route('/api/sefer-baslat', methods=['POST'])
+def api_sefer_baslat():
+    if 'sofor_id' not in session:
+        return jsonify({'status': 'error', 'message': 'Oturum kapalı'})
+    sofor_id = session['sofor_id']
+    plaka = request.form.get('plaka')
+    km = request.form.get('km')
+    from database import baslat_sefer
+    return jsonify(baslat_sefer(sofor_id, plaka, km))
+
+@app.route('/api/sefer-bitir', methods=['POST'])
+def api_sefer_bitir():
+    sefer_id = request.form.get('sefer_id')
+    km = request.form.get('km')
+    from database import bitir_sefer
+    return jsonify(bitir_sefer(sefer_id, km))
+
+import os
+from werkzeug.utils import secure_filename
+from datetime import datetime
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'static', 'uploads', 'sofor_bildirim')
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+@app.route('/api/yakit-bildir', methods=['POST'])
+def api_yakit_bildir():
+    if 'sofor_id' not in session:
+        return jsonify({'status': 'error', 'message': 'Oturum kapalı'})
+    
+    sofor_id = session['sofor_id']
+    from database import get_aktif_sefer, add_yakit_from_sofor
+    aktif_sefer = get_aktif_sefer(sofor_id)
+    
+    if not aktif_sefer:
+        return jsonify({'status': 'error', 'message': 'Aktif sefer bulunamadı. Önce sefer başlatın.'})
+        
+    plaka = aktif_sefer['plaka']
+    litre = request.form.get('litre')
+    file = request.files.get('fotograf')
+    
+    if not file or not litre:
+        return jsonify({'status': 'error', 'message': 'Fotoğraf ve litre bilgisi zorunludur.'})
+        
+    filename = secure_filename(f"yakit_{plaka}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg")
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    
+    db_filepath = f"/static/uploads/sofor_bildirim/{filename}"
+    return jsonify(add_yakit_from_sofor(sofor_id, plaka, litre, db_filepath))
+
+@app.route('/api/hasar-bildir', methods=['POST'])
+def api_hasar_bildir():
+    if 'sofor_id' not in session:
+        return jsonify({'status': 'error', 'message': 'Oturum kapalı'})
+        
+    sofor_id = session['sofor_id']
+    from database import get_aktif_sefer, add_hasar
+    aktif_sefer = get_aktif_sefer(sofor_id)
+    
+    if not aktif_sefer:
+        return jsonify({'status': 'error', 'message': 'Aktif sefer bulunamadı.'})
+        
+    plaka = aktif_sefer['plaka']
+    aciklama = request.form.get('aciklama')
+    enlem = request.form.get('enlem')
+    boylam = request.form.get('boylam')
+    file = request.files.get('fotograf')
+    
+    db_filepath = None
+    if file:
+        filename = secure_filename(f"hasar_{plaka}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg")
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(filepath)
+        db_filepath = f"/static/uploads/sofor_bildirim/{filename}"
+        
+    data = {
+        'plaka': plaka,
+        'sofor_id': sofor_id,
+        'tarih': datetime.now().strftime('%Y-%m-%d'),
+        'tutar': 0, # Hasar anında tutar belli değil
+        'aciklama': aciklama,
+        'sigorta_karsiladi_mi': 0,
+        'konum_enlem': enlem,
+        'konum_boylam': boylam,
+        'fotograf_yolu': db_filepath
+    }
+    
+    return jsonify(add_hasar(data))
+
+@app.route('/api/ariza-bildir', methods=['POST'])
+def api_ariza_bildir():
+    if 'sofor_id' not in session:
+        return jsonify({'status': 'error', 'message': 'Oturum kapalı'})
+        
+    sofor_id = session['sofor_id']
+    from database import get_aktif_sefer, add_ariza_from_sofor
+    aktif_sefer = get_aktif_sefer(sofor_id)
+    
+    if not aktif_sefer:
+        return jsonify({'status': 'error', 'message': 'Aktif sefer bulunamadı.'})
+        
+    plaka = aktif_sefer['plaka']
+    aciklama = request.form.get('aciklama')
+    telefon = request.form.get('telefon')
+    
+    if not aciklama:
+        return jsonify({'status': 'error', 'message': 'Açıklama zorunludur.'})
+        
+    return jsonify(add_ariza_from_sofor(sofor_id, plaka, aciklama, telefon))
+
+@app.route('/api/evrak-gonder', methods=['POST'])
+def api_evrak_gonder():
+    if 'sofor_id' not in session:
+        return jsonify({'status': 'error', 'message': 'Oturum kapalı'})
+        
+    sofor_id = session['sofor_id']
+    from database import get_aktif_sefer, add_evrak_from_sofor
+    aktif_sefer = get_aktif_sefer(sofor_id)
+    
+    if not aktif_sefer:
+        return jsonify({'status': 'error', 'message': 'Aktif sefer bulunamadı. Önce sefer başlatın.'})
+        
+    plaka = aktif_sefer['plaka']
+    evrak_tipi = request.form.get('evrak_tipi')
+    aciklama = request.form.get('aciklama')
+    file = request.files.get('fotograf')
+    
+    if not file or not evrak_tipi:
+        return jsonify({'status': 'error', 'message': 'Fotoğraf ve evrak tipi zorunludur.'})
+        
+    filename = secure_filename(f"evrak_{plaka}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg")
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    file.save(filepath)
+    
+    db_filepath = f"/static/uploads/sofor_bildirim/{filename}"
+    return jsonify(add_evrak_from_sofor(sofor_id, plaka, evrak_tipi, aciklama, db_filepath))
+
+@app.route('/saha-bildirimleri')
+def saha_bildirimleri():
+    """Yöneticiler için Saha Bildirim Merkezi"""
+    from database import get_saha_bildirimleri
+    bildirimler = get_saha_bildirimleri()
+    return render_template('saha_bildirimleri.html', bildirimler=bildirimler)
 
 if __name__ == '__main__':
     print("\n" + "="*50)

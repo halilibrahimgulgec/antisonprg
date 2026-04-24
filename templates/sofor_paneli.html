@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <!-- PWA Settings -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2c3e50">
+    <title>Şoför Tesis Paneli - Kargo Filo</title>
+    <!-- Styles -->
+    <style>
+        :root { --primary: #3498db; --success: #2ecc71; --danger: #e74c3c; --warning: #f1c40f; --dark: #2c3e50; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+        body { background-color: #f4f6f8; color: #333; padding-bottom: 80px; }
+        
+        .header { background: var(--dark); color: white; padding: 20px; text-align: center; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px; position: sticky; top: 0; z-index: 100; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .header h1 { font-size: 1.4rem; font-weight: 700; margin-bottom: 5px; }
+        .header p { font-size: 0.9rem; opacity: 0.8; }
+        .logout-btn { position: absolute; right: 20px; top: 20px; color: white; text-decoration: none; font-size: 0.8rem; background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 12px; }
+        
+        .container { padding: 20px; }
+        
+        .status-card { background: white; border-radius: 15px; padding: 20px; margin-bottom: 25px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); text-align: center; }
+        .status-icon { font-size: 3rem; margin-bottom: 10px; }
+        .status-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 5px; color: var(--dark); }
+        .status-desc { font-size: 0.9rem; color: #7f8c8d; margin-bottom: 15px; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        
+        .action-card { background: white; border-radius: 15px; padding: 20px 10px; text-align: center; cursor: pointer; box-shadow: 0 4px 10px rgba(0,0,0,0.05); transition: 0.2s; border: 2px solid transparent; text-decoration: none; display: block; color: inherit; }
+        .action-card:active { transform: scale(0.95); border-color: var(--primary); }
+        .action-card.disabled { opacity: 0.5; pointer-events: none; }
+        .action-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .action-label { font-size: 0.95rem; font-weight: 600; color: var(--dark); }
+        
+        .btn-large { display: block; width: 100%; padding: 18px; border-radius: 15px; border: none; font-size: 1.2rem; font-weight: bold; color: white; text-align: center; cursor: pointer; transition: 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-top: 15px; }
+        .btn-start { background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); }
+        .btn-stop { background: linear-gradient(135deg, #c0392b 0%, #e74c3c 100%); }
+        .btn-large:active { transform: scale(0.98); }
+        
+        /* Modal */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: flex-end; }
+        .modal.active { display: flex; animation: fadeIn 0.3s; }
+        .modal-content { background: white; width: 100%; border-top-left-radius: 25px; border-top-right-radius: 25px; padding: 30px 20px; box-shadow: 0 -5px 25px rgba(0,0,0,0.2); animation: slideUp 0.3s; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { font-size: 1.3rem; color: var(--dark); margin: 0; }
+        .close-btn { background: #ecf0f1; border: none; width: 35px; height: 35px; border-radius: 50%; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; color: #7f8c8d; }
+        
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 0.9rem; font-weight: bold; color: #7f8c8d; margin-bottom: 8px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 15px; border: 2px solid #ecf0f1; border-radius: 12px; font-size: 1rem; transition: 0.2s; background: #fafafa; }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); outline: none; background: white; }
+        
+        .btn-submit { background: var(--primary); color: white; width: 100%; padding: 16px; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: bold; margin-top: 10px; }
+        
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <a href="/sofor-logout" class="logout-btn">Çıkış</a>
+        <h1>Hoşgeldin, {{ sofor_adi }}</h1>
+        <p>Kargo Filo Operasyon Paneli</p>
+    </div>
+
+    <div class="container">
+        {% if aktif_sefer %}
+        <!-- Aktif Sefer Var -->
+        <div class="status-card" style="border-top: 5px solid var(--success);">
+            <div class="status-icon">🚚</div>
+            <div class="status-title">Aktif Seferiniz Sürüyor</div>
+            <div class="status-desc">Plaka: <strong>{{ aktif_sefer.plaka }}</strong><br>Başlangıç: {{ aktif_sefer.baslangic_zaman.split()[1] if aktif_sefer.baslangic_zaman else '' }}</div>
+            <button class="btn-large btn-stop" onclick="openModal('bitirModal')">Seferi Bitir & Raporla</button>
+        </div>
+        
+        <h3 style="margin: 25px 0 15px 0; font-size: 1.1rem; color: var(--dark);">Yolda Gerçekleşenler</h3>
+        <div class="grid">
+            <div class="action-card" onclick="openModal('yakitModal')">
+                <div class="action-icon">⛽</div>
+                <div class="action-label">Yakıt Fişi Ekle</div>
+            </div>
+            <div class="action-card" onclick="openModal('hasarModal')" style="border-left: 3px solid var(--danger);">
+                <div class="action-icon">💥</div>
+                <div class="action-label">Hasar/Kaza Bildir</div>
+            </div>
+            <div class="action-card" onclick="openModal('arizaModal')" style="border-left: 3px solid var(--warning);">
+                <div class="action-icon">🔧</div>
+                <div class="action-label">Arıza Bildir</div>
+            </div>
+            <div class="action-card" onclick="openModal('evrakModal')">
+                <div class="action-icon">📸</div>
+                <div class="action-label">Evrak Gönder</div>
+            </div>
+        </div>
+
+        {% else %}
+        <!-- Aktif Sefer Yok -->
+        <div class="status-card" style="border-top: 5px solid #bdc3c7;">
+            <div class="status-icon">☕</div>
+            <div class="status-title">Şu an seferde değilsiniz</div>
+            <div class="status-desc">Yeni bir yola çıkmak için aracınızı seçin ve seferi başlatın.</div>
+            <button class="btn-large btn-start" onclick="openModal('baslatModal')">Yeni Sefer Başlat</button>
+        </div>
+        
+        <div class="grid">
+            <div class="action-card disabled">
+                <div class="action-icon">⛽</div>
+                <div class="action-label">Yakıt Fişi Ekle</div>
+            </div>
+            <div class="action-card disabled">
+                <div class="action-icon">💥</div>
+                <div class="action-label">Hasar/Kaza Bildir</div>
+            </div>
+        </div>
+        <p style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: #95a5a6;">İşlem menüleri sefere çıktıktan sonra açılır.</p>
+        {% endif %}
+    </div>
+
+    <!-- MODALS -->
+
+    <!-- 1. Sefer Başlat Modal -->
+    <div id="baslatModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Sefer Başlat</h3>
+                <button class="close-btn" onclick="closeModal('baslatModal')">✕</button>
+            </div>
+            <form onsubmit="submitSeferBaslat(event)">
+                <div class="form-group">
+                    <label>Araç Seçin (Plaka)</label>
+                    <select id="baslatPlaka" required>
+                        <option value="">-- Araç Seç --</option>
+                        {% for p in plakalar %}
+                            <option value="{{ p }}">{{ p }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Başlangıç Kilometresi</label>
+                    <input type="number" id="baslatKm" placeholder="Örn: 254000" required>
+                </div>
+                <button type="submit" class="btn-submit">🚀 Yola Çık</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Sefer Bitir Modal -->
+    <div id="bitirModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Seferi Tamamla</h3>
+                <button class="close-btn" onclick="closeModal('bitirModal')">✕</button>
+            </div>
+            <form onsubmit="submitSeferBitir(event)">
+                <input type="hidden" id="bitirSeferId" value="{{ aktif_sefer.id if aktif_sefer else '' }}">
+                <div class="form-group">
+                    <label>Bitiş Kilometresi</label>
+                    <input type="number" id="bitirKm" placeholder="Güncel KM sayacı" required>
+                </div>
+                <div class="form-group" style="padding: 15px; background: #fef9e7; border-radius: 8px; border-left: 4px solid #f1c40f;">
+                    <p style="font-size: 0.85rem; color: #d35400; margin: 0;"><strong>Dikkat:</strong> Seferi tamamladıktan sonra sisteme raporlanır ve aktif işlem yapamazsınız.</p>
+                </div>
+                <button type="submit" class="btn-submit" style="background: var(--danger);">🏁 Seferi Kapat</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Yakıt Fişi Modal -->
+    <div id="yakitModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Yakıt Fişi Yükle</h3>
+                <button class="close-btn" onclick="closeModal('yakitModal')">✕</button>
+            </div>
+            <form onsubmit="submitYakit(event)">
+                <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 20px;">Fiş fotoğrafını çekin veya galeriden seçin.</p>
+                <div class="form-group">
+                    <label>Fiş Fotoğrafı</label>
+                    <input type="file" id="yakitFotograf" accept="image/*" capture="environment" required>
+                </div>
+                <div class="form-group">
+                    <label>Alınan Litre</label>
+                    <input type="number" id="yakitLitre" step="0.01" placeholder="Litre" required>
+                </div>
+                <button type="submit" class="btn-submit">Kaydet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. Hasar Bildirim Modal -->
+    <div id="hasarModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Kaza/Hasar Bildirimi</h3>
+                <button class="close-btn" onclick="closeModal('hasarModal')">✕</button>
+            </div>
+            <form onsubmit="submitHasar(event)">
+                <div class="form-group">
+                    <label>Durum Özeti</label>
+                    <textarea id="hasarAciklama" rows="3" placeholder="Ne oldu? Kısa açıklama..." required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Hasar Fotoğrafı</label>
+                    <input type="file" id="hasarFotograf" accept="image/*" capture="environment">
+                </div>
+                <div class="form-group">
+                    <label>Konum</label>
+                    <button type="button" onclick="getLocation()" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px dashed var(--primary); background: #ebf5fb; color: var(--primary); font-weight: bold; font-size: 0.9rem; cursor: pointer;">📍 Mevcut Konumumu Al</button>
+                    <div id="locationStatus" style="font-size: 0.8rem; margin-top: 5px; color: var(--success); display: none;">✓ Konum alındı</div>
+                    <input type="hidden" id="konumEnlem">
+                    <input type="hidden" id="konumBoylam">
+                </div>
+                <button type="submit" class="btn-submit" style="background: var(--danger);">Merkeze Bildir</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="arizaModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Arıza Bildirimi</h3>
+                <button class="close-btn" onclick="closeModal('arizaModal')">✕</button>
+            </div>
+            <form onsubmit="submitAriza(event)">
+                <div class="form-group">
+                    <label>İletişim Numarası</label>
+                    <input type="tel" id="arizaTelefon" placeholder="05XX XXX XX XX" required>
+                </div>
+                <div class="form-group">
+                    <label>Sorun Nedir?</label>
+                    <textarea id="arizaAciklama" rows="3" placeholder="Örn: Motor ısındı, fren balatası ses yapıyor..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit" style="background: var(--warning); color: #2c3e50;">Yetkili Servise İlet</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 6. Evrak Gönder Modal -->
+    <div id="evrakModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Evrak Gönder</h3>
+                <button class="close-btn" onclick="closeModal('evrakModal')">✕</button>
+            </div>
+            <form onsubmit="submitEvrak(event)">
+                <div class="form-group">
+                    <label>Evrak Türü</label>
+                    <select id="evrakTipi" required>
+                        <option value="">Seçiniz...</option>
+                        <option value="İrsaliye">İrsaliye</option>
+                        <option value="Fatura">Fatura</option>
+                        <option value="Kantar Fişi">Kantar Fişi</option>
+                        <option value="Diğer">Diğer</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Evrak Fotoğrafı</label>
+                    <input type="file" id="evrakFotograf" accept="image/*" capture="environment" required>
+                </div>
+                <div class="form-group">
+                    <label>Açıklama (Opsiyonel)</label>
+                    <input type="text" id="evrakAciklama" placeholder="Evrakla ilgili notunuz...">
+                </div>
+                <button type="submit" class="btn-submit" style="background: var(--primary);">Gönder</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scriptler -->
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('active');
+            document.body.style.overflow = 'hidden'; 
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        async function submitSeferBaslat(e) {
+            e.preventDefault();
+            const plaka = document.getElementById('baslatPlaka').value;
+            const km = document.getElementById('baslatKm').value;
+
+            const formData = new FormData();
+            formData.append('plaka', plaka);
+            formData.append('km', km);
+
+            const res = await fetch('/api/sefer-baslat', { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.status === 'success') {
+                window.location.reload();
+            } else {
+                alert("Hata: " + data.message);
+            }
+        }
+
+        async function submitSeferBitir(e) {
+            e.preventDefault();
+            const sefer_id = document.getElementById('bitirSeferId').value;
+            const km = document.getElementById('bitirKm').value;
+
+            const formData = new FormData();
+            formData.append('sefer_id', sefer_id);
+            formData.append('km', km);
+
+            const res = await fetch('/api/sefer-bitir', { method: 'POST', body: formData });
+            const data = await res.json();
+            if(data.status === 'success') {
+                window.location.reload();
+            } else {
+                alert("Hata: " + data.message);
+            }
+        }
+
+        function getLocation() {
+            const status = document.getElementById('locationStatus');
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    document.getElementById('konumEnlem').value = pos.coords.latitude;
+                    document.getElementById('konumBoylam').value = pos.coords.longitude;
+                    status.style.display = 'block';
+                    status.innerText = `✓ Konum alındı: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+                }, (err) => {
+                    alert("Konum alınamadı. Cihaz izinlerinizi kontrol edin.");
+                });
+            } else {
+                alert("Tarayıcınız konum özelliğini desteklemiyor.");
+            }
+        }
+
+        async function submitYakit(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'Gönderiliyor...';
+
+            const formData = new FormData();
+            formData.append('litre', document.getElementById('yakitLitre').value);
+            formData.append('fotograf', document.getElementById('yakitFotograf').files[0]);
+
+            const res = await fetch('/api/yakit-bildir', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            if(data.status === 'success') {
+                alert('✅ Yakıt fişi merkeze başarıyla iletildi!');
+                closeModal('yakitModal');
+                e.target.reset();
+            } else {
+                alert("Hata: " + data.message);
+            }
+            btn.disabled = false;
+            btn.innerText = 'Kaydet';
+        }
+
+        async function submitHasar(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'Bildiriliyor...';
+
+            const formData = new FormData();
+            formData.append('aciklama', document.getElementById('hasarAciklama').value);
+            formData.append('enlem', document.getElementById('konumEnlem').value);
+            formData.append('boylam', document.getElementById('konumBoylam').value);
+            
+            const fileInput = document.getElementById('hasarFotograf');
+            if (fileInput.files.length > 0) {
+                formData.append('fotograf', fileInput.files[0]);
+            }
+
+            const res = await fetch('/api/hasar-bildir', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            if(data.status === 'success') {
+                alert('✅ Hasar/Kaza bildirimi merkeze iletildi!');
+                closeModal('hasarModal');
+                e.target.reset();
+                document.getElementById('locationStatus').style.display = 'none';
+            } else {
+                alert("Hata: " + data.message);
+            }
+            btn.disabled = false;
+            btn.innerText = 'Merkeze Bildir';
+        }
+
+        async function submitAriza(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'İletiliyor...';
+
+            const formData = new FormData();
+            formData.append('telefon', document.getElementById('arizaTelefon').value);
+            formData.append('aciklama', document.getElementById('arizaAciklama').value);
+
+            const res = await fetch('/api/ariza-bildir', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            if(data.status === 'success') {
+                alert('✅ Arıza kaydı açıldı ve servise iletildi!');
+                closeModal('arizaModal');
+                e.target.reset();
+            } else {
+                alert("Hata: " + data.message);
+            }
+            btn.disabled = false;
+            btn.innerText = 'Yetkili Servise İlet';
+        }
+
+        async function submitEvrak(e) {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            btn.disabled = true;
+            btn.innerText = 'Gönderiliyor...';
+
+            const formData = new FormData();
+            formData.append('evrak_tipi', document.getElementById('evrakTipi').value);
+            formData.append('fotograf', document.getElementById('evrakFotograf').files[0]);
+            formData.append('aciklama', document.getElementById('evrakAciklama').value);
+
+            const res = await fetch('/api/evrak-gonder', { method: 'POST', body: formData });
+            const data = await res.json();
+            
+            if(data.status === 'success') {
+                alert('✅ Evrak merkeze başarıyla gönderildi!');
+                closeModal('evrakModal');
+                e.target.reset();
+            } else {
+                alert("Hata: " + data.message);
+            }
+            btn.disabled = false;
+            btn.innerText = 'Gönder';
+        }
+    </script>
+</body>
+</html>

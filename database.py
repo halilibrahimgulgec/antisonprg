@@ -16,7 +16,7 @@ def dict_from_row(row):
         return None
     return {key: row[key] for key in row.keys()}
 
-def get_yakit_data():
+def get_yakit_data(harici_gizle=False):
     """Sadece aktif araçların yakıt verilerini çek"""
     try:
         conn = get_db_connection()
@@ -25,11 +25,13 @@ def get_yakit_data():
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='araclar'")
         araclar_exists = cursor.fetchone() is not None
 
+        sahip_filtresi = "AND a.sahip IN ('BİZİM', 'BIZIM', 'BZM')" if harici_gizle else ""
+
         if araclar_exists:
-            cursor.execute('''
+            cursor.execute(f'''
                 SELECT y.* FROM yakit y
                 LEFT JOIN araclar a ON y.plaka = a.plaka
-                WHERE a.plaka IS NULL OR a.aktif = 1
+                WHERE (a.plaka IS NULL OR a.aktif = 1) {sahip_filtresi}
             ''')
         else:
             cursor.execute('SELECT * FROM yakit')
@@ -41,7 +43,7 @@ def get_yakit_data():
         print(f"Yakıt verisi çekilemedi: {e}")
         return []
 
-def get_agirlik_data():
+def get_agirlik_data(harici_gizle=False):
     """Sadece aktif araçların ağırlık (kantar) verilerini çek"""
     try:
         conn = get_db_connection()
@@ -50,11 +52,13 @@ def get_agirlik_data():
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='araclar'")
         araclar_exists = cursor.fetchone() is not None
 
+        sahip_filtresi = "AND a.sahip IN ('BİZİM', 'BIZIM', 'BZM')" if harici_gizle else ""
+
         if araclar_exists:
-            cursor.execute('''
+            cursor.execute(f'''
                 SELECT ag.* FROM agirlik ag
                 LEFT JOIN araclar a ON ag.plaka = a.plaka
-                WHERE a.plaka IS NULL OR a.aktif = 1
+                WHERE (a.plaka IS NULL OR a.aktif = 1) {sahip_filtresi}
             ''')
         else:
             cursor.execute('SELECT * FROM agirlik')
@@ -62,6 +66,9 @@ def get_agirlik_data():
         rows = cursor.fetchall()
         conn.close()
         return [dict_from_row(row) for row in rows]
+    except Exception as e:
+        print(f"Ağırlık verisi çekilemedi: {e}")
+        return []
     except Exception as e:
         print(f"Ağırlık verisi çekilemedi: {e}")
         return []
@@ -707,119 +714,322 @@ def plaka_filtre_uygula():
     except:
         return "", ()
 
-def get_muhasebe_data(baslangic_tarihi, bitis_tarihi, plaka=None):
-    """Muhasebe verilerini hesapla"""
+def get_muhasebe_data(baslangic_tarihi, bitis_tarihi, plaka=None, settings=None):
+    """Muhasebe verilerini hesapla - Detaylı ve aylık trend dahil"""
+    if settings is None:
+        settings = {}
+        
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
+
+        # Ayarları al
+        harici_gizle = settings.get('harici_gizle', True) # Varsayılan olarak dış araçları gizle
+        sahip_filtresi = "AND a.sahip IN ('BİZİM', 'BIZIM', 'BZM')" if harici_gizle else ""
 
         # Tarih filtresi oluştur
         if baslangic_tarihi and bitis_tarihi:
             tarih_filtre_yakit = "WHERE islem_tarihi BETWEEN ? AND ?"
             tarih_filtre_agirlik = "WHERE tarih BETWEEN ? AND ?"
+            tarih_filtre_bakim = "WHERE tarih BETWEEN ? AND ?"
             tarih_params = (baslangic_tarihi, bitis_tarihi)
         else:
             tarih_filtre_yakit = ""
             tarih_filtre_agirlik = ""
+            tarih_filtre_bakim = ""
             tarih_params = ()
 
         # Plaka filtresi ekle - SADECE AKTİF KARGO ARAÇLARI
         if plaka:
             yakit_query = f'''
-                SELECT y.plaka, SUM(y.satir_tutari) as toplam_gider
+                SELECT y.plaka, y.islem_tarihi, y.stok_adi, SUM(y.satir_tutari) as toplam_gider, SUM(y.yakit_miktari) as toplam_yakit_miktari
                 FROM yakit y
                 INNER JOIN araclar a ON y.plaka = a.plaka
                 {tarih_filtre_yakit.replace('islem_tarihi', 'y.islem_tarihi')}
                 {"AND" if tarih_filtre_yakit else "WHERE"} y.plaka = ?
-                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI'
-                GROUP BY y.plaka
+                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY y.plaka, y.islem_tarihi, y.stok_adi
+            '''
+            bakim_query = f'''
+                SELECT b.plaka, b.tarih, SUM(b.maliyet) as toplam_bakim_gider
+                FROM bakim b
+                INNER JOIN araclar a ON b.plaka = a.plaka
+                {tarih_filtre_bakim.replace('tarih', 'b.tarih')}
+                {"AND" if tarih_filtre_bakim else "WHERE"} b.plaka = ?
+                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY b.plaka, b.tarih
             '''
             agirlik_query = f'''
-                SELECT ag.plaka, SUM(ag.net_agirlik * 0.5) as toplam_gelir, MAX(ag.ana_malzeme) as ana_malzeme
+                SELECT ag.plaka, ag.tarih, SUM(ag.net_agirlik) as toplam_agirlik, MAX(ag.ana_malzeme) as ana_malzeme, ag.cari_adi
                 FROM agirlik ag
                 INNER JOIN araclar a ON ag.plaka = a.plaka
                 {tarih_filtre_agirlik.replace('tarih', 'ag.tarih')}
                 {"AND" if tarih_filtre_agirlik else "WHERE"} ag.plaka = ?
                 AND ag.birim NOT IN ('Adet', 'adet', 'ADET')
-                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI'
-                GROUP BY ag.plaka
+                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY ag.plaka, ag.tarih, ag.cari_adi
+            '''
+            ceza_query = f'''
+                SELECT c.plaka, c.tarih, SUM(c.tutar) as toplam_ceza_gider
+                FROM cezalar c
+                INNER JOIN araclar a ON c.plaka = a.plaka
+                {tarih_filtre_bakim.replace('tarih', 'c.tarih')}
+                {"AND" if tarih_filtre_bakim else "WHERE"} c.plaka = ?
+                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY c.plaka, c.tarih
+            '''
+            hasar_query = f'''
+                SELECT h.plaka, h.tarih, SUM(h.tutar) as toplam_hasar_gider
+                FROM hasarlar h
+                INNER JOIN araclar a ON h.plaka = a.plaka
+                {tarih_filtre_bakim.replace('tarih', 'h.tarih')}
+                {"AND" if tarih_filtre_bakim else "WHERE"} h.plaka = ?
+                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                AND h.sigorta_karsiladi_mi = 0
+                GROUP BY h.plaka, h.tarih
             '''
             cursor.execute(yakit_query, tarih_params + (plaka,))
             yakit_rows = cursor.fetchall()
+            cursor.execute(bakim_query, tarih_params + (plaka,))
+            bakim_rows = cursor.fetchall()
             cursor.execute(agirlik_query, tarih_params + (plaka,))
             agirlik_rows = cursor.fetchall()
+            cursor.execute(ceza_query, tarih_params + (plaka,))
+            ceza_rows = cursor.fetchall()
+            cursor.execute(hasar_query, tarih_params + (plaka,))
+            hasar_rows = cursor.fetchall()
         else:
             yakit_query = f'''
-                SELECT y.plaka, SUM(y.satir_tutari) as toplam_gider
+                SELECT y.plaka, y.islem_tarihi, y.stok_adi, SUM(y.satir_tutari) as toplam_gider, SUM(y.yakit_miktari) as toplam_yakit_miktari
                 FROM yakit y
                 INNER JOIN araclar a ON y.plaka = a.plaka
                 {tarih_filtre_yakit.replace('islem_tarihi', 'y.islem_tarihi')}
-                {"WHERE" if not tarih_filtre_yakit else "AND"} a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI'
-                GROUP BY y.plaka
+                {"WHERE" if not tarih_filtre_yakit else "AND"} a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY y.plaka, y.islem_tarihi, y.stok_adi
+            '''
+            bakim_query = f'''
+                SELECT b.plaka, b.tarih, SUM(b.maliyet) as toplam_bakim_gider
+                FROM bakim b
+                INNER JOIN araclar a ON b.plaka = a.plaka
+                {tarih_filtre_bakim.replace('tarih', 'b.tarih')}
+                {"WHERE" if not tarih_filtre_bakim else "AND"} a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY b.plaka, b.tarih
             '''
             agirlik_query = f'''
-                SELECT ag.plaka, SUM(ag.net_agirlik * 0.5) as toplam_gelir, MAX(ag.ana_malzeme) as ana_malzeme
+                SELECT ag.plaka, ag.tarih, SUM(ag.net_agirlik) as toplam_agirlik, MAX(ag.ana_malzeme) as ana_malzeme, ag.cari_adi
                 FROM agirlik ag
                 INNER JOIN araclar a ON ag.plaka = a.plaka
                 {tarih_filtre_agirlik.replace('tarih', 'ag.tarih')}
                 {"WHERE" if not tarih_filtre_agirlik else "AND"} ag.birim NOT IN ('Adet', 'adet', 'ADET')
-                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI'
-                GROUP BY ag.plaka
+                AND a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY ag.plaka, ag.tarih, ag.cari_adi
+            '''
+            ceza_query = f'''
+                SELECT c.plaka, c.tarih, SUM(c.tutar) as toplam_ceza_gider
+                FROM cezalar c
+                INNER JOIN araclar a ON c.plaka = a.plaka
+                {tarih_filtre_bakim.replace('tarih', 'c.tarih')}
+                {"WHERE" if not tarih_filtre_bakim else "AND"} a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                GROUP BY c.plaka, c.tarih
+            '''
+            hasar_query = f'''
+                SELECT h.plaka, h.tarih, SUM(h.tutar) as toplam_hasar_gider
+                FROM hasarlar h
+                INNER JOIN araclar a ON h.plaka = a.plaka
+                {tarih_filtre_bakim.replace('tarih', 'h.tarih')}
+                {"WHERE" if not tarih_filtre_bakim else "AND"} a.aktif = 1 AND a.arac_tipi = 'KARGO ARACI' {sahip_filtresi}
+                AND h.sigorta_karsiladi_mi = 0
+                GROUP BY h.plaka, h.tarih
             '''
             cursor.execute(yakit_query, tarih_params)
             yakit_rows = cursor.fetchall()
+            cursor.execute(bakim_query, tarih_params)
+            bakim_rows = cursor.fetchall()
             cursor.execute(agirlik_query, tarih_params)
             agirlik_rows = cursor.fetchall()
+            cursor.execute(ceza_query, tarih_params)
+            ceza_rows = cursor.fetchall()
+            cursor.execute(hasar_query, tarih_params)
+            hasar_rows = cursor.fetchall()
 
         conn.close()
 
+        def extract_month(tarih_str):
+            if not tarih_str: return 'Bilinmiyor'
+            try:
+                if '-' in tarih_str:
+                    parts = tarih_str.split(' ')[0].split('-')
+                    if len(parts) >= 2: return f"{parts[0]}-{parts[1]}"
+                elif '.' in tarih_str:
+                    parts = tarih_str.split(' ')[0].split('.')
+                    if len(parts) >= 3: return f"{parts[2]}-{parts[1]}"
+            except:
+                pass
+            return 'Bilinmiyor'
+
         plaka_veriler = {}
+        aylik_veriler = {}
+        cari_veriler = {}
+        
+        motorin_fiyat = settings.get('motorin_fiyat')
+        adblue_fiyat = settings.get('adblue_fiyat')
+        cari_fiyatlar = settings.get('cari_fiyatlar', {})
+
+        # Yakıt
         for row in yakit_rows:
             p = row['plaka']
-            if p not in plaka_veriler:
-                plaka_veriler[p] = {'gelir': 0, 'gider': 0, 'ana_malzeme': 'Bilinmiyor'}
-            plaka_veriler[p]['gider'] = float(row['toplam_gider'] or 0)
+            ay = extract_month(row['islem_tarihi'])
+            stok = (row['stok_adi'] or '').upper()
+            
+            if 'ADBLUE' in stok and adblue_fiyat:
+                gider = float(row['toplam_yakit_miktari'] or 0) * adblue_fiyat
+            elif 'ADBLUE' not in stok and motorin_fiyat:
+                gider = float(row['toplam_yakit_miktari'] or 0) * motorin_fiyat
+            else:
+                gider = float(row['toplam_gider'] or 0)
 
+            if p not in plaka_veriler:
+                plaka_veriler[p] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0, 'ana_malzeme': 'Bilinmiyor'}
+            plaka_veriler[p]['yakit_gider'] += gider
+
+            if ay not in aylik_veriler:
+                aylik_veriler[ay] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0}
+            aylik_veriler[ay]['yakit_gider'] += gider
+
+        # Bakım
+        for row in bakim_rows:
+            p = row['plaka']
+            ay = extract_month(row['tarih'])
+            gider = float(row['toplam_bakim_gider'] or 0)
+
+            if p not in plaka_veriler:
+                plaka_veriler[p] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0, 'ana_malzeme': 'Bilinmiyor'}
+            plaka_veriler[p]['bakim_gider'] += gider
+
+            if ay not in aylik_veriler:
+                aylik_veriler[ay] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0}
+            aylik_veriler[ay]['bakim_gider'] += gider
+            
+        # Ceza
+        for row in ceza_rows:
+            p = row['plaka']
+            ay = extract_month(row['tarih'])
+            gider = float(row['toplam_ceza_gider'] or 0)
+
+            if p not in plaka_veriler:
+                plaka_veriler[p] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0, 'ana_malzeme': 'Bilinmiyor'}
+            plaka_veriler[p]['ceza_gider'] += gider
+
+            if ay not in aylik_veriler:
+                aylik_veriler[ay] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0}
+            aylik_veriler[ay]['ceza_gider'] += gider
+
+        # Hasar
+        for row in hasar_rows:
+            p = row['plaka']
+            ay = extract_month(row['tarih'])
+            gider = float(row['toplam_hasar_gider'] or 0)
+
+            if p not in plaka_veriler:
+                plaka_veriler[p] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0, 'ana_malzeme': 'Bilinmiyor'}
+            plaka_veriler[p]['hasar_gider'] += gider
+
+            if ay not in aylik_veriler:
+                aylik_veriler[ay] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0}
+            aylik_veriler[ay]['hasar_gider'] += gider
+
+        # Gelir (Ağırlık)
         for row in agirlik_rows:
             p = row['plaka']
+            ay = extract_month(row['tarih'])
+            cari = (row['cari_adi'] or '').strip()
+            
+            # Fiyat belirleme (Customer matching)
+            fiyat = 0.5 # Default multiplier if not found
+            if cari_fiyatlar:
+                # Case-insensitive substring matching
+                for c_name, c_price in cari_fiyatlar.items():
+                    if c_name.upper() in cari.upper() or cari.upper() in c_name.upper():
+                        fiyat = c_price
+                        break
+                        
+            gelir = float(row['toplam_agirlik'] or 0) * fiyat
+
             if p not in plaka_veriler:
-                plaka_veriler[p] = {'gelir': 0, 'gider': 0, 'ana_malzeme': 'Bilinmiyor'}
-            plaka_veriler[p]['gelir'] = float(row['toplam_gelir'] or 0)
+                plaka_veriler[p] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0, 'ana_malzeme': 'Bilinmiyor'}
+            plaka_veriler[p]['gelir'] += gelir
             plaka_veriler[p]['ana_malzeme'] = row['ana_malzeme'] or 'Bilinmiyor'
 
+            if ay not in aylik_veriler:
+                aylik_veriler[ay] = {'gelir': 0, 'yakit_gider': 0, 'bakim_gider': 0, 'ceza_gider': 0, 'hasar_gider': 0}
+            aylik_veriler[ay]['gelir'] += gelir
+
+            cari_display = cari if cari else 'Bilinmeyen Müşteri'
+            if cari_display not in cari_veriler:
+                cari_veriler[cari_display] = {'gelir': 0}
+            cari_veriler[cari_display]['gelir'] += gelir
+
         toplam_gelir = sum(v['gelir'] for v in plaka_veriler.values())
-        toplam_gider = sum(v['gider'] for v in plaka_veriler.values())
+        toplam_yakit_gider = sum(v['yakit_gider'] for v in plaka_veriler.values())
+        toplam_bakim_gider = sum(v['bakim_gider'] for v in plaka_veriler.values())
+        toplam_ceza_gider = sum(v['ceza_gider'] for v in plaka_veriler.values())
+        toplam_hasar_gider = sum(v['hasar_gider'] for v in plaka_veriler.values())
+        toplam_gider = toplam_yakit_gider + toplam_bakim_gider + toplam_ceza_gider + toplam_hasar_gider
+        
         net_kar = toplam_gelir - toplam_gider
         kar_marji = (net_kar / toplam_gelir * 100) if toplam_gelir > 0 else 0
 
         plaka_bazli = []
         for p, v in plaka_veriler.items():
-            net = v['gelir'] - v['gider']
+            net = v['gelir'] - (v['yakit_gider'] + v['bakim_gider'] + v['ceza_gider'] + v['hasar_gider'])
             marji = (net / v['gelir'] * 100) if v['gelir'] > 0 else 0
             plaka_bazli.append({
                 'plaka': p,
                 'gelir': v['gelir'],
-                'gider': v['gider'],
+                'yakit_gider': v['yakit_gider'],
+                'bakim_gider': v['bakim_gider'],
+                'ceza_gider': v['ceza_gider'],
+                'hasar_gider': v['hasar_gider'],
+                'toplam_gider': (v['yakit_gider'] + v['bakim_gider'] + v['ceza_gider'] + v['hasar_gider']),
                 'net_kar': net,
                 'kar_marji': marji,
                 'ana_malzeme': v['ana_malzeme']
             })
-
+        
         plaka_bazli.sort(key=lambda x: x['net_kar'], reverse=True)
+
+        aylar = sorted([ay for ay in aylik_veriler.keys() if ay != 'Bilinmiyor'])[-12:] # Son 12 ay
+        aylik_trend = {
+            'aylar': aylar,
+            'gelir': [aylik_veriler[ay]['gelir'] for ay in aylar],
+            'yakit_gider': [aylik_veriler[ay]['yakit_gider'] for ay in aylar],
+            'bakim_gider': [aylik_veriler[ay]['bakim_gider'] for ay in aylar]
+        }
+
+        # Cari bazlı liste
+        cari_bazli = [{'cari': k, 'gelir': v['gelir']} for k, v in cari_veriler.items()]
+        cari_bazli.sort(key=lambda x: x['gelir'], reverse=True)
 
         return {
             'status': 'success',
             'toplam_gelir': toplam_gelir,
+            'toplam_yakit_gider': toplam_yakit_gider,
+            'toplam_bakim_gider': toplam_bakim_gider,
+            'toplam_ceza_gider': toplam_ceza_gider,
+            'toplam_hasar_gider': toplam_hasar_gider,
             'toplam_gider': toplam_gider,
             'net_kar': net_kar,
             'kar_marji': kar_marji,
-            'plaka_bazli': plaka_bazli
+            'plaka_bazli': plaka_bazli,
+            'aylik_trend': aylik_trend,
+            'cari_bazli': cari_bazli
         }
 
     except Exception as e:
+        import traceback
         return {
             'status': 'error',
-            'message': str(e)
+            'message': str(e) + " - " + traceback.format_exc()
         }
 
 def get_arac_performans_analizi(plaka, baslangic_tarihi=None, bitis_tarihi=None):
@@ -1044,9 +1254,9 @@ def add_bakim_kaydi(data):
                 bildiren_kisi, iletisim_tel, ariza_saati, ariza_konumu,
                 operasyon_durumu, servis_adi, servis_giris_tarihi,
                 servis_cikis_tarihi, iscilik_maliyeti, parca_maliyeti,
-                fatura_no, garanti_durumu
+                fatura_no, garanti_durumu, durum
             )
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             data.get('plaka'),
             data.get('bakim_tipi'),
@@ -1067,11 +1277,55 @@ def add_bakim_kaydi(data):
             iscilik,
             parca,
             data.get('fatura_no'),
-            data.get('garanti_durumu')
+            data.get('garanti_durumu'),
+            data.get('durum', 'Tamamlandı')
         ))
         conn.commit()
         conn.close()
         return {'status': 'success', 'message': 'Bakım kaydı başarıyla eklendi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def update_bakim_maliyet(bakim_id, data):
+    """Mevcut bir bakım kaydına servis ve maliyet bilgilerini ekleyip kapat"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        iscilik = float(data.get('iscilik_maliyeti') or 0)
+        parca = float(data.get('parca_maliyeti') or 0)
+        toplam_maliyet = float(data.get('maliyet') or (iscilik + parca))
+        
+        cursor.execute('''
+            UPDATE bakim SET 
+                servis_adi = ?, 
+                servis_giris_tarihi = ?, 
+                servis_cikis_tarihi = ?, 
+                iscilik_maliyeti = ?, 
+                parca_maliyeti = ?, 
+                maliyet = ?, 
+                fatura_no = ?, 
+                garanti_durumu = ?,
+                bir_sonraki_bakim_km = ?,
+                bir_sonraki_bakim_tarih = ?,
+                durum = 'Tamamlandı'
+            WHERE id = ?
+        ''', (
+            data.get('servis_adi'),
+            data.get('servis_giris_tarihi'),
+            data.get('servis_cikis_tarihi'),
+            iscilik,
+            parca,
+            toplam_maliyet,
+            data.get('fatura_no'),
+            data.get('garanti_durumu'),
+            data.get('bir_sonraki_bakim_km'),
+            data.get('bir_sonraki_bakim_tarih'),
+            bakim_id
+        ))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Bakım kaydı başarıyla güncellendi ve kapatıldı'}
     except Exception as e:
         return {'status': 'error', 'message': str(e)}
 
@@ -1182,3 +1436,452 @@ def get_bakim_analiz_data():
             'arac_maliyetleri': [],
             'kpi': {'bu_ay_toplam': 0, 'bu_ay_adet': 0, 'genel_toplam': 0, 'serviste_sayisi': 0}
         }
+
+# --- ŞOFÖR YÖNETİMİ (AŞAMA 2) ---
+
+def get_soforler(aktif_sadece=False):
+    """Tüm şoförleri getir"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        if aktif_sadece:
+            cursor.execute('SELECT * FROM soforler WHERE aktif = 1 ORDER BY ad_soyad')
+        else:
+            cursor.execute('SELECT * FROM soforler ORDER BY ad_soyad')
+            
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict_from_row(row) for row in rows]
+    except Exception as e:
+        print(f"Şoförler getirilemedi: {e}")
+        return []
+
+def add_sofor(data):
+    """Yeni şoför ekle"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO soforler (ad_soyad, telefon, tc_no, aktif)
+            VALUES (?, ?, ?, ?)
+        ''', (
+            data.get('ad_soyad'),
+            data.get('telefon'),
+            data.get('tc_no'),
+            int(data.get('aktif', 1))
+        ))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Şoför başarıyla eklendi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def update_sofor(sofor_id, data):
+    """Şoför bilgilerini güncelle"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE soforler SET 
+                ad_soyad = ?, 
+                telefon = ?, 
+                tc_no = ?, 
+                aktif = ?
+            WHERE id = ?
+        ''', (
+            data.get('ad_soyad'),
+            data.get('telefon'),
+            data.get('tc_no'),
+            int(data.get('aktif', 1)),
+            sofor_id
+        ))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Şoför başarıyla güncellendi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def delete_sofor(sofor_id):
+    """Şoför kaydını sil"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM soforler WHERE id = ?', (sofor_id,))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Şoför silindi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+# --- HASAR VE CEZA YÖNETİMİ (AŞAMA 3) ---
+
+def get_cezalar():
+    """Tüm cezaları getir"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT c.*, s.ad_soyad as sofor_adi 
+            FROM cezalar c
+            LEFT JOIN soforler s ON c.sofor_id = s.id
+            ORDER BY c.tarih DESC
+        ''')
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict_from_row(row) for row in rows]
+    except Exception as e:
+        print(f"Cezalar getirilemedi: {e}")
+        return []
+
+def add_ceza(data):
+    """Yeni trafik cezası ekle"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO cezalar (plaka, sofor_id, tarih, tutar, aciklama, odeme_durumu)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (
+            data.get('plaka'),
+            data.get('sofor_id') if data.get('sofor_id') else None,
+            data.get('tarih'),
+            float(data.get('tutar', 0)),
+            data.get('aciklama'),
+            data.get('odeme_durumu', 'Ödenmedi')
+        ))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Ceza başarıyla eklendi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def delete_ceza(ceza_id):
+    """Ceza kaydını sil"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM cezalar WHERE id = ?', (ceza_id,))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Ceza silindi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def get_hasarlar():
+    """Tüm hasarları getir"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT h.*, s.ad_soyad as sofor_adi 
+            FROM hasarlar h
+            LEFT JOIN soforler s ON h.sofor_id = s.id
+            ORDER BY h.tarih DESC
+        ''')
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict_from_row(row) for row in rows]
+    except Exception as e:
+        print(f"Hasarlar getirilemedi: {e}")
+        return []
+
+def add_hasar(data):
+    """Yeni kaza/hasar ekle"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO hasarlar (plaka, sofor_id, tarih, tutar, aciklama, sigorta_karsiladi_mi, konum_enlem, konum_boylam, fotograf_yolu)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ''', (
+            data.get('plaka'),
+            data.get('sofor_id') if data.get('sofor_id') else None,
+            data.get('tarih'),
+            float(data.get('tutar', 0)),
+            data.get('aciklama'),
+            int(data.get('sigorta_karsiladi_mi', 0)),
+            data.get('konum_enlem'),
+            data.get('konum_boylam'),
+            data.get('fotograf_yolu')
+        ))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Hasar kaydı başarıyla eklendi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def delete_hasar(hasar_id):
+    """Hasar kaydını sil"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM hasarlar WHERE id = ?', (hasar_id,))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Hasar kaydı silindi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+# --- LASTİK YÖNETİMİ (AŞAMA 4) ---
+
+def get_lastikler(aktif_sadece=False):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        if aktif_sadece:
+            cursor.execute('SELECT * FROM lastikler WHERE aktif = 1 ORDER BY id DESC')
+        else:
+            cursor.execute('SELECT * FROM lastikler ORDER BY id DESC')
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict_from_row(row) for row in rows]
+    except Exception as e:
+        print(f"Lastikler getirilemedi: {e}")
+        return []
+
+def add_lastik(data):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO lastikler (marka, ebat, seri_no, fiyat, alinma_tarihi, aktif)
+            VALUES (?, ?, ?, ?, ?, 1)
+        ''', (
+            data.get('marka'),
+            data.get('ebat'),
+            data.get('seri_no'),
+            float(data.get('fiyat', 0)),
+            data.get('alinma_tarihi')
+        ))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Lastik envantere eklendi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def delete_lastik(lastik_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('UPDATE lastikler SET aktif = 0 WHERE id = ?', (lastik_id,))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Lastik envanterden silindi (pasife çekildi)'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def get_arac_lastikleri(plaka):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            SELECT ald.*, l.marka, l.ebat, l.seri_no 
+            FROM arac_lastik_durumu ald
+            JOIN lastikler l ON ald.lastik_id = l.id
+            WHERE ald.plaka = ? AND ald.sokulme_tarihi IS NULL
+        ''', (plaka,))
+        rows = cursor.fetchall()
+        conn.close()
+        return [dict_from_row(row) for row in rows]
+    except Exception as e:
+        print(f"Araç lastikleri getirilemedi: {e}")
+        return []
+
+def tak_lastik(plaka, lastik_id, pozisyon, takilma_tarihi, takilma_km):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Eğer bu pozisyonda zaten takılı bir lastik varsa onu sökülmüş olarak işaretle
+        cursor.execute('''
+            UPDATE arac_lastik_durumu 
+            SET sokulme_tarihi = ?, sokulme_km = ? 
+            WHERE plaka = ? AND pozisyon = ? AND sokulme_tarihi IS NULL
+        ''', (takilma_tarihi, takilma_km, plaka, pozisyon))
+        
+        # Yeni lastiği tak
+        cursor.execute('''
+            INSERT INTO arac_lastik_durumu (plaka, lastik_id, takilma_tarihi, takilma_km, pozisyon)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (plaka, lastik_id, takilma_tarihi, takilma_km, pozisyon))
+        
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': f'Lastik araca takıldı (Pozisyon: {pozisyon})'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def sok_lastik(durum_id, sokulme_tarihi, sokulme_km):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            UPDATE arac_lastik_durumu 
+            SET sokulme_tarihi = ?, sokulme_km = ? 
+            WHERE id = ?
+        ''', (sokulme_tarihi, sokulme_km, durum_id))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Lastik araçtan söküldü'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+# --- ŞOFÖR PANELİ (PWA - AŞAMA 5) ---
+
+def get_sofor_by_telefon(telefon):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM soforler WHERE telefon = ? AND aktif = 1", (telefon,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict_from_row(row) if row else None
+    except Exception as e:
+        print(f"Şoför girişinde hata: {e}")
+        return None
+
+def get_aktif_sefer(sofor_id):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM seferler WHERE sofor_id = ? AND durum = 'Aktif'", (sofor_id,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict_from_row(row) if row else None
+    except Exception as e:
+        print(f"Aktif sefer getirilemedi: {e}")
+        return None
+
+def baslat_sefer(sofor_id, plaka, baslangic_km):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        import datetime
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute('''
+            INSERT INTO seferler (sofor_id, plaka, baslangic_zaman, baslangic_km, durum)
+            VALUES (?, ?, ?, ?, 'Aktif')
+        ''', (sofor_id, plaka, now, baslangic_km))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Sefer başlatıldı'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def bitir_sefer(sefer_id, bitis_km):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        import datetime
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute('''
+            UPDATE seferler 
+            SET bitis_zaman = ?, bitis_km = ?, durum = 'Tamamlandı'
+            WHERE id = ?
+        ''', (now, bitis_km, sefer_id))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Sefer tamamlandı'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def add_yakit_from_sofor(sofor_id, plaka, litre, fotograf_yolu):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        import datetime
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute('''
+            INSERT INTO yakit (plaka, sofor_id, yakit_miktari, islem_tarihi, fis_fotograf_yolu, stok_adi)
+            VALUES (?, ?, ?, ?, ?, 'MOTORİN')
+        ''', (plaka, sofor_id, litre, now, fotograf_yolu))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Yakıt fişi başarıyla kaydedildi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def add_ariza_from_sofor(sofor_id, plaka, aciklama, telefon):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        import datetime
+        now = datetime.datetime.now().strftime("%Y-%m-%d")
+        cursor.execute('''
+            INSERT INTO bakim (plaka, bakim_tipi, yapilan_islem, tarih, maliyet, durum, bildiren_kisi, iletisim_tel)
+            VALUES (?, 'Arıza/Onarım', ?, ?, 0, 'Açık', (SELECT ad_soyad FROM soforler WHERE id = ?), ?)
+        ''', (plaka, aciklama, now, sofor_id, telefon))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Arıza kaydı oluşturuldu'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def add_evrak_from_sofor(sofor_id, plaka, evrak_tipi, aciklama, fotograf_yolu):
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('''
+            INSERT INTO sofor_evraklari (sofor_id, plaka, evrak_tipi, aciklama, fotograf_yolu)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (sofor_id, plaka, evrak_tipi, aciklama, fotograf_yolu))
+        conn.commit()
+        conn.close()
+        return {'status': 'success', 'message': 'Evrak başarıyla gönderildi'}
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}
+
+def get_saha_bildirimleri():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # 1. Evraklar
+        cursor.execute('''
+            SELECT e.*, s.ad_soyad as sofor_adi, e.created_at as tarih_sirala 
+            FROM sofor_evraklari e 
+            LEFT JOIN soforler s ON e.sofor_id = s.id 
+            ORDER BY e.created_at DESC LIMIT 50
+        ''')
+        evraklar = [dict_from_row(r) for r in cursor.fetchall()]
+        
+        # 2. Arızalar (Açık olanlar)
+        cursor.execute('''
+            SELECT b.*, b.tarih as tarih_sirala 
+            FROM bakim b 
+            WHERE b.durum = 'Açık' AND b.bakim_tipi = 'Arıza/Onarım' 
+            ORDER BY b.tarih DESC LIMIT 50
+        ''')
+        arizalar = [dict_from_row(r) for r in cursor.fetchall()]
+        
+        # 3. Hasarlar (Fotoğraflı veya Konumlu)
+        cursor.execute('''
+            SELECT h.*, s.ad_soyad as sofor_adi, h.created_at as tarih_sirala 
+            FROM hasarlar h 
+            LEFT JOIN soforler s ON h.sofor_id = s.id 
+            WHERE h.fotograf_yolu IS NOT NULL OR h.konum_enlem IS NOT NULL
+            ORDER BY h.tarih DESC LIMIT 50
+        ''')
+        hasarlar = [dict_from_row(r) for r in cursor.fetchall()]
+        
+        # 4. Yakıt Fişleri
+        cursor.execute('''
+            SELECT y.*, s.ad_soyad as sofor_adi, y.created_at as tarih_sirala 
+            FROM yakit y 
+            LEFT JOIN soforler s ON y.sofor_id = s.id 
+            WHERE y.fis_fotograf_yolu IS NOT NULL 
+            ORDER BY y.created_at DESC LIMIT 50
+        ''')
+        yakit_fisleri = [dict_from_row(r) for r in cursor.fetchall()]
+        
+        conn.close()
+        return {
+            'evraklar': evraklar,
+            'arizalar': arizalar,
+            'hasarlar': hasarlar,
+            'yakit_fisleri': yakit_fisleri
+        }
+    except Exception as e:
+        print(f"Saha bildirimleri getirilirken hata: {e}")
+        return {'evraklar': [], 'arizalar': [], 'hasarlar': [], 'yakit_fisleri': []}

@@ -426,9 +426,16 @@
                         </div>
                     </div>
 
-                    <div style="text-align: right; margin-top: 20px;">
-                        <button type="submit" class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem;">💾
-                            Kaydı Tamamla</button>
+                    <div
+                        style="text-align: right; margin-top: 20px; display: flex; justify-content: flex-end; gap: 10px;">
+                        <input type="hidden" name="durum" id="durum_input" value="Tamamlandı">
+                        <button type="submit" class="btn"
+                            style="padding: 12px 30px; font-size: 1.1rem; background: #feebc8; color: #dd6b20; border: 1px solid #fbd38d;"
+                            onclick="document.getElementById('durum_input').value='Açık'">⏳ Servise Gidiyor (Açık
+                            Bırak)</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 30px; font-size: 1.1rem;"
+                            onclick="document.getElementById('durum_input').value='Tamamlandı'">💾 Kaydı
+                            Tamamla</button>
                     </div>
                 </div>
             </form>
@@ -476,6 +483,7 @@
                             <th>Servis</th>
                             <th>Maliyet</th>
                             <th>Durum</th>
+                            <th>Kayıt Durumu</th>
                             <th>İşlem</th>
                         </tr>
                     </thead>
@@ -517,8 +525,21 @@
                             </td>
                             <td>{{ kayit.operasyon_durumu if kayit.operasyon_durumu else '-' }}</td>
                             <td>
+                                {% if kayit.durum == 'Açık' %}
+                                <span class="badge" style="background:#feebc8; color:#dd6b20;">⏳ Açık</span>
+                                {% else %}
+                                <span class="badge" style="background:#c6f6d5; color:#22543d;">✅ Tamamlandı</span>
+                                {% endif %}
+                            </td>
+                            <td style="display: flex; gap: 5px;">
+                                {% if kayit.durum == 'Açık' %}
+                                <button type="button" class="btn btn-primary"
+                                    style="font-size: 0.8rem; padding: 6px 12px;"
+                                    onclick="openUpdateModal({{ kayit.id }}, '{{ kayit.plaka }}')">✏️ Kapat</button>
+                                {% endif %}
                                 <form action="/bakim-sil/{{ kayit.id }}" method="POST"
-                                    onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?');">
+                                    onsubmit="return confirm('Bu kaydı silmek istediğinize emin misiniz?');"
+                                    style="display:inline;">
                                     <button type="submit" class="btn btn-danger">Sil</button>
                                 </form>
                             </td>
@@ -535,6 +556,96 @@
             </div>
         </div>
     </div>
+
+    <!-- Kapatma Modalı -->
+    <div id="updateModal"
+        style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div class="card" style="width:100%; max-width:600px; max-height:90vh; overflow-y:auto; margin:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:#2d3748;">✏️ Arıza Kapat / Maliyet Ekle</h3>
+                <button type="button" onclick="closeUpdateModal()"
+                    style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <p id="modalPlaka" style="margin-bottom:15px; font-weight:bold; color:#4a5568;"></p>
+            <form id="updateForm" method="POST" action="">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Servis / Firma Adı <span style="color:red">*</span></label>
+                        <input type="text" name="servis_adi" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Fatura No</label>
+                        <input type="text" name="fatura_no" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Servis Giriş <span style="color:red">*</span></label>
+                        <input type="date" name="servis_giris_tarihi" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Servis Çıkış <span style="color:red">*</span></label>
+                        <input type="date" name="servis_cikis_tarihi" class="form-control" required>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>İşçilik Tutarı (TL) <span style="color:red">*</span></label>
+                        <input type="number" step="0.01" name="iscilik_maliyeti" id="modal_iscilik" class="form-control"
+                            onchange="calcModalTotal()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Parça Tutarı (TL) <span style="color:red">*</span></label>
+                        <input type="number" step="0.01" name="parca_maliyeti" id="modal_parca" class="form-control"
+                            onchange="calcModalTotal()" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Toplam Maliyet (TL)</label>
+                        <input type="number" step="0.01" name="maliyet" id="modal_maliyet" class="form-control"
+                            style="background: #f0fff4; font-weight: bold;" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>Garanti Durumu</label>
+                        <select name="garanti_durumu" class="form-control">
+                            <option value="Garantisiz">Garantisiz</option>
+                            <option value="Parça Garantili">Parça Garantili</option>
+                            <option value="İşçilik Garantili">İşçilik Garantili</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Sonraki Bakım KM</label>
+                        <input type="number" name="bir_sonraki_bakim_km" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label>Sonraki Bakım Tarihi</label>
+                        <input type="date" name="bir_sonraki_bakim_tarih" class="form-control">
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top:20px;">
+                    <button type="button" class="btn btn-home"
+                        style="color:#333; margin-right:10px; border:1px solid #ddd;"
+                        onclick="closeUpdateModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">💾 Kaydet & Kapat</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openUpdateModal(id, plaka) {
+            document.getElementById('updateModal').style.display = 'flex';
+            document.getElementById('updateForm').action = '/bakim-guncelle/' + id;
+            document.getElementById('modalPlaka').innerText = 'Plaka: ' + plaka;
+        }
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+        function calcModalTotal() {
+            var iscilik = parseFloat(document.getElementById('modal_iscilik').value) || 0;
+            var parca = parseFloat(document.getElementById('modal_parca').value) || 0;
+            document.getElementById('modal_maliyet').value = (iscilik + parca).toFixed(2);
+        }
+    </script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="tr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -140,6 +141,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <a href="/" class="back-button">
@@ -152,13 +154,13 @@
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
 
         <div class="card">
@@ -178,16 +180,60 @@
                     </div>
                     <div class="form-group">
                         <label for="plaka">🚗 Plaka</label>
-                        <select id="plaka" name="plaka" style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
+                        <select id="plaka" name="plaka"
+                            style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem;">
                             <option value="">Tüm Araçlar</option>
                         </select>
                     </div>
                 </div>
+
+                <h3 style="color: #4a5568; margin-bottom: 16px; margin-top: 24px;">⚙️ Özel Ayarlar & Fiyatlandırma</h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px;">
+                    <div class="form-group">
+                        <label>🎯 Hedef Gelir (₺)</label>
+                        <input type="number" name="hedef_gelir" value="1000000">
+                    </div>
+                    <div class="form-group">
+                        <label>🛑 Hedef Gider Limiti (₺)</label>
+                        <input type="number" name="hedef_gider" value="750000">
+                    </div>
+                    <div class="form-group">
+                        <label>⛽ Motorin Litre Fiyatı (₺) <small>(Opsiyonel - Boşsa fişteki tutar
+                                alınır)</small></label>
+                        <input type="number" step="0.01" name="motorin_fiyat" placeholder="Örn: 42.50">
+                    </div>
+                    <div class="form-group">
+                        <label>💧 AdBlue Litre Fiyatı (₺) <small>(Opsiyonel)</small></label>
+                        <input type="number" step="0.01" name="adblue_fiyat" placeholder="Örn: 15.00">
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label>🤝 Cari (Müşteri) Bazlı Taşıma / Navlun Fiyatları (TL)</label>
+                    <textarea name="cari_fiyatlar" rows="3"
+                        style="padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 1rem; width: 100%;"
+                        placeholder="A Firması: 100&#10;B Firması: 120"></textarea>
+                    <small style="color: #718096; margin-top: 5px; display: block;">Her satıra bir firma gelecek şekilde
+                        <b>Firma Adı: Fiyat</b> formatında yazın (Örn: `ÇİMSA: 150`). Listede olmayan cariler (veya
+                        kutuyu boş bırakırsanız tüm cariler) için varsayılan çarpan <b>0.5</b> alınacaktır.</small>
+                </div>
+
+                <div class="form-group" style="margin-bottom: 24px;">
+                    <label
+                        style="display: flex; align-items: center; gap: 8px; cursor: pointer; color:#e53e3e; font-weight:600;">
+                        <input type="checkbox" name="harici_gizle" checked style="width: 20px; height: 20px;">
+                        Dış Araçları (Yakıt/Bakım gideri hiç olmayanları) Analizden Çıkar
+                    </label>
+                    <small style="color: #718096; display: block; margin-top: 5px; margin-left: 28px;">
+                        Bu seçenek işaretliyken, şirketinizden yakıt almayan ve bakımı yapılmayan harici (dış) taşeron
+                        araçlar kar-zarar tablolarına ve genel grafiklere yansıtılmaz. (Sadece kendi özmal kârınızı
+                        görmek için seçili bırakın).
+                    </small>
+                </div>
                 <p style="color: #a0aec0; font-size: 0.85rem; margin-bottom: 16px;">
-                    💡 Filtre seçmezseniz tüm veriler analiz edilir
+                    💡 Tarih/Plaka filtresi seçmezseniz tüm veriler analiz edilir
                 </p>
                 <button type="submit" class="btn">
-                    🔍 Muhasebe Analizi Yap
+                    🔍 Seçili Ayarlarla Analiz Yap
                 </button>
             </form>
 
@@ -209,4 +255,5 @@
         </div>
     </div>
 </body>
+
 </html>

@@ -395,10 +395,19 @@
                             <td>{{ "{:,.2f}".format(arac.ton_basina_yakit).replace(',', 'X').replace('.',
                                 ',').replace('X', '.') if arac.toplam_tonaj > 0 else 'N/A' }}</td>
                             <td>
-                                {% if arac.verimlilik_skoru < 20 %} <span class="badge badge-success">İyi</span>
-                                    {% else %}
-                                    <span class="badge badge-danger">Kötü</span>
-                                    {% endif %}
+                                {% if selected_arac_tipi == 'KARGO ARACI' and selected_malzeme %}
+                                {% if arac.ton_basina_yakit > result.ortalama_ton_yakit %}
+                                <span class="badge badge-success">İyi</span>
+                                {% else %}
+                                <span class="badge badge-danger">Kötü</span>
+                                {% endif %}
+                                {% else %}
+                                {% if arac.km_litre_orani > result.ortalama_km_litre %}
+                                <span class="badge badge-success">İyi</span>
+                                {% else %}
+                                <span class="badge badge-danger">Kötü</span>
+                                {% endif %}
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}

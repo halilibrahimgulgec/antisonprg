@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Şoför Yönetimi - Kargo Yakıt Sistemi</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            color: white;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-home {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .btn-home:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+            font-size: 0.8rem;
+            padding: 6px 12px;
+        }
+        
+        .btn-info {
+            background: #3498db;
+            color: white;
+            font-size: 0.8rem;
+            padding: 6px 12px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            color: #4a5568;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #f7fafc;
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-aktif {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+
+        .badge-pasif {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>👨‍✈️ Şoför / Personel Yönetimi</h1>
+                <p style="opacity: 0.9;">Tüm şoförlerin performans ve tanımlama ekranı</p>
+            </div>
+            <a href="/" class="btn btn-home">🏠 Ana Sayfa</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div style="background: {{ '#d4edda' if category == 'success' else '#f8d7da' }}; 
+                                color: {{ '#155724' if category == 'success' else '#721c24' }}; 
+                                padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Yeni Kayıt Formu -->
+        <div class="card">
+            <h2 style="margin-bottom: 20px; color: #2d3748;">➕ Yeni Şoför Ekle</h2>
+            <form action="/sofor-ekle" method="POST">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Ad Soyad <span style="color:red">*</span></label>
+                        <input type="text" name="ad_soyad" class="form-control" required placeholder="Ad Soyad">
+                    </div>
+                    <div class="form-group">
+                        <label>Telefon</label>
+                        <input type="text" name="telefon" class="form-control" placeholder="05XX...">
+                    </div>
+                    <div class="form-group">
+                        <label>TC Kimlik No</label>
+                        <input type="text" name="tc_no" class="form-control" maxlength="11" placeholder="___________">
+                    </div>
+                    <div class="form-group">
+                        <label>Durum</label>
+                        <select name="aktif" class="form-control">
+                            <option value="1">Aktif Çalışıyor</option>
+                            <option value="0">Pasif / İşten Ayrıldı</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="text-align: right; margin-top: 15px;">
+                    <button type="submit" class="btn btn-primary">💾 Şoförü Kaydet</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Personel Listesi -->
+        <div class="card">
+            <h2 style="margin-bottom: 20px;">📋 Şoför Listesi</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ad Soyad</th>
+                            <th>Telefon</th>
+                            <th>TC Kimlik No</th>
+                            <th>Kayıt Tarihi</th>
+                            <th>Durum</th>
+                            <th>İşlem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sofor in soforler %}
+                        <tr>
+                            <td>{{ sofor.id }}</td>
+                            <td><strong>{{ sofor.ad_soyad }}</strong></td>
+                            <td>{{ sofor.telefon if sofor.telefon else '-' }}</td>
+                            <td>{{ sofor.tc_no if sofor.tc_no else '-' }}</td>
+                            <td>{{ sofor.created_at[:10] }}</td>
+                            <td>
+                                {% if sofor.aktif == 1 %}
+                                <span class="badge badge-aktif">Aktif</span>
+                                {% else %}
+                                <span class="badge badge-pasif">Pasif</span>
+                                {% endif %}
+                            </td>
+                            <td style="display: flex; gap: 5px;">
+                                <button type="button" class="btn btn-info" onclick="openUpdateModal({{ sofor.id }}, '{{ sofor.ad_soyad }}', '{{ sofor.telefon }}', '{{ sofor.tc_no }}', {{ sofor.aktif }})">✏️ Düzenle</button>
+                                <form action="/sofor-sil/{{ sofor.id }}" method="POST" onsubmit="return confirm('Bu şoförü silmek istediğinize emin misiniz? (Silmek yerine pasif yapmanız önerilir)');" style="display:inline;">
+                                    <button type="submit" class="btn btn-danger">🗑️ Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="7" style="text-align: center; padding: 20px; color: #718096;">
+                                Henüz kayıtlı şoför bulunamadı.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Düzenleme Modalı -->
+    <div id="updateModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; justify-content:center; align-items:center;">
+        <div class="card" style="width:100%; max-width:500px; margin:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+                <h3 style="color:#2d3748;">✏️ Şoför Düzenle</h3>
+                <button type="button" onclick="closeUpdateModal()" style="background:none; border:none; font-size:1.5rem; cursor:pointer;">&times;</button>
+            </div>
+            <form id="updateForm" method="POST" action="">
+                <div class="form-group">
+                    <label>Ad Soyad <span style="color:red">*</span></label>
+                    <input type="text" name="ad_soyad" id="m_ad_soyad" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" name="telefon" id="m_telefon" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>TC Kimlik No</label>
+                    <input type="text" name="tc_no" id="m_tc_no" class="form-control" maxlength="11">
+                </div>
+                <div class="form-group">
+                    <label>Durum</label>
+                    <select name="aktif" id="m_aktif" class="form-control">
+                        <option value="1">Aktif Çalışıyor</option>
+                        <option value="0">Pasif / İşten Ayrıldı</option>
+                    </select>
+                </div>
+                <div style="text-align: right; margin-top:20px;">
+                    <button type="button" class="btn btn-home" style="color:#333; margin-right:10px; border:1px solid #ddd;" onclick="closeUpdateModal()">İptal</button>
+                    <button type="submit" class="btn btn-primary">💾 Kaydet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openUpdateModal(id, ad, tel, tc, aktif) {
+            document.getElementById('updateModal').style.display = 'flex';
+            document.getElementById('updateForm').action = '/sofor-guncelle/' + id;
+            document.getElementById('m_ad_soyad').value = ad;
+            document.getElementById('m_telefon').value = (tel != 'None') ? tel : '';
+            document.getElementById('m_tc_no').value = (tc != 'None') ? tc : '';
+            document.getElementById('m_aktif').value = aktif;
+        }
+        function closeUpdateModal() {
+            document.getElementById('updateModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>

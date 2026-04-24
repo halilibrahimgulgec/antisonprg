@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kaza, Ceza ve Hasar Yönetimi</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, sans-serif; background: linear-gradient(135deg, #fceabb 0%, #f8b500 100%); min-height: 100vh; padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .card { background: white; border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin-bottom: 24px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; color: #2d3748; }
+        
+        .btn { padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 600; border: none; cursor: pointer; transition: 0.2s; }
+        .btn-home { background: rgba(0,0,0,0.1); color: #2d3748; }
+        .btn-home:hover { background: rgba(0,0,0,0.2); }
+        .btn-primary { background: #e53e3e; color: white; }
+        .btn-warning { background: #dd6b20; color: white; }
+        .btn-danger { background: #c53030; color: white; font-size: 0.8rem; padding: 6px 12px; }
+
+        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 20px; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; margin-bottom: 6px; color: #4a5568; font-size: 0.9rem; font-weight: 600; }
+        .form-control { width: 100%; padding: 10px; border: 1px solid #e2e8f0; border-radius: 6px; font-size: 1rem; }
+
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; }
+        .tab-btn { padding: 10px 20px; background: none; border: none; font-weight: 600; color: #718096; cursor: pointer; border-bottom: 3px solid transparent; }
+        .tab-btn.active { color: #dd6b20; border-bottom-color: #dd6b20; }
+        
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e2e8f0; }
+        th { background: #f7fafc; color: #4a5568; font-weight: 600; }
+        tr:hover { background: #f8f9fa; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; }
+    </style>
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div>
+                <h1>🚨 Kaza, Ceza ve Hasar Yönetimi</h1>
+                <p>Araçlara kesilen cezalar ve kaza/hasar kayıtları</p>
+            </div>
+            <a href="/" class="btn btn-home">🏠 Ana Sayfa</a>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div style="background: {{ '#d4edda' if category == 'success' else '#f8d7da' }}; color: {{ '#155724' if category == 'success' else '#721c24' }}; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <!-- Kayıt Formu -->
+        <div class="card">
+            <div class="tabs">
+                <button type="button" class="tab-btn active" onclick="openTab(event, 'ceza-ekle')">👮 Trafik Cezası Ekle</button>
+                <button type="button" class="tab-btn" onclick="openTab(event, 'hasar-ekle')">💥 Kaza/Hasar Kaydı Ekle</button>
+            </div>
+
+            <!-- Ceza Formu -->
+            <div id="ceza-ekle" class="tab-content active">
+                <form action="/ceza-ekle" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Plaka <span style="color:red">*</span></label>
+                            <select name="plaka" class="form-control" required>
+                                <option value="">Seçiniz...</option>
+                                {% for p in plakalar %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sorumlu Şoför</label>
+                            <select name="sofor_id" class="form-control">
+                                <option value="">Seçiniz...</option>
+                                {% for s in soforler %}<option value="{{ s.id }}">{{ s.ad_soyad }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Ceza Tarihi <span style="color:red">*</span></label>
+                            <input type="date" name="tarih" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Ceza Tutarı (TL) <span style="color:red">*</span></label>
+                            <input type="number" step="0.01" name="tutar" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Ceza Açıklaması / Yeri</label>
+                        <input type="text" name="aciklama" class="form-control" placeholder="Aşırı hız, park ihlali vs.">
+                    </div>
+                    <div class="form-group">
+                        <label>Ödeme Durumu</label>
+                        <select name="odeme_durumu" class="form-control" style="width: 200px;">
+                            <option value="Ödenmedi">Ödenmedi</option>
+                            <option value="Ödendi">Ödendi</option>
+                        </select>
+                    </div>
+                    <div style="text-align: right;"><button type="submit" class="btn btn-warning">💾 Cezayı Kaydet</button></div>
+                </form>
+            </div>
+
+            <!-- Hasar Formu -->
+            <div id="hasar-ekle" class="tab-content">
+                <form action="/hasar-ekle" method="POST">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Plaka <span style="color:red">*</span></label>
+                            <select name="plaka" class="form-control" required>
+                                <option value="">Seçiniz...</option>
+                                {% for p in plakalar %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Sorumlu Şoför</label>
+                            <select name="sofor_id" class="form-control">
+                                <option value="">Seçiniz...</option>
+                                {% for s in soforler %}<option value="{{ s.id }}">{{ s.ad_soyad }}</option>{% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Kaza/Hasar Tarihi <span style="color:red">*</span></label>
+                            <input type="date" name="tarih" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Hasar Maliyeti (TL) <span style="color:red">*</span></label>
+                            <input type="number" step="0.01" name="tutar" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Açıklama / Hasar Özeti</label>
+                        <textarea name="aciklama" class="form-control" rows="2" placeholder="Sağ çamurluk vuruldu, lastik yarıldı vs."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Sigorta Karşıladı mı?</label>
+                        <select name="sigorta_karsiladi_mi" class="form-control" style="width: 200px;">
+                            <option value="0">Hayır (Cari Maliyet)</option>
+                            <option value="1">Evet (Kasko/Sigorta) - Muhasebeden düş</option>
+                        </select>
+                    </div>
+                    <div style="text-align: right;"><button type="submit" class="btn btn-primary">💾 Hasarı Kaydet</button></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Ceza Listesi -->
+        <div class="card">
+            <h2>📜 Trafik Cezaları</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead><tr><th>Tarih</th><th>Plaka</th><th>Sorumlu Şoför</th><th>Açıklama</th><th>Tutar</th><th>Durum</th><th>İşlem</th></tr></thead>
+                    <tbody>
+                        {% for ceza in cezalar %}
+                        <tr>
+                            <td>{{ ceza.tarih }}</td><td><strong>{{ ceza.plaka }}</strong></td>
+                            <td>{{ ceza.sofor_adi if ceza.sofor_adi else '-' }}</td>
+                            <td>{{ ceza.aciklama }}</td><td><strong>{{ "%.2f"|format(ceza.tutar) }} ₺</strong></td>
+                            <td><span class="badge" style="background: {{ '#c6f6d5' if ceza.odeme_durumu == 'Ödendi' else '#feebc8' }}; color: {{ '#22543d' if ceza.odeme_durumu == 'Ödendi' else '#dd6b20' }};">{{ ceza.odeme_durumu }}</span></td>
+                            <td><form action="/ceza-sil/{{ ceza.id }}" method="POST" onsubmit="return confirm('Silinsin mi?');"><button type="submit" class="btn btn-danger">Sil</button></form></td>
+                        </tr>
+                        {% else %}<tr><td colspan="7" style="text-align:center; padding:15px; color:#718096;">Ceza kaydı bulunamadı.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Hasar Listesi -->
+        <div class="card">
+            <h2>💥 Hasar Kayıtları</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead><tr><th>Tarih</th><th>Plaka</th><th>Sorumlu Şoför</th><th>Açıklama</th><th>Tutar</th><th>Sigorta</th><th>İşlem</th></tr></thead>
+                    <tbody>
+                        {% for hasar in hasarlar %}
+                        <tr>
+                            <td>{{ hasar.tarih }}</td><td><strong>{{ hasar.plaka }}</strong></td>
+                            <td>{{ hasar.sofor_adi if hasar.sofor_adi else '-' }}</td>
+                            <td>{{ hasar.aciklama }}</td><td><strong>{{ "%.2f"|format(hasar.tutar) }} ₺</strong></td>
+                            <td>
+                                {% if hasar.sigorta_karsiladi_mi == 1 %}
+                                <span class="badge" style="background:#c6f6d5; color:#22543d;">Karşıladı</span>
+                                {% else %}
+                                <span class="badge" style="background:#f8d7da; color:#721c24;">Şirket Kasasından</span>
+                                {% endif %}
+                            </td>
+                            <td><form action="/hasar-sil/{{ hasar.id }}" method="POST" onsubmit="return confirm('Silinsin mi?');"><button type="submit" class="btn btn-danger">Sil</button></form></td>
+                        </tr>
+                        {% else %}<tr><td colspan="7" style="text-align:center; padding:15px; color:#718096;">Hasar kaydı bulunamadı.</td></tr>{% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

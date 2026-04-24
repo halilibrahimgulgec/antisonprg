@@ -235,7 +235,7 @@ class AnomalTespitModeli:
 
     def egit(self):
         """Modeli eğit"""
-        yakit_data = get_yakit_data()
+        yakit_data = get_yakit_data(harici_gizle=True)
 
         if not yakit_data or len(yakit_data) < 20:
             return {
@@ -293,7 +293,7 @@ class AnomalTespitModeli:
             if egit_result['status'] == 'error':
                 return egit_result
 
-        yakit_data = get_yakit_data()
+        yakit_data = get_yakit_data(harici_gizle=True)
         df = pd.DataFrame(yakit_data)
 
         anomaliler = []
@@ -341,7 +341,7 @@ class AnomalTespitModeli:
             if egit_result['status'] == 'error':
                 return egit_result
 
-        yakit_data = get_yakit_data()
+        yakit_data = get_yakit_data(harici_gizle=True)
         df = pd.DataFrame(yakit_data)
 
         anomaliler = []
@@ -448,7 +448,7 @@ class AnomalTespitModeli:
         detaylar = []
 
         # Ortalamaları hesapla
-        yakit_data = get_yakit_data()
+        yakit_data = get_yakit_data(harici_gizle=True)
         df = pd.DataFrame(yakit_data)
         ort_fiyat = df['birim_fiyat'].mean()
 
@@ -529,7 +529,7 @@ class AnomalTespitModeli:
         except:
             arac_tipi = 'KARGO ARACI'
 
-        yakit_data = get_yakit_data()
+        yakit_data = get_yakit_data(harici_gizle=True)
         df = pd.DataFrame(yakit_data)
         
         # Plaka bazlı hedef normu bul
@@ -764,13 +764,22 @@ class PerformansAnalizi:
         en_verimsiz = performans.nlargest(5, 'verimlilik_skoru').to_dict('records')
 
         veriler = []
+        ort_km_litre = performans['km_litre_orani'].mean()
+        ort_ton_yakit = performans['ton_basina_yakit'].mean() if len(performans) > 0 else 0
+
         for _, row in performans.iterrows():
+            # Yük bazlı (KUM/BETON) filtreleme var ise Ton/Litre verimliliğini kullan, diğer durumlarda KM/Litre
+            if arac_tipi_filtre == 'KARGO ARACI' and ana_malzeme_filtre:
+                is_iyi = row['ton_basina_yakit'] > ort_ton_yakit
+            else:
+                is_iyi = row['km_litre_orani'] > ort_km_litre
+
             veri = {
                 'toplam_yakit': round(row['yakit_miktari'], 1),
                 'toplam_km': round(row['km_fark'], 0),
                 'km_litre': round(row['km_litre_orani'], 2) if row['km_litre_orani'] > 0 else None,
                 'km_maliyet': round(row['km_basina_maliyet'], 2) if row['km_basina_maliyet'] > 0 else None,
-                'verimlilik': 'İyi' if row['km_litre_orani'] > performans['km_litre_orani'].mean() else 'Kötü'
+                'verimlilik': 'İyi' if is_iyi else 'Kötü'
             }
 
             # KARGO ARACI ise ana malzeme ve tonaj ekle
@@ -778,10 +787,12 @@ class PerformansAnalizi:
                 veri['ana_malzeme'] = row['ana_malzeme']
                 veri['toplam_tonaj'] = round(row['toplam_tonaj'] / 1000, 2)
                 veri['ton_yakit'] = round(row['ton_basina_yakit'], 2) if row['ton_basina_yakit'] > 0 else None
+                veri['kantar_birimi'] = row['kantar_birimi']
             else:
                 veri['ana_malzeme'] = row['arac_tipi']
                 veri['toplam_tonaj'] = None
                 veri['ton_yakit'] = None
+                veri['kantar_birimi'] = '-'
 
             veriler.append(veri)
 
@@ -790,9 +801,9 @@ class PerformansAnalizi:
             'tum_araclar': performans.to_dict('records'),
             'en_verimli': en_verimli,
             'en_verimsiz': en_verimsiz,
-            'ortalama_km_litre': round(performans['km_litre_orani'].mean(), 2),
+            'ortalama_km_litre': round(ort_km_litre, 2),
             'ortalama_km_maliyet': round(performans['km_basina_maliyet'].mean(), 2),
-            'ortalama_ton_yakit': round(performans['ton_basina_yakit'].mean(), 2) if len(performans) > 0 else 0,
+            'ortalama_ton_yakit': round(ort_ton_yakit, 2),
             'toplam_arac': len(performans),
             'veriler': veriler
         }
