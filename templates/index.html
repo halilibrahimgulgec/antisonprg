@@ -254,33 +254,33 @@
 
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-label">Toplam Kayıt</div>
+                    <div class="stat-label">{{ _('Toplam Kayıt') }}</div>
                     <div class="stat-value">{{ db_info.stats.toplam_kayit }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Yakıt Kayıtları</div>
+                    <div class="stat-label">{{ _('Yakıt Kayıtları') }}</div>
                     <div class="stat-value">{{ db_info.stats.yakit_kayit }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Ağırlık Kayıtları</div>
+                    <div class="stat-label">{{ _('Ağırlık Kayıtları') }}</div>
                     <div class="stat-value">{{ db_info.stats.agirlik_kayit }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Araç Takip</div>
+                    <div class="stat-label">{{ _('Araç Takip') }}</div>
                     <div class="stat-value">{{ db_info.stats.arac_takip_kayit }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Toplam Plaka</div>
+                    <div class="stat-label">{{ _('Toplam Plaka') }}</div>
                     <div class="stat-value">{{ db_info.stats.plaka_sayisi }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Toplam Motorin</div>
+                    <div class="stat-label">{{ _('Toplam Motorin') }}</div>
                     <div class="stat-value">{{ "%.1f"|format(db_info.stats.toplam_motorin if
                         db_info.stats.toplam_motorin
                         else 0) }} L</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Toplam AdBlue</div>
+                    <div class="stat-label">{{ _('Toplam AdBlue') }}</div>
                     <div class="stat-value" style="color: #3182ce;">{{ "%.1f"|format(db_info.stats.toplam_adblue if
                         db_info.stats.toplam_adblue
                         else 0) }} L</div>
@@ -291,88 +291,88 @@
 
             <div class="btn-group">
                 <a href="/kargo-arac-filtre" class="btn btn-primary" style="flex: 1;">
-                    🔍 Kargo Araçları Analizi
+                    🔍 {{ _('Kargo Araçları Analizi') }}
                 </a>
                 <a href="/binek-arac-filtre" class="btn btn-primary"
                     style="flex: 1; background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
-                    🚗 Binek Araç Analizi
+                    🚗 {{ _('Binek Araç Analizi') }}
                 </a>
                 <a href="/is-makinesi-filtre" class="btn btn-primary"
                     style="flex: 1; background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);">
-                    🚜 İş Makinesi Analizi
+                    🚜 {{ _('İş Makinesi Analizi') }}
                 </a>
             </div>
 
             <div class="btn-group" style="margin-top: 16px;">
                 <a href="/muhasebe" class="btn btn-secondary" style="flex: 1;">
-                    💰 Muhasebe Analizi
+                    💰 {{ _('Muhasebe Analizi') }}
                 </a>
                 <a href="/ai-analysis" class="btn btn-success" style="flex: 1;">
-                    🤖 AI Analiz
+                    🤖 {{ _('AI Analiz') }}
                 </a>
                 <a href="/arac-yonetimi" class="btn btn-primary"
                     style="flex: 1; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
-                    🚛 Araç Yönetimi
+                    🚛 {{ _('Araç Yönetimi') }}
                 </a>
                 <a href="/bakim" class="btn btn-primary"
                     style="flex: 1; background: linear-gradient(135deg, #8e44ad 0%, #9b59b6 100%);">
-                    🛠️ Araç Bakım
+                    🛠️ {{ _('Araç Bakım') }}
                 </a>
             </div>
             <div class="btn-group" style="margin-top: 16px;">
                 <a href="/bakim-analiz" class="btn btn-primary"
                     style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #e53e3e 0%, #fc8181 100%);">
-                    📊 Bakım Analiz Paneli
+                    📊 {{ _('Bakım Analiz Paneli') }}
                 </a>
                 <a href="/soforler" class="btn btn-primary"
                     style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%);">
-                    👨‍✈️ Şoför Yönetimi
+                    👨‍✈️ {{ _('Şoför Yönetimi') }}
                 </a>
                 <a href="/hasar-ceza-yonetimi" class="btn btn-primary"
                     style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #d35400 0%, #e67e22 100%);">
-                    💥 Hasar ve Ceza Yönetimi
+                    💥 {{ _('Hasar ve Ceza Yönetimi') }}
                 </a>
                 <a href="/lastik-yonetimi" class="btn btn-primary"
                     style="flex: 1; min-width: 200px; background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);">
-                    🛞 Lastik Yönetimi
+                    🛞 {{ _('Lastik Yönetimi') }}
                 </a>
             </div>
             <div class="btn-group" style="margin-top: 16px;">
                 <a href="/ai-assistant" class="btn btn-primary"
                     style="flex: 1; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 16px; font-weight: 600; font-size: 16px;">
-                    🤖 AI Asistan - Sorularınızı Yanıtlar
+                    🤖 {{ _('AI Asistan - Sorularınızı Yanıtlar') }}
                 </a>
                 <a href="/sofor-login" class="btn btn-primary" target="_blank"
                     style="flex: 1; background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%); color: white; border: none; padding: 16px; font-weight: 600; font-size: 16px;">
-                    📱 Mobil Şoför Paneli (PWA)
+                    📱 {{ _('Mobil Şoför Paneli (PWA)') }}
                 </a>
             </div>
             <div class="btn-group" style="margin-top: 16px;">
                 <a href="/saha-bildirimleri" class="btn btn-primary"
                     style="flex: 1; background: linear-gradient(135deg, #e17055 0%, #d63031 100%); color: white; border: none; padding: 16px; font-weight: 600; font-size: 16px;">
-                    📥 Saha Bildirim Merkezi (Gelen Kutusu)
+                    📥 {{ _('Saha Bildirim Merkezi (Gelen Kutusu)') }}
                 </a>
             </div>
         </div>
 
         <div class="card">
-            <h2>📝 Veri Yükleme</h2>
+            <h2>📝 {{ _('Veri Yükleme') }}</h2>
 
             <!-- Mailden Çekme Butonu -->
             <div
                 style="background: #e8f0fe; padding: 16px; border-radius: 8px; border: 1px solid #b3d7ff; margin-bottom: 24px;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                    <h3 style="font-size: 1.1rem; color: #1a73e8; margin: 0;">📧 Otomatik Veri Çekme</h3>
+                    <h3 style="font-size: 1.1rem; color: #1a73e8; margin: 0;">📧 {{ _('Otomatik Veri Çekme') }}</h3>
                     <button onclick="openSettings()" class="btn btn-secondary"
                         style="padding: 4px 10px; font-size: 0.8rem; background: #718096; width: auto; margin: 0;">⚙️
-                        Ayarlar</button>
+                        {{ _('Ayarlar') }}</button>
                 </div>
                 <p style="color: #5f6368; margin-bottom: 12px; font-size: 0.9rem;">
-                    Tanımlı mail adresinden gelen Excel dosyalarını otomatik olarak indirip işler.
+                    {{ _('Tanımlı mail adresinden gelen Excel dosyalarını otomatik olarak indirip işler.') }}
                 </p>
                 <button onclick="fetchMail()" id="mailBtn" class="btn btn-primary"
                     style="background: #1a73e8; width: 100%;">
-                    📨 Mailden Verileri Çek
+                    📨 {{ _('Mailden Verileri Çek') }}
                 </button>
                 <div id="mailStatus" style="margin-top: 10px; display: none; padding: 10px; border-radius: 4px;"></div>
             </div>
@@ -382,42 +382,38 @@
                 style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
                 <div
                     style="background: white; width: 90%; max-width: 400px; margin: 100px auto; padding: 24px; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-                    <h3 style="margin-bottom: 16px;">📧 Mail Ayarları</h3>
+                    <h3 style="margin-bottom: 16px;">📧 {{ _('Mail Ayarları') }}</h3>
 
                     <div style="margin-bottom: 12px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 4px;">Gmail Adresi:</label>
+                        <label style="display: block; font-weight: 600; margin-bottom: 4px;">{{ _('Gmail Adresi:') }}</label>
                         <input type="email" id="mailUser"
                             style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
                             placeholder="ornek@gmail.com">
                     </div>
 
                     <div style="margin-bottom: 12px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 4px;">Uygulama Şifresi:</label>
+                        <label style="display: block; font-weight: 600; margin-bottom: 4px;">{{ _('Uygulama Şifresi:') }}</label>
                         <input type="password" id="mailPass"
                             style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
                             placeholder="xxxx xxxx xxxx xxxx">
-                        <small style="color: #666; font-size: 0.8rem;">Gmail &gt; Güvenlik &gt; Uygulama Şifreleri
-                            (Normal şifreniz DEĞİL)</small>
+                        <small style="color: #666; font-size: 0.8rem;">{{ _('Gmail &gt; Güvenlik &gt; Uygulama Şifreleri (Normal şifreniz DEĞİL)') }}</small>
                     </div>
 
                     <div style="margin-bottom: 20px;">
-                        <label style="display: block; font-weight: 600; margin-bottom: 4px;">Gönderici Filtresi
-                            (Opsiyonel):</label>
+                        <label style="display: block; font-weight: 600; margin-bottom: 4px;">{{ _('Gönderici Filtresi (Opsiyonel):') }}</label>
                         <div style="margin-bottom: 20px;">
-                            <label style="display: block; font-weight: 600; margin-bottom: 4px;">Gönderici Filtresi
-                                (Opsiyonel):</label>
+                            <label style="display: block; font-weight: 600; margin-bottom: 4px;">{{ _('Gönderici Filtresi (Opsiyonel):') }}</label>
                             <input type="text" id="mailSender"
                                 style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 4px;"
                                 placeholder="mail1@ornek.com, mail2@ornek.com">
-                            <small style="color: #666; font-size: 0.8rem;">Virgül ile ayırarak birden fazla mail
-                                ekleyebilirsiniz.</small>
+                            <small style="color: #666; font-size: 0.8rem;">{{ _('Virgül ile ayırarak birden fazla mail ekleyebilirsiniz.') }}</small>
                         </div>
                     </div>
 
                     <div style="display: flex; gap: 10px; justify-content: flex-end;">
                         <button onclick="closeSettings()" class="btn"
-                            style="background: #e2e8f0; color: #333; width: auto;">İptal</button>
-                        <button onclick="saveSettings()" class="btn btn-primary" style="width: auto;">Kaydet</button>
+                            style="background: #e2e8f0; color: #333; width: auto;">{{ _('İptal') }}</button>
+                        <button onclick="saveSettings()" class="btn btn-primary" style="width: auto;">{{ _('Kaydet') }}</button>
                     </div>
                 </div>
             </div>
@@ -501,7 +497,7 @@
                     <!-- Yakıt Dosyası -->
                     <div style="background: #f7fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568;">
-                            ⛽ Motorin / Yakıt Excel Dosyası
+                            ⛽ {{ _('Motorin / Yakıt Excel Dosyası') }}
                         </label>
                         <input type="file" name="motorin_file" accept=".xlsx, .xls, .csv"
                             style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
@@ -510,7 +506,7 @@
                     <!-- Kantar Dosyası -->
                     <div style="background: #f7fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568;">
-                            ⚖️ Kantar Excel Dosyası
+                            ⚖️ {{ _('Kantar Excel Dosyası') }}
                         </label>
                         <input type="file" name="kantar_file" accept=".xlsx, .xls, .csv"
                             style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
@@ -519,19 +515,19 @@
                     <!-- Araç Takip Dosyası -->
                     <div style="background: #f7fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0;">
                         <label style="display: block; margin-bottom: 8px; font-weight: 600; color: #4a5568;">
-                            🚛 Araç Takip Raporu
+                            🚛 {{ _('Araç Takip Raporu') }}
                         </label>
                         <input type="file" name="takip_file" accept=".xlsx, .xls, .csv"
                             style="width: 100%; padding: 8px; border: 1px solid #cbd5e0; border-radius: 4px;">
                     </div>
 
                     <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 8px;">
-                        📂 Dosyaları Yükle ve İşle
+                        📂 {{ _('Dosyaları Yükle ve İşle') }}
                     </button>
                 </div>
             </form>
             <p style="color: #718096; margin-top: 12px; font-size: 0.875rem;">
-                Desteklenen formatlar: .xlsx, .xls, .csv
+                {{ _('Desteklenen formatlar: .xlsx, .xls, .csv') }}
             </p>
         </div>
     </div>

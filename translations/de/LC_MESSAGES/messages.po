@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-30 23:45+0300\n"
+"POT-Creation-Date: 2026-05-01 00:52+0300\n"
 "PO-Revision-Date: 2026-04-30 23:43+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: de\n"
@@ -37,4 +37,163 @@ msgstr "Bereit"
 #: templates/index.html:251
 msgid "Boş"
 msgstr "Leer"
+
+#: templates/index.html:257
+msgid "Toplam Kayıt"
+msgstr "Gesamtdatensätze"
+
+#: templates/index.html:261
+msgid "Yakıt Kayıtları"
+msgstr "Kraftstoffaufzeichnungen"
+
+#: templates/index.html:265
+msgid "Ağırlık Kayıtları"
+msgstr "Gewichtsaufzeichnungen"
+
+#: templates/index.html:269
+msgid "Araç Takip"
+msgstr "Fahrzeugortung"
+
+#: templates/index.html:273
+msgid "Toplam Plaka"
+msgstr "Gesamtzahl der Kennzeichen"
+
+#: templates/index.html:277
+msgid "Toplam Motorin"
+msgstr "Gesamt Diesel"
+
+#: templates/index.html:283
+msgid "Toplam AdBlue"
+msgstr "Gesamt AdBlue"
+
+#: templates/index.html:294
+#, fuzzy
+msgid "Kargo Araçları Analizi"
+msgstr "Fracht-Kraftstoff-Analysesystem"
+
+#: templates/index.html:298
+msgid "Binek Araç Analizi"
+msgstr "PKW-Analyse"
+
+#: templates/index.html:302
+msgid "İş Makinesi Analizi"
+msgstr "Baumaschinen-Analyse"
+
+#: templates/index.html:308
+msgid "Muhasebe Analizi"
+msgstr "Buchhaltungsanalyse"
+
+#: templates/index.html:311
+msgid "AI Analiz"
+msgstr "KI-Analyse"
+
+#: templates/index.html:315
+msgid "Araç Yönetimi"
+msgstr "Fahrzeugverwaltung"
+
+#: templates/index.html:319
+msgid "Araç Bakım"
+msgstr "Fahrzeugwartung"
+
+#: templates/index.html:325
+msgid "Bakım Analiz Paneli"
+msgstr "Wartungsanalyse-Panel"
+
+#: templates/index.html:329
+msgid "Şoför Yönetimi"
+msgstr "Fahrerverwaltung"
+
+#: templates/index.html:333
+msgid "Hasar ve Ceza Yönetimi"
+msgstr "Schadens- und Strafenverwaltung"
+
+#: templates/index.html:337
+msgid "Lastik Yönetimi"
+msgstr "Reifenverwaltung"
+
+#: templates/index.html:343
+msgid "AI Asistan - Sorularınızı Yanıtlar"
+msgstr "KI-Assistent - Beantwortet Ihre Fragen"
+
+#: templates/index.html:347
+msgid "Mobil Şoför Paneli (PWA)"
+msgstr "Mobiles Fahrer-Panel (PWA)"
+
+#: templates/index.html:353
+msgid "Saha Bildirim Merkezi (Gelen Kutusu)"
+msgstr "Feld-Benachrichtigungszentrum (Posteingang)"
+
+#: templates/index.html:359
+msgid "Veri Yükleme"
+msgstr "Daten-Upload"
+
+#: templates/index.html:365
+msgid "Otomatik Veri Çekme"
+msgstr "Automatische Datenextraktion"
+
+#: templates/index.html:368
+msgid "Ayarlar"
+msgstr "Einstellungen"
+
+#: templates/index.html:371
+msgid ""
+"Tanımlı mail adresinden gelen Excel dosyalarını otomatik olarak indirip "
+"işler."
+msgstr ""
+
+#: templates/index.html:375
+msgid "Mailden Verileri Çek"
+msgstr "Daten aus E-Mail abrufen"
+
+#: templates/index.html:385
+msgid "Mail Ayarları"
+msgstr "E-Mail-Einstellungen"
+
+#: templates/index.html:388
+msgid "Gmail Adresi:"
+msgstr "Gmail-Adresse:"
+
+#: templates/index.html:395
+msgid "Uygulama Şifresi:"
+msgstr "App-Passwort:"
+
+#: templates/index.html:399
+msgid "Gmail &gt; Güvenlik &gt; Uygulama Şifreleri (Normal şifreniz DEĞİL)"
+msgstr "Gmail &gt; Sicherheit &gt; App-Passwörter (NICHT Ihr normales Passwort)"
+
+#: templates/index.html:403 templates/index.html:405
+msgid "Gönderici Filtresi (Opsiyonel):"
+msgstr "Absenderfilter (Optional):"
+
+#: templates/index.html:409
+msgid "Virgül ile ayırarak birden fazla mail ekleyebilirsiniz."
+msgstr "Sie können mehrere E-Mails durch Kommas getrennt hinzufügen."
+
+#: templates/index.html:415
+msgid "İptal"
+msgstr "Abbrechen"
+
+#: templates/index.html:416
+msgid "Kaydet"
+msgstr "Speichern"
+
+#: templates/index.html:500
+msgid "Motorin / Yakıt Excel Dosyası"
+msgstr "Diesel / Kraftstoff Excel-Datei"
+
+#: templates/index.html:509
+msgid "Kantar Excel Dosyası"
+msgstr "Waagen Excel-Datei"
+
+#: templates/index.html:518
+msgid "Araç Takip Raporu"
+msgstr "Fahrzeugortungsbericht"
+
+#: templates/index.html:525
+msgid "Dosyaları Yükle ve İşle"
+msgstr "Dateien hochladen und verarbeiten"
+
+#: templates/index.html:530
+msgid "Desteklenen formatlar: .xlsx, .xls, .csv"
+msgstr "Unterstützte Formate: .xlsx, .xls, .csv"
 

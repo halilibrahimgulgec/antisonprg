@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-04-30 23:45+0300\n"
+"POT-Creation-Date: 2026-05-01 00:52+0300\n"
 "PO-Revision-Date: 2026-04-30 23:43+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: en\n"
@@ -37,4 +37,163 @@ msgstr "Ready"
 #: templates/index.html:251
 msgid "Boş"
 msgstr "Empty"
+
+#: templates/index.html:257
+msgid "Toplam Kayıt"
+msgstr "Total Records"
+
+#: templates/index.html:261
+msgid "Yakıt Kayıtları"
+msgstr "Fuel Records"
+
+#: templates/index.html:265
+msgid "Ağırlık Kayıtları"
+msgstr "Weight Records"
+
+#: templates/index.html:269
+msgid "Araç Takip"
+msgstr "Vehicle Tracking"
+
+#: templates/index.html:273
+msgid "Toplam Plaka"
+msgstr "Total Plates"
+
+#: templates/index.html:277
+msgid "Toplam Motorin"
+msgstr "Total Diesel"
+
+#: templates/index.html:283
+msgid "Toplam AdBlue"
+msgstr "Total AdBlue"
+
+#: templates/index.html:294
+#, fuzzy
+msgid "Kargo Araçları Analizi"
+msgstr "Cargo Fuel Analysis System"
+
+#: templates/index.html:298
+msgid "Binek Araç Analizi"
+msgstr "Passenger Cars Analysis"
+
+#: templates/index.html:302
+msgid "İş Makinesi Analizi"
+msgstr "Heavy Machinery Analysis"
+
+#: templates/index.html:308
+msgid "Muhasebe Analizi"
+msgstr "Accounting Analysis"
+
+#: templates/index.html:311
+msgid "AI Analiz"
+msgstr "AI Analysis"
+
+#: templates/index.html:315
+msgid "Araç Yönetimi"
+msgstr "Vehicle Management"
+
+#: templates/index.html:319
+msgid "Araç Bakım"
+msgstr "Vehicle Maintenance"
+
+#: templates/index.html:325
+msgid "Bakım Analiz Paneli"
+msgstr "Maintenance Analysis Panel"
+
+#: templates/index.html:329
+msgid "Şoför Yönetimi"
+msgstr "Driver Management"
+
+#: templates/index.html:333
+msgid "Hasar ve Ceza Yönetimi"
+msgstr "Damage & Fine Management"
+
+#: templates/index.html:337
+msgid "Lastik Yönetimi"
+msgstr "Tire Management"
+
+#: templates/index.html:343
+msgid "AI Asistan - Sorularınızı Yanıtlar"
+msgstr "AI Assistant - Answers Your Questions"
+
+#: templates/index.html:347
+msgid "Mobil Şoför Paneli (PWA)"
+msgstr "Mobile Driver Panel (PWA)"
+
+#: templates/index.html:353
+msgid "Saha Bildirim Merkezi (Gelen Kutusu)"
+msgstr "Field Notification Center (Inbox)"
+
+#: templates/index.html:359
+msgid "Veri Yükleme"
+msgstr "Data Upload"
+
+#: templates/index.html:365
+msgid "Otomatik Veri Çekme"
+msgstr "Automatic Data Extraction"
+
+#: templates/index.html:368
+msgid "Ayarlar"
+msgstr "Settings"
+
+#: templates/index.html:371
+msgid ""
+"Tanımlı mail adresinden gelen Excel dosyalarını otomatik olarak indirip "
+"işler."
+msgstr ""
+
+#: templates/index.html:375
+msgid "Mailden Verileri Çek"
+msgstr "Fetch Data from Mail"
+
+#: templates/index.html:385
+msgid "Mail Ayarları"
+msgstr "Mail Settings"
+
+#: templates/index.html:388
+msgid "Gmail Adresi:"
+msgstr "Gmail Address:"
+
+#: templates/index.html:395
+msgid "Uygulama Şifresi:"
+msgstr "App Password:"
+
+#: templates/index.html:399
+msgid "Gmail &gt; Güvenlik &gt; Uygulama Şifreleri (Normal şifreniz DEĞİL)"
+msgstr "Gmail &gt; Security &gt; App Passwords (NOT your normal password)"
+
+#: templates/index.html:403 templates/index.html:405
+msgid "Gönderici Filtresi (Opsiyonel):"
+msgstr "Sender Filter (Optional):"
+
+#: templates/index.html:409
+msgid "Virgül ile ayırarak birden fazla mail ekleyebilirsiniz."
+msgstr "You can add multiple emails separated by commas."
+
+#: templates/index.html:415
+msgid "İptal"
+msgstr "Cancel"
+
+#: templates/index.html:416
+msgid "Kaydet"
+msgstr "Save"
+
+#: templates/index.html:500
+msgid "Motorin / Yakıt Excel Dosyası"
+msgstr "Diesel / Fuel Excel File"
+
+#: templates/index.html:509
+msgid "Kantar Excel Dosyası"
+msgstr "Weighbridge Excel File"
+
+#: templates/index.html:518
+msgid "Araç Takip Raporu"
+msgstr "Vehicle Tracking Report"
+
+#: templates/index.html:525
+msgid "Dosyaları Yükle ve İşle"
+msgstr "Upload and Process Files"
+
+#: templates/index.html:530
+msgid "Desteklenen formatlar: .xlsx, .xls, .csv"
+msgstr "Supported formats: .xlsx, .xls, .csv"
 
