@@ -219,10 +219,17 @@
 </head>
 
 <body>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 100;">
+        <select onchange="window.location.href='/set_language/'+this.value" style="padding: 8px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            <option value="tr" {% if get_locale() == 'tr' %}selected{% endif %}>🇹🇷 TR</option>
+            <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>🇬🇧 EN</option>
+            <option value="de" {% if get_locale() == 'de' %}selected{% endif %}>🇩🇪 DE</option>
+        </select>
+    </div>
     <div class="container">
         <div class="header">
-            <h1>🚚 Kargo Yakıt Analiz Sistemi</h1>
-            <p>Araç yakıt tüketimi ve maliyet analizi</p>
+            <h1>🚚 {{ _('Kargo Yakıt Analiz Sistemi') }}</h1>
+            <p>{{ _('Araç yakıt tüketimi ve maliyet analizi') }}</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -237,11 +244,11 @@
 
         <div class="card">
             <h2>
-                📊 Veritabanı Durumu
+                📊 {{ _('Veritabanı Durumu') }}
                 {% if db_info.exists %}
-                <span class="status-badge status-success">✓ Hazır</span>
+                <span class="status-badge status-success">✓ {{ _('Hazır') }}</span>
                 {% else %}
-                <span class="status-badge status-warning">⚠ Boş</span>
+                <span class="status-badge status-warning">⚠ {{ _('Boş') }}</span>
                 {% endif %}
             </h2>
 

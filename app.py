@@ -1,6 +1,7 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, send_file, session
 from flask_cors import CORS
+from flask_babel import Babel, gettext as _
 from datetime import datetime
 import logging
 from dotenv import load_dotenv
@@ -19,6 +20,27 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 app.secret_key = 'your-secret-key-here'
+
+# Babel Configuration
+app.config['BABEL_DEFAULT_LOCALE'] = 'tr'
+app.config['BABEL_SUPPORTED_LOCALES'] = ['tr', 'en', 'de']
+
+def get_locale():
+    if 'lang' in session:
+        return session['lang']
+    return request.accept_languages.best_match(app.config['BABEL_SUPPORTED_LOCALES'])
+
+babel = Babel(app, locale_selector=get_locale)
+
+@app.route('/set_language/<lang>')
+def set_language(lang):
+    if lang in app.config['BABEL_SUPPORTED_LOCALES']:
+        session['lang'] = lang
+    return redirect(request.referrer or url_for('index'))
+
+@app.context_processor
+def inject_locale():
+    return dict(get_locale=get_locale)
 
 # Jinja2 template'lere Python built-in fonksiyonları ekle
 app.jinja_env.globals.update(zip=zip)
