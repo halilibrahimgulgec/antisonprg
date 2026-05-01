@@ -16,7 +16,7 @@ GEMINI_API_KEY = 'AIzaSyCK-9xTu-C42H4-SvAs06hEpSxp5qVH6QI'
 genai.configure(api_key=GEMINI_API_KEY)
 
 class GeminiAssistant:
-    def __init__(self, model='gemini-1.5-flash'):
+    def __init__(self, model='gemini-2.5-flash'):
         self.model_name = model
         self.model = genai.GenerativeModel(self.model_name)
         self.chat_history = []
