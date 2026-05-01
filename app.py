@@ -1219,9 +1219,9 @@ def ai_assistant():
 def assistant_status():
     """Ollama servis durumunu kontrol et"""
     try:
-        from ollama_assistant import OllamaAssistant
-        assistant = OllamaAssistant(model='llama3.1')
-        status = assistant.check_ollama_status()
+        from gemini_assistant import GeminiAssistant
+        assistant = GeminiAssistant()
+        status = assistant.check_gemini_status()
         return jsonify(status)
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
@@ -1230,7 +1230,7 @@ def assistant_status():
 def assistant_ask():
     """Asistana soru sor"""
     try:
-        from ollama_assistant import OllamaAssistant
+        from gemini_assistant import GeminiAssistant
 
         data = request.get_json()
         question = data.get('question', '')
@@ -1238,8 +1238,7 @@ def assistant_ask():
         if not question:
             return jsonify({'status': 'error', 'message': 'Soru boş olamaz'})
 
-        # Türkçe destekli model kullan
-        assistant = OllamaAssistant(model='llama3.2')
+        assistant = GeminiAssistant()
         result = assistant.ask_with_db_query(question)
 
         # Excel veya PDF export varsa session'a kaydet
@@ -1289,8 +1288,8 @@ def assistant_download():
 def assistant_history():
     """Sohbet geçmişini getir"""
     try:
-        from ollama_assistant import OllamaAssistant
-        assistant = OllamaAssistant(model='llama3.2')
+        from gemini_assistant import GeminiAssistant
+        assistant = GeminiAssistant()
         history = assistant.get_chat_history()
         return jsonify({'status': 'success', 'history': history})
     except Exception as e:
@@ -1300,8 +1299,8 @@ def assistant_history():
 def assistant_clear():
     """Sohbet geçmişini temizle"""
     try:
-        from ollama_assistant import OllamaAssistant
-        assistant = OllamaAssistant(model='llama3.2')
+        from gemini_assistant import GeminiAssistant
+        assistant = GeminiAssistant()
         result = assistant.clear_history()
         return jsonify(result)
     except Exception as e:

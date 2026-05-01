@@ -1,4 +1,4 @@
-import requests
+import os
 import json
 import sqlite3
 import pandas as pd
@@ -9,29 +9,38 @@ from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
+import google.generativeai as genai
 
-class OllamaAssistant:
-    def __init__(self, model='llama3.2', base_url='http://localhost:11434'):
-        self.model = model
-        self.base_url = base_url
-        self.api_url = f"{base_url}/api/generate"
+# API Anahtarını Tanımla
+GEMINI_API_KEY = 'AIzaSyCK-9xTu-C42H4-SvAs06hEpSxp5qVH6QI'
+genai.configure(api_key=GEMINI_API_KEY)
+
+class GeminiAssistant:
+    def __init__(self, model='gemini-1.5-flash'):
+        self.model_name = model
+        self.model = genai.GenerativeModel(self.model_name)
         self.chat_history = []
 
-    def check_ollama_status(self):
-        """Ollama servisinin çalışıp çalışmadığını kontrol et"""
+    def check_gemini_status(self):
+        """Gemini API servisinin çalışıp çalışmadığını kontrol et"""
         try:
-            response = requests.get(f"{self.base_url}/api/tags", timeout=2)
-            if response.status_code == 200:
-                models = response.json().get('models', [])
+            # Basit bir deneme isteği gönder
+            response = self.model.generate_content("Merhaba", request_options={"timeout": 10})
+            if response.text:
                 return {
                     'status': 'running',
-                    'models': [m['name'] for m in models],
-                    'message': 'Ollama servisi çalışıyor'
+                    'models': [self.model_name],
+                    'message': 'Gemini API servisi çalışıyor'
+                }
+            else:
+                return {
+                    'status': 'error',
+                    'message': 'Gemini API yanıt vermedi'
                 }
         except Exception as e:
             return {
                 'status': 'error',
-                'message': f'Ollama servisine bağlanılamadı: {str(e)}'
+                'message': f'Gemini API\'ye bağlanılamadı: {str(e)}'
             }
 
     def get_context_data(self):
@@ -79,7 +88,7 @@ Aktif Araçlar (ilk 10):
             if query_type == 'plaka_yakit':
                 plaka = params.get('plaka')
                 cursor.execute('''
-                    SELECT
+                    SELECT 
                         SUM(yakit_miktari) as toplam_yakit,
                         SUM(km_fark) as toplam_km,
                         COUNT(*) as kayit_sayisi
@@ -88,7 +97,7 @@ Aktif Araçlar (ilk 10):
                 ''', (plaka,))
                 row = cursor.fetchone()
                 result = dict(row) if row else None
-
+                
                 # Fallback: Eğer km_fark verisi yoksa MAX-MIN dene
                 if result and not result.get('toplam_km'):
                     cursor.execute('''
@@ -145,7 +154,8 @@ Aktif Araçlar (ilk 10):
         """Kullanıcı sorusuna göre prompt oluştur"""
         context = self.get_context_data()
 
-        system_prompt = f"""Sen kargo yönetim sistemi asistanısın. SADECE TÜRKÇE konuş!
+        system_prompt = f"""Sen bir kargo ve ERP yönetim sistemi asistanısın. SADECE TÜRKÇE konuş! 
+Sana verilen sistem bilgilerini kullanarak kullanıcının sorularına kısa, net ve yardımcı cevaplar ver.
 
 Sistem Bilgileri:
 {context}
@@ -157,56 +167,32 @@ TÜRKÇE cevap ver (kısa ve net):"""
         return system_prompt
 
     def ask(self, question, stream=False):
-        """Ollama'ya soru sor"""
+        """Gemini'ye soru sor"""
         try:
             prompt = self.create_prompt(question)
+            
+            response = self.model.generate_content(prompt)
 
-            payload = {
-                'model': self.model,
-                'prompt': prompt,
-                'stream': stream
-            }
+            if response.text:
+                response_text = response.text
+                
+                self.chat_history.append({
+                    'question': question,
+                    'answer': response_text,
+                    'timestamp': datetime.now().isoformat()
+                })
 
-            response = requests.post(
-                self.api_url,
-                json=payload,
-                timeout=60
-            )
-
-            if response.status_code == 200:
-                if stream:
-                    return response
-                else:
-                    response_text = ''
-                    for line in response.text.strip().split('\n'):
-                        if line:
-                            json_response = json.loads(line)
-                            response_text += json_response.get('response', '')
-                            if json_response.get('done', False):
-                                break
-
-                    self.chat_history.append({
-                        'question': question,
-                        'answer': response_text,
-                        'timestamp': datetime.now().isoformat()
-                    })
-
-                    return {
-                        'status': 'success',
-                        'answer': response_text,
-                        'model': self.model
-                    }
+                return {
+                    'status': 'success',
+                    'answer': response_text,
+                    'model': self.model_name
+                }
             else:
                 return {
                     'status': 'error',
-                    'message': f'API hatası: {response.status_code}'
+                    'message': 'API yanıt döndürmedi.'
                 }
 
-        except requests.exceptions.Timeout:
-            return {
-                'status': 'error',
-                'message': 'Zaman aşımı. Ollama yanıt vermedi (60 saniye).'
-            }
         except Exception as e:
             return {
                 'status': 'error',
@@ -216,7 +202,7 @@ TÜRKÇE cevap ver (kısa ve net):"""
     def ask_with_db_query(self, question):
         """Veritabanı sorgusu ile desteklenmiş soru"""
         question_lower = question.lower()
-
+        
         db_result = None
         export_type = None
 
@@ -294,10 +280,8 @@ TÜRKÇE cevap ver (kısa ve net):"""
                 }
 
         context = self.get_context_data()
-
-        if db_result:
-            context += f"\n\nVeritabanı Sorgu Sonucu:\n{json.dumps(db_result, indent=2, ensure_ascii=False)}"
-
+        
+        # Eğer özel bir sorgu değilse Gemini'ye gönder
         return self.ask(question)
 
     def get_chat_history(self):
@@ -312,7 +296,7 @@ TÜRKÇE cevap ver (kısa ve net):"""
     def create_excel(self, data, question):
         """Veritabanı sonuçlarından Excel dosyası oluştur"""
         output = io.BytesIO()
-
+        
         if isinstance(data, list) and len(data) > 0:
             df = pd.DataFrame(data)
         elif isinstance(data, dict):
@@ -334,10 +318,10 @@ TÜRKÇE cevap ver (kısa ve net):"""
             'km_bilgisi': 'KM Bilgisi'
         }
         df.rename(columns=column_mapping, inplace=True)
-
+        
         with pd.ExcelWriter(output, engine='openpyxl') as writer:
             df.to_excel(writer, sheet_name='Rapor', index=False)
-
+            
         output.seek(0)
         return output.getvalue()
 
@@ -363,11 +347,11 @@ TÜRKÇE cevap ver (kısa ve net):"""
             # Sütun başlıkları
             headers = list(data[0].keys())
             table_data = [headers]
-
+            
             # Satırlar
             for row in data:
                 table_data.append([str(row[key]) for key in headers])
-
+                
             # Tablo oluştur
             table = Table(table_data)
             table.setStyle(TableStyle([
@@ -386,19 +370,46 @@ TÜRKÇE cevap ver (kısa ve net):"""
         output.seek(0)
         return output.getvalue()
 
-def test_ollama():
-    """Ollama test fonksiyonu"""
-    assistant = OllamaAssistant()
+# Dışa aktarılacak yardımcı fonksiyonlar
+assistant = GeminiAssistant()
 
-    status = assistant.check_ollama_status()
-    print("Ollama Durumu:", status)
+def check_gemini_status():
+    return assistant.check_gemini_status()
 
-    if status['status'] == 'running':
-        print("\nTest sorusu soruluyor...")
-        result = assistant.ask("Merhaba, sen kimsin?")
-        print("\nYanıt:", result)
+def ask_gemini(question, model=None, conversation_history=None):
+    if model:
+        assistant.model_name = model
+        assistant.model = genai.GenerativeModel(model)
+        
+    return assistant.ask_with_db_query(question)
 
-    return status
-
-if __name__ == '__main__':
-    test_ollama()
+def get_quick_insights():
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT SUM(yakit_miktari) as toplam 
+            FROM yakit 
+            WHERE islem_tarihi >= date('now', '-30 days')
+        ''')
+        row = cursor.fetchone()
+        son_30_gun = row['toplam'] if row['toplam'] else 0
+        
+        cursor.execute('''
+            SELECT SUM(yakit_miktari) as toplam 
+            FROM yakit 
+            WHERE islem_tarihi >= date('now', '-7 days')
+        ''')
+        row = cursor.fetchone()
+        son_7_gun = row['toplam'] if row['toplam'] else 0
+        
+        conn.close()
+        
+        return [
+            f"Son 30 günde toplam {son_30_gun:.1f}L yakıt tüketildi.",
+            f"Son 7 günde {son_7_gun:.1f}L yakıt alımı yapıldı.",
+            "En yüksek tüketim yapan aracı bulmak için 'en fazla yakıt' yazabilirsiniz."
+        ]
+    except Exception as e:
+        return ["Sistem durumu şu an alınamıyor."]

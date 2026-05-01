@@ -291,7 +291,7 @@
         <div class="chat-header">
             <h1>
                 <i class="fas fa-robot"></i>
-                AI Asistan
+                AI Asistan (Gemini)
                 <span class="status-indicator" id="statusIndicator"></span>
             </h1>
             <div>
@@ -456,7 +456,7 @@
                 }
             } catch (error) {
                 hideLoading();
-                addMessage('❌ Bağlantı hatası. Ollama servisinin çalıştığından emin olun.', false);
+                addMessage('❌ Bağlantı hatası. API veya İnternet bağlantınızı kontrol edin.', false);
             } finally {
                 isWaiting = false;
                 document.getElementById('sendBtn').disabled = false;
