@@ -474,6 +474,12 @@
         
         <nav class="nav-menu">
             <li class="nav-item">
+                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {{ _('AI ASİSTAN (YENİ)') }}
+                </a>
+            </li>
+            <li class="nav-item">
                 <a href="/" class="nav-link active">
                     <i class="fa-solid fa-chart-line"></i>
                     {{ _('Dashboard') }}
@@ -599,6 +605,11 @@
             <section class="section-card">
                 <h3><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> {{ _('Hızlı İşlemler') }}</h3>
                 <div class="quick-actions">
+                    <a href="/ai-assistant" class="action-card" style="grid-column: span 2; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);">
+                        <div class="action-icon" style="color: #667eea;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+                        <h4 style="color: white; font-size: 1.2rem;">{{ _('AI ASİSTAN') }}</h4>
+                        <p style="color: rgba(255,255,255,0.8);">{{ _('Tüm sorularınızı veritabanı verileriyle yanıtlayan akıllı asistan.') }}</p>
+                    </a>
                     <a href="/kargo-arac-filtre" class="action-card">
                         <div class="action-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
                         <h4>{{ _('Kargo Araçları') }}</h4>
@@ -638,11 +649,6 @@
                         <div class="action-icon"><i class="fa-solid fa-circle-dot"></i></div>
                         <h4>{{ _('Lastik Yönetimi') }}</h4>
                         <p>{{ _('Lastik ömür ve stok takibi.') }}</p>
-                    </a>
-                    <a href="/ai-assistant" class="action-card" style="grid-column: span 2; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-                        <div class="action-icon" style="color: #667eea;"><i class="fa-solid fa-message"></i></div>
-                        <h4 style="color: white;">{{ _('AI Asistan') }}</h4>
-                        <p style="color: rgba(255,255,255,0.8);">{{ _('Tüm sorularınızı veritabanı verileriyle yanıtlayan akıllı asistan.') }}</p>
                     </a>
                 </div>
             </section>

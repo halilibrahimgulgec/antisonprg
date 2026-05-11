@@ -1,347 +1,221 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Analiz - Kargo Sistemi</title>
+    <title>{{ _('AI Analiz & Tahmin - Telematik Dashboard') }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --primary: #6366F1; /* AI için indigo tonu */
+            --primary-rgb: 99, 102, 241;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --sidebar-width: 280px;
+            --radius: 20px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        .back-link {
-            display: inline-block;
-            color: white;
-            text-decoration: none;
-            margin-bottom: 20px;
-            padding: 8px 16px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        .back-link:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .card {
+        /* Sidebar consistency */
+        .sidebar {
+            width: var(--sidebar-width);
             background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            margin-bottom: 24px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #E5E7EB;
+            z-index: 1000;
         }
 
-        .card h2 {
-            font-size: 1.5rem;
-            color: #2d3748;
-            margin-bottom: 24px;
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 10px; text-decoration: none; }
+        .logo i { font-size: 1.8rem; color: #3B82F6; }
+        .logo h2 { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+
+        .nav-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-
-        .form-control {
-            width: 100%;
             padding: 12px 16px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
+            border-radius: 12px;
             transition: all 0.2s;
         }
+        .nav-link:hover, .nav-link.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
+        .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
 
-        .form-control:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 30px 40px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-title h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.8px; }
+
+        .card { background: white; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        
+        .feature-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 30px; }
+        .feature-box {
+            background: #F9FAFB;
+            padding: 24px;
+            border-radius: 16px;
+            border-left: 4px solid var(--primary);
+            transition: transform 0.2s;
         }
+        .feature-box:hover { transform: translateY(-5px); }
+        .feature-box h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 10px; color: var(--text-main); }
+        .feature-box p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
 
-        .btn {
+        .form-group { margin-bottom: 20px; display: flex; flex-direction: column; gap: 8px; }
+        .form-group label { font-weight: 600; font-size: 0.85rem; color: #4B5563; }
+        .form-control {
+            padding: 12px 16px;
+            border: 2px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1); }
+
+        .btn-ai {
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 14px 28px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
+            gap: 10px;
             text-decoration: none;
-            justify-content: center;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            background: var(--primary);
         }
+        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3); }
+        .btn-danger { background: #EF4444; }
+        .btn-success { background: #10B981; }
 
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
-        }
+        .alert { padding: 16px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; }
+        .alert-success { background: #D1FAE5; color: #065F46; }
+        .alert-error { background: #FEE2E2; color: #991B1B; }
 
-        .btn-danger {
-            background: #e53e3e;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c53030;
-            transform: translateY(-2px);
-        }
-
-        .btn-success {
-            background: #48bb78;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background: #38a169;
-            transform: translateY(-2px);
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 24px;
-            flex-wrap: wrap;
-        }
-
-        .alert {
-            padding: 16px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border-left: 4px solid #28a745;
-        }
-
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border-left: 4px solid #dc3545;
-        }
-
-        .grid-2 {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 24px;
-        }
-
-        .feature-box {
-            background: #f7fafc;
-            padding: 24px;
-            border-radius: 12px;
-            border-left: 4px solid #667eea;
-        }
-
-        .feature-box h3 {
-            color: #2d3748;
-            margin-bottom: 12px;
-            font-size: 1.25rem;
-        }
-
-        .feature-box p {
-            color: #718096;
-            line-height: 1.6;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.75rem;
-            }
-
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-
-            .btn-group {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-            }
-        }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
     </style>
 </head>
 <body>
-    <div style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center;">
-        <div style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; color: white; font-weight: 600; font-size: 0.9rem;">
-            👤 {{ session['username'] }}
-        </div>
-        <a href="/logout" style="padding: 8px 16px; border-radius: 8px; background: #e53e3e; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-            Çıkış
+    <aside class="sidebar">
+        <a href="/" class="logo">
+            <i class="fa-solid fa-truck-fast"></i>
+            <h2>ANTİ-GRAVİTY</h2>
         </a>
-    </div>
-    <div class="container">
-        <a href="/" class="back-link">← Ana Sayfaya Dön</a>
-
-        <div class="header">
-            <h1>🤖 AI Yakıt Analiz Sistemi</h1>
-            <p>Yapay zeka ile yakıt tüketim tahmini ve anomali tespiti</p>
+        <nav class="nav-menu">
+            <li class="nav-item">
+                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {{ _('AI ASİSTAN (YENİ)') }}
+                </a>
+            </li>
+            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
+            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
+            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
+            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
+            <li class="nav-item"><a href="/ai-analysis" class="nav-link active"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
+            <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
+        </nav>
+        <div class="user-profile">
+            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
+            <div class="user-info">
+                <h4>{{ session['username'] }}</h4>
+                <p>{{ session['role'] }}</p>
+            </div>
         </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-title">
+                <h1>🤖 {{ _('AI Analiz & Tahmin') }}</h1>
+                <p style="color: var(--text-muted);">{{ _('Yapay zeka motoru ile geleceği öngörün.') }}</p>
+            </div>
+            <a href="/" class="nav-link" style="background: white; box-shadow: var(--shadow);"><i class="fa-solid fa-arrow-left"></i> {{ _('Geri') }}</a>
+        </header>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        {% endif %}
         {% endwith %}
 
-        <div class="card">
-            <h2>🎯 AI Özellikleri</h2>
-            <div class="grid-2">
-                <div class="feature-box">
-                    <h3>📈 Yakıt Tüketim Tahmini</h3>
-                    <p>Random Forest algoritması ile araçların gelecekteki yakıt tüketimini tahmin edin. Geçmiş verilerden öğrenerek doğru tahminler üretin.</p>
-                </div>
-                <div class="feature-box">
-                    <h3>🔍 Anomali Tespiti</h3>
-                    <p>Isolation Forest algoritması ile anormal yakıt tüketimlerini tespit edin. Olası sorunları erken fark edin.</p>
-                </div>
+        <div class="feature-grid">
+            <div class="feature-box">
+                <h3>📈 {{ _('Yakıt Tüketim Tahmini') }}</h3>
+                <p>{{ _('Random Forest algoritması ile araçların gelecekteki yakıt tüketimini öngörün.') }}</p>
+            </div>
+            <div class="feature-box" style="border-left-color: #EF4444;">
+                <h3>🔍 {{ _('Anomali Tespiti') }}</h3>
+                <p>{{ _('Isolation Forest ile alışılmadık yakıt tüketimlerini ve kaçakları otomatik bulun.') }}</p>
             </div>
         </div>
 
         <div class="card">
-            <h2>📊 Yakıt Tüketim Tahmini</h2>
-            <form method="POST" action="/ai-predict">
-                <div class="form-group">
-                    <label for="plaka">Araç Plakası</label>
-                    <input type="text" name="plaka" id="plaka" class="form-control" placeholder="Plaka numarası yazın..." required autocomplete="off" list="plaka-list">
-                    <datalist id="plaka-list">
-                        {% for plaka in plakalar %}
-                            <option value="{{ plaka }}">
-                        {% endfor %}
-                    </datalist>
+            <h3><i class="fa-solid fa-crystal-ball"></i> {{ _('Bireysel Araç Tahmini') }}</h3>
+            <form method="POST" action="/ai-predict" style="margin-top: 20px;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+                    <div class="form-group">
+                        <label>{{ _('Araç Plakası') }}</label>
+                        <input type="text" name="plaka" class="form-control" placeholder="34XXX00" required list="plaka-list">
+                        <datalist id="plaka-list">{% for p in plakalar %}<option value="{{ p }}">{% endfor %}</datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>{{ _('Tahmin Tipi') }}</label>
+                        <select name="tahmin_tipi" id="tahmin_tipi" class="form-control">
+                            <option value="tek">{{ _('Tek Gün Tahmini') }}</option>
+                            <option value="gelecek_ay">{{ _('Gelecek 30 Gün Tahmini') }}</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="tarih_group">
+                        <label>{{ _('Tarih') }}</label>
+                        <input type="date" name="tarih" id="tarih" class="form-control" value="{{ today }}">
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="tahmin_tipi">Tahmin Tipi</label>
-                    <select name="tahmin_tipi" id="tahmin_tipi" class="form-control">
-                        <option value="tek">Tek Gün Tahmini</option>
-                        <option value="gelecek_ay">Gelecek 30 Gün Tahmini</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="tarih_group">
-                    <label for="tarih">Tarih</label>
-                    <input type="date" name="tarih" id="tarih" class="form-control" value="{{ today }}">
-                </div>
-
-                <button type="submit" class="btn btn-primary">
-                    🔮 Tahmin Yap
-                </button>
+                <button type="submit" class="btn-ai" style="margin-top: 20px;"><i class="fa-solid fa-bolt"></i> {{ _('TAHMİNİ BAŞLAT') }}</button>
             </form>
         </div>
 
-        <div class="card">
-            <h2>🔍 Anomali Tespiti</h2>
-            <p style="color: #718096; margin-bottom: 20px;">
-                Tüm yakıt kayıtlarında anormal tüketimleri tespit edin. Sistem otomatik olarak beklenenden farklı yakıt tüketimlerini bulur.
-            </p>
-            <div class="btn-group">
-                <form method="POST" action="/ai-anomaly" style="margin: 0;">
-                    <button type="submit" class="btn btn-danger">
-                        🚨 Anomalileri Tespit Et
-                    </button>
-                </form>
-                <a href="/anomaly-dashboard" class="btn btn-primary">
-                    📊 Anomali Dashboard
-                </a>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+            <div class="card">
+                <h3><i class="fa-solid fa-triangle-exclamation" style="color: #EF4444;"></i> {{ _('Anomali Analizi') }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 15px 0 25px;">{{ _('Tüm veritabanı taranarak normal dışı yakıt tüketimleri raporlanır.') }}</p>
+                <div style="display: flex; gap: 12px;">
+                    <form method="POST" action="/ai-anomaly"><button type="submit" class="btn-ai btn-danger"><i class="fa-solid fa-search"></i> {{ _('Tespit Et') }}</button></form>
+                    <a href="/anomaly-dashboard" class="btn-ai" style="background: #374151;"><i class="fa-solid fa-chart-pie"></i> {{ _('Dashboard') }}</a>
+                </div>
+            </div>
+            <div class="card">
+                <h3><i class="fa-solid fa-layer-group" style="color: #10B981;"></i> {{ _('Toplu Tahmin') }}</h3>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin: 15px 0 25px;">{{ _('Tüm filo için gelecek ay bütçe planlaması tahminlerini oluşturun.') }}</p>
+                <form method="POST" action="/ai-bulk-predict"><button type="submit" class="btn-ai btn-success"><i class="fa-solid fa-gears"></i> {{ _('Tüm Filoyu Tahmin Et') }}</button></form>
             </div>
         </div>
-
-        <div class="card">
-            <h2>📦 Toplu Tahmin</h2>
-            <p style="color: #718096; margin-bottom: 20px;">
-                Tüm araçlar için gelecek ay yakıt tüketim tahmini yapın. Toplam bütçe planlaması için ideal.
-            </p>
-            <form method="POST" action="/ai-bulk-predict">
-                <button type="submit" class="btn btn-success">
-                    📊 Tüm Araçları Tahmin Et
-                </button>
-            </form>
-        </div>
-
-        <div class="card">
-            <h2>⚡ Performans Analizi</h2>
-            <p style="color: #718096; margin-bottom: 20px;">
-                Araçların yakıt/km oranı, tonaj bilgisi ve verimlilik skorlarını analiz edin. En verimli ve verimsiz araçları tespit edin.
-            </p>
-            <a href="/performans-analizi" class="btn btn-primary">
-                📊 Performans Analizi
-            </a>
-        </div>
-    </div>
+    </main>
 
     <script>
-        const tahminTipi = document.getElementById('tahmin_tipi');
-        const tarihGroup = document.getElementById('tarih_group');
-
-        tahminTipi.addEventListener('change', function() {
-            if (this.value === 'gelecek_ay') {
-                tarihGroup.style.display = 'none';
-            } else {
-                tarihGroup.style.display = 'block';
-            }
+        document.getElementById('tahmin_tipi').addEventListener('change', function() {
+            document.getElementById('tarih_group').style.display = (this.value === 'gelecek_ay') ? 'none' : 'block';
         });
-
-        // Bugünün tarihi
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('tarih').value = today;
     </script>
 </body>
 </html>
