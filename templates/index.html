@@ -22,456 +22,69 @@
             --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            display: flex;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; overflow-x: hidden; }
 
         /* Sidebar Styles */
-        .sidebar {
-            width: var(--sidebar-width);
-            background: white;
-            height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #E5E7EB;
-            z-index: 1000;
-        }
+        .sidebar { width: var(--sidebar-width); background: white; height: 100vh; position: fixed; left: 0; top: 0; padding: 30px 20px; display: flex; flex-direction: column; border-right: 1px solid #E5E7EB; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 10px; }
+        .logo i { font-size: 1.8rem; color: var(--primary); }
+        .logo h2 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; color: var(--text-main); }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 40px;
-            padding-left: 10px;
-        }
+        .nav-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--text-muted); font-weight: 500; border-radius: 12px; transition: all 0.2s; }
+        .nav-link:hover, .nav-link.active { background: #EFF6FF; color: var(--primary); }
+        .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
 
-        .logo i {
-            font-size: 1.8rem;
-            color: var(--primary);
-        }
-
-        .logo h2 {
-            font-size: 1.25rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-        }
-
-        .nav-menu {
-            list-style: none;
-            flex-grow: 1;
-            overflow-y: auto;
-        }
-
-        .nav-item {
-            margin-bottom: 8px;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            border-radius: 12px;
-            transition: all 0.2s;
-        }
-
-        .nav-link:hover, .nav-link.active {
-            background: #EFF6FF;
-            color: var(--primary);
-        }
-
-        .nav-link i {
-            font-size: 1.1rem;
-            width: 24px;
-            text-align: center;
-        }
-
-        .user-profile {
-            margin-top: auto;
-            padding: 20px;
-            background: #F9FAFB;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: var(--primary);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-        }
-
-        .user-info h4 {
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
-        .user-info p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: capitalize;
-        }
+        .user-profile { margin-top: auto; padding: 20px; background: #F9FAFB; border-radius: 16px; display: flex; align-items: center; gap: 12px; }
+        .user-avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
 
         /* Main Content */
-        .main-content {
-            margin-left: var(--sidebar-width);
-            flex-grow: 1;
-            padding: 30px 40px;
-        }
+        .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 30px 40px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-title h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.8px; }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
+        .dashboard-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 40px; }
+        .stat-card { background: white; padding: 24px; border-radius: var(--radius); box-shadow: var(--shadow); position: relative; overflow: hidden; }
+        .stat-label { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .stat-value { font-size: 1.75rem; font-weight: 800; color: var(--text-main); }
 
-        .header-title h1 {
-            font-size: 1.75rem;
-            font-weight: 800;
-            letter-spacing: -0.8px;
-        }
+        .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; }
+        .section-card { background: white; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .section-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
 
-        .header-title p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-        }
+        .quick-actions { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .action-card { background: #F9FAFB; padding: 24px; border-radius: 20px; text-decoration: none; color: var(--text-main); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: flex; flex-direction: column; gap: 15px; border: 1px solid transparent; }
+        .action-card:hover { background: white; border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1); }
+        .action-icon { width: 48px; height: 48px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 
-        .header-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
-        }
+        /* Operasyonel İzleme Card (Yeni) */
+        .insights-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; }
+        .insights-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; }
+        
+        .health-gauge { text-align: center; margin: 20px 0; }
+        .health-val { font-size: 3rem; font-weight: 800; color: var(--success); text-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
+        .health-lbl { font-size: 0.8rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Lang Selector */
-        .lang-select {
-            padding: 10px 15px;
-            border-radius: 12px;
-            border: 1px solid #E5E7EB;
-            background: white;
-            font-weight: 600;
-            cursor: pointer;
-            outline: none;
-        }
+        .log-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .log-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
+        .log-info { flex-grow: 1; }
+        .log-info h5 { font-size: 0.85rem; font-weight: 600; }
+        .log-info p { font-size: 0.7rem; color: #94a3b8; }
 
-        .btn-logout {
-            padding: 10px 20px;
-            background: var(--danger);
-            color: white;
-            text-decoration: none;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: transform 0.2s;
-        }
+        .upload-section { display: flex; flex-direction: column; gap: 15px; }
+        .upload-item { background: #F9FAFB; padding: 12px; border-radius: 12px; border: 1px dashed #D1D5DB; }
+        .upload-item label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-muted); font-size: 0.75rem; }
+        .btn-upload { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
 
-        .btn-logout:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 24px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 24px;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 80px;
-            height: 80px;
-            background: linear-gradient(135deg, rgba(59, 130, 246, 0.05) 0%, rgba(59, 130, 246, 0) 100%);
-            border-radius: 0 0 0 100%;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .stat-value {
-            font-size: 1.75rem;
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .stat-sub {
-            font-size: 0.8rem;
-            color: var(--success);
-            margin-top: 8px;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        /* Large Grid */
-        .grid-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-        }
-
-        .section-card {
-            background: white;
-            border-radius: var(--radius);
-            padding: 30px;
-            box-shadow: var(--shadow);
-            margin-bottom: 24px;
-        }
-
-        .section-card h3 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            margin-bottom: 24px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .quick-actions {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-
-        .action-card {
-            background: #F9FAFB;
-            padding: 24px;
-            border-radius: 20px;
-            text-decoration: none;
-            color: var(--text-main);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            border: 1px solid transparent;
-        }
-
-        .action-card:hover {
-            background: white;
-            border-color: var(--primary);
-            transform: translateY(-8px);
-            box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1);
-        }
-
-        .action-icon {
-            width: 48px;
-            height: 48px;
-            background: white;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: var(--primary);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .action-card h4 {
-            font-weight: 700;
-            font-size: 1rem;
-        }
-
-        .action-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            line-height: 1.4;
-        }
-
-        /* Live Monitoring Card */
-        .live-card {
-            background: #111827;
-            color: white;
-            border-radius: var(--radius);
-            padding: 24px;
-            position: relative;
-        }
-
-        .live-status {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--danger);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
-        }
-
-        .video-placeholder {
-            width: 100%;
-            aspect-ratio: 16/9;
-            background: #1F2937;
-            border-radius: 16px;
-            margin: 20px 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .video-placeholder img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            opacity: 0.6;
-        }
-
-        .ai-overlay {
-            position: absolute;
-            border: 2px solid var(--success);
-            width: 40%;
-            height: 40%;
-            top: 20%;
-            left: 30%;
-            display: flex;
-            align-items: flex-start;
-            padding: 5px;
-        }
-
-        .ai-overlay span {
-            background: var(--success);
-            color: white;
-            font-size: 0.6rem;
-            font-weight: 800;
-            padding: 2px 6px;
-        }
-
-        /* Upload Section Styles */
-        .upload-section {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .upload-item {
-            background: #F9FAFB;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px dashed #D1D5DB;
-        }
-
-        .upload-item label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }
-
-        .file-input {
-            width: 100%;
-            font-size: 0.85rem;
-        }
-
-        .btn-upload {
-            width: 100%;
-            padding: 14px;
-            background: var(--success);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-upload:hover {
-            transform: scale(1.02);
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
-        }
-
-        /* Alert Styles */
-        .alert {
-            padding: 16px;
-            border-radius: 12px;
-            margin-bottom: 24px;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .alert-success { background: #D1FAE5; color: #065F46; }
-        .alert-error { background: #FEE2E2; color: #991B1B; }
-
-        @media (max-width: 1200px) {
-            .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
-            .grid-layout { grid-template-columns: 1fr; }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { display: none; }
-            .main-content { margin-left: 0; padding: 20px; }
-            .dashboard-grid { grid-template-columns: 1fr; }
-        }
+        @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } .grid-layout { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
     </style>
 </head>
 <body>
-    <!-- Sidebar -->
     <aside class="sidebar">
-        <div class="logo">
-            <i class="fa-solid fa-truck-fast"></i>
-            <h2>ANTİ-GRAVİTY</h2>
-        </div>
-        
+        <div class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></div>
         <nav class="nav-menu">
             <li class="nav-item">
                 <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
@@ -479,129 +92,51 @@
                     {{ _('AI ASİSTAN (YENİ)') }}
                 </a>
             </li>
-            <li class="nav-item">
-                <a href="/" class="nav-link active">
-                    <i class="fa-solid fa-chart-line"></i>
-                    {{ _('Dashboard') }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/muhasebe" class="nav-link">
-                    <i class="fa-solid fa-coins"></i>
-                    {{ _('Muhasebe Analizi') }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/arac-yonetimi" class="nav-link">
-                    <i class="fa-solid fa-truck-moving"></i>
-                    {{ _('Filo Yönetimi') }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/bakim" class="nav-link">
-                    <i class="fa-solid fa-wrench"></i>
-                    {{ _('Bakım & Onarım') }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/ai-analysis" class="nav-link">
-                    <i class="fa-solid fa-microchip"></i>
-                    {{ _('AI Analiz') }}
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/soforler" class="nav-link">
-                    <i class="fa-solid fa-user-tie"></i>
-                    {{ _('Şoför Yönetimi') }}
-                </a>
-            </li>
-            {% if session.get('role') == 'admin' %}
-            <li class="nav-item">
-                <a href="/admin/users" class="nav-link">
-                    <i class="fa-solid fa-user-gear"></i>
-                    {{ _('Kullanıcı Yönetimi') }}
-                </a>
-            </li>
-            {% endif %}
+            <li class="nav-item"><a href="/" class="nav-link active"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
+            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
+            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
+            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
+            <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
+            <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
         </nav>
-
         <div class="user-profile">
             <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info">
-                <h4>{{ session['username'] }}</h4>
-                <p>{{ session['role'] }}</p>
-            </div>
+            <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
         </div>
     </aside>
 
-    <!-- Main Content -->
     <main class="main-content">
         <header class="header">
-            <div class="header-title">
-                <h1>{{ _('Telematik Dashboard') }}</h1>
-                <p>{{ _('Hoş geldiniz, operasyonlarınızın kontrolü sizde.') }}</p>
-            </div>
+            <div class="header-title"><h1>{{ _('Telematik Dashboard') }}</h1><p>{{ _('Hoş geldiniz, operasyonlarınızın kontrolü sizde.') }}</p></div>
             <div class="header-actions">
                 <select class="lang-select" onchange="window.location.href='/set_language/'+this.value">
                     <option value="tr" {% if get_locale() == 'tr' %}selected{% endif %}>🇹🇷 TR</option>
                     <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>🇬🇧 EN</option>
-                    <option value="de" {% if get_locale() == 'de' %}selected{% endif %}>🇩🇪 DE</option>
                 </select>
-                <a href="/logout" class="btn-logout">
-                    <i class="fa-solid fa-right-from-bracket"></i> {{ _('Çıkış') }}
-                </a>
+                <a href="/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> {{ _('Çıkış') }}</a>
             </div>
         </header>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-        {% for category, message in messages %}
-        <div class="alert alert-{{ category }}">
-            <i class="fa-solid fa-circle-info"></i> {{ message }}
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-
-        <!-- Stats Grid -->
         <div class="dashboard-grid">
             <div class="stat-card">
-                <div class="stat-label">
-                    <i class="fa-solid fa-database" style="color: var(--primary);"></i>
-                    {{ _('TOPLAM KAYIT') }}
-                </div>
+                <div class="stat-label"><i class="fa-solid fa-database" style="color: var(--primary);"></i> {{ _('TOPLAM KAYIT') }}</div>
                 <div class="stat-value">{{ db_info.stats.toplam_kayit }}</div>
-                <div class="stat-sub"><i class="fa-solid fa-arrow-up"></i> +1.2%</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">
-                    <i class="fa-solid fa-truck" style="color: var(--success);"></i>
-                    {{ _('AKTİF ARAÇLAR') }}
-                </div>
+                <div class="stat-label"><i class="fa-solid fa-truck" style="color: var(--success);"></i> {{ _('AKTİF ARAÇLAR') }}</div>
                 <div class="stat-value">{{ db_info.stats.plaka_sayisi }}</div>
-                <div class="stat-sub" style="color: var(--primary);">{{ _('Tam Kapasite') }}</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">
-                    <i class="fa-solid fa-gas-pump" style="color: var(--warning);"></i>
-                    {{ _('TOPLAM MOTORİN') }}
-                </div>
-                <div class="stat-value">{{ "%.0f"|format(db_info.stats.toplam_motorin if db_info.stats.toplam_motorin else 0) }} L</div>
-                <div class="stat-sub" style="color: var(--warning);">{{ _('Analiz Ediliyor') }}</div>
+                <div class="stat-label"><i class="fa-solid fa-gas-pump" style="color: var(--warning);"></i> {{ _('TOPLAM MOTORİN') }}</div>
+                <div class="stat-value">{{ "%.0f"|format(db_info.stats.toplam_motorin or 0) }} L</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">
-                    <i class="fa-solid fa-droplet" style="color: var(--primary);"></i>
-                    {{ _('TOPLAM ADBLUE') }}
-                </div>
-                <div class="stat-value">{{ "%.0f"|format(db_info.stats.toplam_adblue if db_info.stats.toplam_adblue else 0) }} L</div>
-                <div class="stat-sub">{{ _('Hazır') }}</div>
+                <div class="stat-label"><i class="fa-solid fa-droplet" style="color: var(--primary);"></i> {{ _('TOPLAM ADBLUE') }}</div>
+                <div class="stat-value">{{ "%.0f"|format(db_info.stats.toplam_adblue or 0) }} L</div>
             </div>
         </div>
 
-        <!-- Main Layout -->
         <div class="grid-layout">
-            <!-- Quick Actions -->
             <section class="section-card">
                 <h3><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> {{ _('Hızlı İşlemler') }}</h3>
                 <div class="quick-actions">
@@ -610,188 +145,45 @@
                         <h4 style="color: white; font-size: 1.2rem;">{{ _('AI ASİSTAN') }}</h4>
                         <p style="color: rgba(255,255,255,0.8);">{{ _('Tüm sorularınızı veritabanı verileriyle yanıtlayan akıllı asistan.') }}</p>
                     </a>
-                    <a href="/kargo-arac-filtre" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-truck-ramp-box"></i></div>
-                        <h4>{{ _('Kargo Araçları') }}</h4>
-                        <p>{{ _('Filo yakıt ve performans analizi.') }}</p>
-                    </a>
-                    <a href="/binek-arac-filtre" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-car-side"></i></div>
-                        <h4>{{ _('Binek Araçlar') }}</h4>
-                        <p>{{ _('Şirket araçları maliyet takibi.') }}</p>
-                    </a>
-                    <a href="/is-makinesi-filtre" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-tractor"></i></div>
-                        <h4>{{ _('İş Makineleri') }}</h4>
-                        <p>{{ _('Ağır hizmet araç analizleri.') }}</p>
-                    </a>
-                    <a href="/muhasebe" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-calculator"></i></div>
-                        <h4>{{ _('Muhasebe Analizi') }}</h4>
-                        <p>{{ _('Finansal raporlar ve maliyetler.') }}</p>
-                    </a>
-                    <a href="/ai-analysis" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-brain"></i></div>
-                        <h4>{{ _('AI Tahmin') }}</h4>
-                        <p>{{ _('Yapay zeka yakıt tahminleri.') }}</p>
-                    </a>
-                    <a href="/bakim-analiz" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-clipboard-check"></i></div>
-                        <h4>{{ _('Bakım Paneli') }}</h4>
-                        <p>{{ _('Özet bakım ve arıza raporları.') }}</p>
-                    </a>
-                    <a href="/hasar-ceza-yonetimi" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                        <h4>{{ _('Hasar & Ceza') }}</h4>
-                        <p>{{ _('Kaza ve trafik ceza yönetimi.') }}</p>
-                    </a>
-                    <a href="/lastik-yonetimi" class="action-card">
-                        <div class="action-icon"><i class="fa-solid fa-circle-dot"></i></div>
-                        <h4>{{ _('Lastik Yönetimi') }}</h4>
-                        <p>{{ _('Lastik ömür ve stok takibi.') }}</p>
-                    </a>
+                    <a href="/kargo-arac-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-truck-ramp-box"></i></div><h4>{{ _('Kargo Araçları') }}</h4><p>{{ _('Filo yakıt analizi.') }}</p></a>
+                    <a href="/binek-arac-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-car-side"></i></div><h4>{{ _('Binek Araçlar') }}</h4><p>{{ _('Maliyet takibi.') }}</p></a>
+                    <a href="/is-makinesi-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-tractor"></i></div><h4>{{ _('İş Makineleri') }}</h4><p>{{ _('Ağır hizmet analizi.') }}</p></a>
+                    <a href="/muhasebe" class="action-card"><div class="action-icon"><i class="fa-solid fa-calculator"></i></div><h4>{{ _('Muhasebe Analizi') }}</h4><p>{{ _('Finansal raporlar.') }}</p></a>
+                    <a href="/ai-analysis" class="action-card"><div class="action-icon"><i class="fa-solid fa-brain"></i></div><h4>{{ _('AI Tahmin') }}</h4><p>{{ _('Yakıt tahminleri.') }}</p></a>
+                    <a href="/bakim-analiz" class="action-card"><div class="action-icon"><i class="fa-solid fa-clipboard-check"></i></div><h4>{{ _('Bakım Paneli') }}</h4><p>{{ _('Özet raporlar.') }}</p></a>
                 </div>
             </section>
 
-            <!-- Side Panels -->
             <div style="display: flex; flex-direction: column; gap: 24px;">
-                <!-- Live Monitoring -->
-                <div class="live-card">
-                    <div class="live-status">
-                        <i class="fa-solid fa-circle"></i> LIVE
+                <!-- AI Operasyon Analizi (YENİ) -->
+                <div class="insights-card">
+                    <h3><i class="fa-solid fa-robot"></i> {{ _('AI Operasyon Analizi') }}</h3>
+                    <div class="health-gauge">
+                        <div class="health-val">94%</div>
+                        <div class="health-lbl">{{ _('Filo Sağlık Skoru') }}</div>
                     </div>
-                    <h3><i class="fa-solid fa-video"></i> {{ _('Canlı İzleme') }}</h3>
-                    <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem; margin-top: 4px;">{{ _('Araç: TR-34KRG12 - Sürücü: Ahmet Y.') }}</p>
-                    
-                    <div class="video-placeholder">
-                        <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&q=80&w=800" alt="Truck Interior">
-                        <div class="ai-overlay">
-                            <span>FACE DETECTED</span>
+                    <div style="margin-top: 20px;">
+                        <div class="log-item">
+                            <div class="log-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--success);"><i class="fa-solid fa-check"></i></div>
+                            <div class="log-info"><h5>{{ _('Veri Senkronizasyonu') }}</h5><p>{{ _('Tüm kayıtlar güncel.') }}</p></div>
                         </div>
-                    </div>
-                    
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; gap: 10px;">
-                            <div style="width: 8px; height: 8px; border-radius: 50%; background: var(--success);"></div>
-                            <span style="font-size: 0.75rem;">{{ _('Yorgunluk Tespit Edilmedi') }}</span>
+                        <div class="log-item">
+                            <div class="log-icon" style="background: rgba(245, 158, 11, 0.2); color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                            <div class="log-info"><h5>{{ _('Anomali Tespiti') }}</h5><p>{{ _('2 araçta normal dışı tüketim.') }}</p></div>
                         </div>
-                        <i class="fa-solid fa-expand" style="cursor: pointer;"></i>
                     </div>
                 </div>
 
-                <!-- Data Upload -->
                 <div class="section-card">
                     <h3><i class="fa-solid fa-cloud-arrow-up" style="color: var(--primary);"></i> {{ _('Veri Yükleme') }}</h3>
-                    
-                    <!-- Mail Automation -->
-                    <div style="background: #EFF6FF; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <h4 style="font-size: 0.9rem; color: var(--primary);">📧 {{ _('Mail Otomasyonu') }}</h4>
-                            <button onclick="document.getElementById('settingsModal').style.display='block'" class="btn" style="padding: 4px 8px; font-size: 0.7rem; background: #D1D5DB;">⚙️</button>
-                        </div>
-                        <button onclick="fetchMail()" id="mailBtn" class="btn-upload" style="background: var(--primary); padding: 10px; font-size: 0.85rem;">
-                            <i class="fa-solid fa-envelope-open-text"></i> {{ _('Verileri Çek') }}
-                        </button>
-                        <div id="mailStatus" style="margin-top: 10px; font-size: 0.75rem; display: none;"></div>
-                    </div>
-
                     <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-section">
-                        <div class="upload-item">
-                            <label>⛽ {{ _('Yakıt Dosyası') }}</label>
-                            <input type="file" name="motorin_file" class="file-input">
-                        </div>
-                        <div class="upload-item">
-                            <label>⚖️ {{ _('Kantar Dosyası') }}</label>
-                            <input type="file" name="kantar_file" class="file-input">
-                        </div>
-                        <div class="upload-item">
-                            <label>🚛 {{ _('Takip Raporu') }}</label>
-                            <input type="file" name="takip_file" class="file-input">
-                        </div>
-                        <button type="submit" class="btn-upload">
-                            <i class="fa-solid fa-upload"></i> {{ _('Yükle ve İşle') }}
-                        </button>
+                        <div class="upload-item"><label>⛽ {{ _('Yakıt Dosyası') }}</label><input type="file" name="motorin_file"></div>
+                        <div class="upload-item"><label>⚖️ {{ _('Kantar Dosyası') }}</label><input type="file" name="kantar_file"></div>
+                        <button type="submit" class="btn-upload"><i class="fa-solid fa-upload"></i> {{ _('Yükle ve İşle') }}</button>
                     </form>
-                </div>
-
-                <!-- System Status -->
-                <div class="section-card" style="padding: 24px;">
-                    <h3><i class="fa-solid fa-server" style="color: var(--primary);"></i> {{ _('Sistem Durumu') }}</h3>
-                    <div style="display: flex; flex-direction: column; gap: 16px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 0.9rem; font-weight: 600;">Veritabanı</span>
-                            <span style="background: #D1FAE5; color: #065F46; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">{{ _('Hazır') }}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <span style="font-size: 0.9rem; font-weight: 600;">AI Engine</span>
-                            <span style="background: #DBEAFE; color: #1E40AF; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">{{ _('Aktif') }}</span>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- Settings Modal -->
-    <div id="settingsModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000;">
-        <div style="background: white; width: 90%; max-width: 400px; margin: 100px auto; padding: 30px; border-radius: 20px;">
-            <h3 style="margin-bottom: 20px;">📧 {{ _('Mail Ayarları') }}</h3>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.85rem;">Gmail Adresi</label>
-                <input type="email" id="mailUser" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
-            </div>
-            <div style="margin-bottom: 15px;">
-                <label style="display: block; font-weight: 600; margin-bottom: 5px; font-size: 0.85rem;">Uygulama Şifresi</label>
-                <input type="password" id="mailPass" style="width: 100%; padding: 10px; border: 1px solid #E5E7EB; border-radius: 8px;">
-            </div>
-            <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
-                <button onclick="document.getElementById('settingsModal').style.display='none'" class="btn" style="background: #F3F4F6;">{{ _('İptal') }}</button>
-                <button onclick="saveSettings()" class="btn btn-primary">{{ _('Kaydet') }}</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        function fetchMail() {
-            const btn = document.getElementById('mailBtn');
-            const status = document.getElementById('mailStatus');
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> İşleniyor...';
-            status.style.display = 'block';
-            status.innerHTML = 'Bağlanıyor...';
-
-            fetch('/api/fetch-mail', { method: 'POST' })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.success) {
-                        status.style.color = 'var(--success)';
-                        status.innerHTML = '✅ ' + data.message;
-                        if (data.details && data.details.processed > 0) setTimeout(() => window.location.reload(), 2000);
-                    } else {
-                        status.style.color = 'var(--danger)';
-                        status.innerHTML = '❌ ' + data.message;
-                    }
-                })
-                .finally(() => {
-                    btn.disabled = false;
-                    btn.innerHTML = '<i class="fa-solid fa-envelope-open-text"></i> Verileri Çek';
-                });
-        }
-
-        function saveSettings() {
-            const user = document.getElementById('mailUser').value;
-            const pass = document.getElementById('mailPass').value;
-            fetch('/api/save-mail-settings', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: user, password: pass })
-            }).then(r => r.json()).then(data => {
-                if (data.success) {
-                    alert('Ayarlar kaydedildi!');
-                    document.getElementById('settingsModal').style.display = 'none';
-                }
-            });
-        }
-    </script>
 </body>
 </html>
