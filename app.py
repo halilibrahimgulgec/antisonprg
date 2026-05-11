@@ -32,6 +32,54 @@ def get_locale():
 
 babel = Babel(app, locale_selector=get_locale)
 
+# Authentication Check
+@app.before_request
+def check_auth():
+    # Public routes that don't require login
+    public_routes = ['login', 'static', 'set_language']
+    
+    # If request doesn't match a route or is a public route, let it pass
+    if request.endpoint is None or request.endpoint in public_routes:
+        return None
+        
+    # If user is in session, allow access
+    if 'user_id' in session:
+        return None
+        
+    # If not logged in, redirect to login page
+    return redirect(url_for('login'))
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Kullanıcı giriş sayfası"""
+    if 'user_id' in session:
+        return redirect(url_for('index'))
+        
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        from database import verify_user
+        user = verify_user(username, password)
+        
+        if user:
+            session['user_id'] = user['id']
+            session['username'] = user['username']
+            session['role'] = user['role']
+            flash(f'Hoş geldiniz, {username}!', 'success')
+            return redirect(url_for('index'))
+        else:
+            flash('Geçersiz kullanıcı adı veya şifre.', 'error')
+            
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    """Kullanıcı çıkış işlemi"""
+    session.clear()
+    flash('Başarıyla çıkış yapıldı.', 'success')
+    return redirect(url_for('login'))
+
 @app.route('/set_language/<lang>')
 def set_language(lang):
     if lang in app.config['BABEL_SUPPORTED_LOCALES']:

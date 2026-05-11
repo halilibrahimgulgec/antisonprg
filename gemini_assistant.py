@@ -11,8 +11,19 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
 import google.generativeai as genai
 
-# API Anahtarını Tanımla
-GEMINI_API_KEY = 'AIzaSyCK-9xTu-C42H4-SvAs06hEpSxp5qVH6QI'
+from dotenv import load_dotenv
+from local_queries import check_local_queries
+
+# PythonAnywhere için .env dosyasının tam yolunu belirtiyoruz
+env_path = os.path.join(os.path.dirname(__file__), '.env')
+load_dotenv(env_path)
+
+# API Anahtarını Çevresel Değişkenlerden (.env) Al
+GEMINI_API_KEY = os.getenv('GEMINI_API_KEY')
+
+if not GEMINI_API_KEY:
+    print("UYARI: GEMINI_API_KEY bulunamadı! Lütfen .env dosyanızı kontrol edin.")
+
 genai.configure(api_key=GEMINI_API_KEY)
 
 class GeminiAssistant:
@@ -22,11 +33,9 @@ class GeminiAssistant:
         self.chat_history = []
 
     def check_gemini_status(self):
-        """Gemini API servisinin çalışıp çalışmadığını kontrol et"""
+        """Gemini API servisinin çalışıp çalışmadığını kontrol et (Kota tüketmemesi için mocklandı)"""
         try:
-            # Basit bir deneme isteği gönder
-            response = self.model.generate_content("Merhaba", request_options={"timeout": 10})
-            if response.text:
+            if self.model_name:
                 return {
                     'status': 'running',
                     'models': [self.model_name],
@@ -35,7 +44,7 @@ class GeminiAssistant:
             else:
                 return {
                     'status': 'error',
-                    'message': 'Gemini API yanıt vermedi'
+                    'message': 'Gemini API tanımlı değil'
                 }
         except Exception as e:
             return {
@@ -118,6 +127,32 @@ Aktif Araçlar (ilk 10):
                 ''')
                 rows = cursor.fetchall()
                 result = [dict(row) for row in rows]
+
+            elif query_type == 'en_fazla_km':
+                cursor.execute('''
+                    SELECT plaka, SUM(km_fark) as toplam_km
+                    FROM yakit
+                    WHERE km_fark > 0 AND km_fark < 2000
+                    GROUP BY plaka
+                    ORDER BY toplam_km DESC
+                    LIMIT 5
+                ''')
+                rows = cursor.fetchall()
+                result = [dict(row) for row in rows]
+                
+                # Eğer km_fark ile veri gelmediyse MAX - MIN ile fallback (eski veriler için)
+                if not result or all(not r.get('toplam_km') for r in result):
+                    cursor.execute('''
+                        SELECT plaka, (MAX(km_bilgisi) - MIN(km_bilgisi)) as toplam_km
+                        FROM yakit
+                        WHERE km_bilgisi > 0
+                        GROUP BY plaka
+                        HAVING toplam_km > 0 AND toplam_km < 100000
+                        ORDER BY toplam_km DESC
+                        LIMIT 5
+                    ''')
+                    rows = cursor.fetchall()
+                    result = [dict(row) for row in rows]
 
             elif query_type == 'son_yakit_alimlari':
                 limit = params.get('limit', 5) if params else 5
@@ -217,7 +252,12 @@ TÜRKÇE ve RESMİ cevap ver:"""
         elif 'pdf' in question_lower and ('ver' in question_lower or 'yap' in question_lower or 'oluştur' in question_lower or 'indir' in question_lower or 'çıkart' in question_lower or 'formatında' in question_lower):
             export_type = 'pdf'
 
-        # Sorgu türünü belirle ve DIREKT YANITLA
+        # 1. YENİ SÖZLÜK SİSTEMİ (Yerel Ücretsiz Kısayollar)
+        local_result = check_local_queries(question)
+        if local_result and not export_type:
+            return local_result
+
+        # Sorgu türünü belirle ve DIREKT YANITLA (Eski kurallar)
         if 'en fazla yakıt' in question_lower or 'en çok yakıt' in question_lower:
             db_result = self.query_database('en_fazla_yakit')
             if db_result and not export_type:
@@ -243,6 +283,15 @@ TÜRKÇE ve RESMİ cevap ver:"""
                     answer += f"{i}. <strong>{arac['plaka']}</strong> - {arac['arac_tipi']} ({arac['sahip']})<br>"
                 if len(db_result) > 20:
                     answer += f"<br><em>... ve {len(db_result) - 20} araç daha</em>"
+                return {'status': 'success', 'answer': answer}
+
+        elif 'kilometre' in question_lower or 'km' in question_lower or 'en çok yol' in question_lower:
+            db_result = self.query_database('en_fazla_km')
+            if db_result and not export_type:
+                answer = "🏎️ <strong>En Çok Kilometre Yapan Araçlar:</strong><br><br>"
+                for i, arac in enumerate(db_result, 1):
+                    km = arac.get('toplam_km') or 0
+                    answer += f"{i}. <strong>{arac['plaka']}</strong> - {km:,.0f} km<br>"
                 return {'status': 'success', 'answer': answer}
 
         elif any(keyword in question_lower for keyword in ['plaka', 'araç']):
@@ -286,8 +335,73 @@ TÜRKÇE ve RESMİ cevap ver:"""
 
         context = self.get_context_data()
         
-        # Eğer özel bir sorgu değilse Gemini'ye gönder
-        return self.ask(question)
+        # Eğer özel bir sorgu değilse Auto-SQL ajanına (Kendi Kendine Sorgu Yazan) gönder
+        return self.auto_sql_agent(question)
+
+    def get_database_schema(self):
+        return """
+        Veritabanı Şeması (SQLite):
+        - yakit (id, plaka, islem_tarihi, saat, yakit_miktari, birim_fiyat, satir_tutari, stok_adi, km_bilgisi, km_fark, litre_km, toplam_yuk, ton_litre, fis_fotograf_yolu, sofor_id)
+        - araclar (id, plaka, sahip, arac_tipi, aktif, notlar)
+        - bakim (id, plaka, bakim_tipi, yapilan_islem, tarih, km, maliyet, bir_sonraki_bakim_km, bir_sonraki_bakim_tarih, servis_adi, durum)
+        - soforler (id, ad_soyad, telefon, tc_no, aktif)
+        - cezalar (id, plaka, sofor_id, tarih, tutar, aciklama, odeme_durumu)
+        - hasarlar (id, plaka, sofor_id, tarih, tutar, aciklama, sigorta_karsiladi_mi)
+        - seferler (id, sofor_id, plaka, baslangic_zaman, bitis_zaman, baslangic_km, bitis_km, durum)
+        - agirlik (id, tarih, miktar, birim, net_agirlik, plaka, adres, islem_noktasi, cari_adi)
+        """
+
+    def auto_sql_agent(self, question):
+        """Kullanıcının sorusundan dinamik olarak SQL üretip veritabanında çalıştırır"""
+        try:
+            import re
+            schema = self.get_database_schema()
+            
+            # Aşama 1: SQL Üretimi
+            sql_prompt = f'''Sen uzman bir veritabanı mühendisisin.
+            Aşağıdaki SQLite veritabanı şemasına dayanarak, kullanıcının sorusunu cevaplayacak SADECE BİR adet 'SELECT' sorgusu yaz.
+            Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
+            Kullanıcının sorusu: {question}
+            Şema: {schema}'''
+            
+            response = self.model.generate_content(sql_prompt)
+            sql_code = response.text.strip()
+            
+            # Markdown kalıntılarını temizle (```sql ... ```)
+            match = re.search(r'```(?:sql)?\s*(.*?)\s*```', sql_code, re.DOTALL | re.IGNORECASE)
+            if match:
+                sql_code = match.group(1).strip()
+            
+            # Sadece SELECT sorgularına izin ver, güvenlik için UPDATE/DELETE engeli
+            if not sql_code.upper().startswith("SELECT"):
+                return self.ask(question)
+
+            # Aşama 2: Veritabanında Çalıştırma
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute(sql_code)
+            rows = cursor.fetchall()
+            db_result = [dict(row) for row in rows]
+            conn.close()
+
+            # Aşama 3: İnsancıl Cevap Üretimi
+            answer_prompt = f'''Sen Kargo/Beton şirketinin profesyonel yapay zeka asistanısın. Sadece Türkçe yanıt ver.
+            Kullanıcının sorusu: {question}
+            Kullanıcının sorusu için çalıştırılan sorgu sonucu elde edilen veri: {db_result}
+            
+            Lütfen bu veriyi kullanarak kullanıcıya resmi, açık, HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) güzel bir Türkçe cevap hazırla. Asla SQL kodundan veya veritabanı yapısından bahsetme. Doğrudan sonuçları sun.
+            Eğer veri boş liste ([]) ise "İstediğiniz kriterlere uygun veri bulunamadı." gibi kibar bir mesaj ver.'''
+            
+            final_response = self.model.generate_content(answer_prompt)
+            
+            return {
+                'status': 'success',
+                'answer': "🤖 <em>(Auto-SQL Analizi)</em><br><br>" + final_response.text
+            }
+        except Exception as e:
+            # SQL hataları veya yetki sorunları olursa standart sohbet moduna geri dön
+            print(f"Auto-SQL Hatası: {str(e)}")
+            return self.ask(question)
 
     def get_chat_history(self):
         """Sohbet geçmişini getir"""

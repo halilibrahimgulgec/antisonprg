@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from typing import List, Dict, Any
+from werkzeug.security import check_password_hash
 
 DATABASE_PATH = 'kargo_data.db'
 
@@ -15,6 +16,26 @@ def dict_from_row(row):
     if row is None:
         return None
     return {key: row[key] for key in row.keys()}
+
+def get_user_by_username(username):
+    """Kullanıcı adıyla kullanıcı bilgilerini getir"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        row = cursor.fetchone()
+        conn.close()
+        return dict_from_row(row)
+    except Exception as e:
+        print(f"Kullanıcı bilgisi çekilemedi: {e}")
+        return None
+
+def verify_user(username, password):
+    """Kullanıcı adı ve şifreyi doğrula"""
+    user = get_user_by_username(username)
+    if user and check_password_hash(user['password'], password):
+        return user
+    return None
 
 def get_yakit_data(harici_gizle=False):
     """Sadece aktif araçların yakıt verilerini çek"""

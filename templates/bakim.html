@@ -246,6 +246,14 @@
 </head>
 
 <body>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 100; display: flex; gap: 10px; align-items: center;">
+        <div style="background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 8px; color: white; font-weight: 600; font-size: 0.9rem;">
+            👤 {{ session['username'] }}
+        </div>
+        <a href="/logout" style="padding: 8px 16px; border-radius: 8px; background: #e53e3e; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            Çıkış
+        </a>
+    </div>
     <div class="container">
         <div class="header">
             <div>
