@@ -80,6 +80,57 @@ def logout():
     flash('Başarıyla çıkış yapıldı.', 'success')
     return redirect(url_for('login'))
 
+@app.route('/admin/users')
+def list_users():
+    """Kullanıcı yönetim sayfası"""
+    if session.get('role') != 'admin':
+        flash('Bu sayfaya erişim yetkiniz yok.', 'error')
+        return redirect(url_for('index'))
+    
+    from database import get_all_users
+    users = get_all_users()
+    return render_template('users.html', users=users)
+
+@app.route('/admin/user/add', methods=['POST'])
+def add_user():
+    """Yeni kullanıcı ekle"""
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+        
+    username = request.form.get('username')
+    password = request.form.get('password')
+    role = request.form.get('role', 'user')
+    
+    if not username or not password:
+        flash('Kullanıcı adı ve şifre gereklidir.', 'error')
+        return redirect(url_for('list_users'))
+        
+    from database import add_new_user
+    if add_new_user(username, password, role):
+        flash(f'Kullanıcı {username} başarıyla eklendi.', 'success')
+    else:
+        flash('Kullanıcı eklenirken bir hata oluştu (Kullanıcı adı zaten var olabilir).', 'error')
+        
+    return redirect(url_for('list_users'))
+
+@app.route('/admin/user/delete/<int:user_id>')
+def remove_user(user_id):
+    """Kullanıcıyı sil"""
+    if session.get('role') != 'admin':
+        return jsonify({'error': 'Unauthorized'}), 403
+        
+    if user_id == session.get('user_id'):
+        flash('Kendi kullanıcınızı silemezsiniz.', 'error')
+        return redirect(url_for('list_users'))
+        
+    from database import delete_user
+    if delete_user(user_id):
+        flash('Kullanıcı başarıyla silindi.', 'success')
+    else:
+        flash('Kullanıcı silinirken bir hata oluştu.', 'error')
+        
+    return redirect(url_for('list_users'))
+
 @app.route('/set_language/<lang>')
 def set_language(lang):
     if lang in app.config['BABEL_SUPPORTED_LOCALES']:

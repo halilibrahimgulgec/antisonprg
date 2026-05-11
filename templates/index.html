@@ -228,6 +228,11 @@
             <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>🇬🇧 EN</option>
             <option value="de" {% if get_locale() == 'de' %}selected{% endif %}>🇩🇪 DE</option>
         </select>
+        {% if session.get('role') == 'admin' %}
+        <a href="/admin/users" style="padding: 8px 16px; border-radius: 8px; background: rgba(255,255,255,0.2); color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+            {{ _('Kullanıcı Yönetimi') }}
+        </a>
+        {% endif %}
         <a href="/logout" style="padding: 8px 16px; border-radius: 8px; background: #e53e3e; color: white; text-decoration: none; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
             {{ _('Çıkış') }}
         </a>

@@ -37,6 +37,48 @@ def verify_user(username, password):
         return user
     return None
 
+def get_all_users():
+    """Tüm kullanıcıları getirir"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT id, username, role, created_at FROM users ORDER BY created_at DESC')
+        users = cursor.fetchall()
+        conn.close()
+        return [dict(u) for u in users]
+    except Exception as e:
+        print(f"Kullanıcılar listesi çekilemedi: {e}")
+        return []
+
+def add_new_user(username, password, role='user'):
+    """Yeni kullanıcı ekler"""
+    from werkzeug.security import generate_password_hash
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        hashed_password = generate_password_hash(password)
+        cursor.execute('INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+                       (username, hashed_password, role))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Kullanıcı eklenemedi: {e}")
+        return False
+
+def delete_user(user_id):
+    """Kullanıcıyı siler"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('DELETE FROM users WHERE id = ?', (user_id,))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Kullanıcı silinemedi: {e}")
+        return False
+
 def get_yakit_data(harici_gizle=False):
     """Sadece aktif araçların yakıt verilerini çek"""
     try:
