@@ -192,6 +192,12 @@
                             <input type="file" name="kantar_file" onchange="showName(this, 'kantarName')">
                             <div id="kantarName" class="file-name"></div>
                         </label>
+                        <label class="custom-file-upload">
+                            <i class="fa-solid fa-location-crosshairs"></i>
+                            <span>{{ _('ARAÇ TAKİP DOSYASI SEÇ') }}</span>
+                            <input type="file" name="takip_file" onchange="showName(this, 'takipName')">
+                            <div id="takipName" class="file-name"></div>
+                        </label>
                         <button type="submit" class="btn-upload"><i class="fa-solid fa-bolt"></i> {{ _('Yükle ve İşle') }}</button>
                     </form>
                 </div>
