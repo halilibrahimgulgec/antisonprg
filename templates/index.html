@@ -37,9 +37,6 @@
         .nav-link:hover, .nav-link.active { background: #EFF6FF; color: var(--primary); }
         .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
 
-        .user-profile { margin-top: auto; padding: 20px; background: #F9FAFB; border-radius: 16px; display: flex; align-items: center; gap: 12px; }
-        .user-avatar { width: 40px; height: 40px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; }
-
         /* Main Content */
         .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 30px 40px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
@@ -59,24 +56,50 @@
         .action-card:hover { background: white; border-color: var(--primary); transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1); }
         .action-icon { width: 48px; height: 48px; background: white; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; color: var(--primary); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
 
-        /* Operasyonel İzleme Card (Yeni) */
-        .insights-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: var(--radius); padding: 24px; position: relative; overflow: hidden; }
-        .insights-card::before { content: ''; position: absolute; top: -50px; right: -50px; width: 150px; height: 150px; background: rgba(59, 130, 246, 0.1); border-radius: 50%; }
-        
+        /* Veri Yükleme Styling */
+        .upload-section { display: flex; flex-direction: column; gap: 20px; }
+        .custom-file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: #F8FAFC;
+            border: 2px dashed #E2E8F0;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .custom-file-upload:hover { background: #F1F5F9; border-color: var(--primary); }
+        .custom-file-upload i { font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; }
+        .custom-file-upload span { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+        .custom-file-upload input { display: none; }
+        .file-name { font-size: 0.75rem; color: var(--success); font-weight: 700; margin-top: 5px; display: none; }
+
+        .btn-upload {
+            width: 100%;
+            padding: 16px;
+            background: var(--success);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+        }
+        .btn-upload:hover { transform: translateY(-2px); box-shadow: 0 15px 25px rgba(16, 185, 129, 0.3); }
+
+        /* AI Insights Card */
+        .insights-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: white; border-radius: var(--radius); padding: 24px; }
         .health-gauge { text-align: center; margin: 20px 0; }
-        .health-val { font-size: 3rem; font-weight: 800; color: var(--success); text-shadow: 0 0 20px rgba(16, 185, 129, 0.4); }
-        .health-lbl { font-size: 0.8rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-
-        .log-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .log-icon { width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; }
-        .log-info { flex-grow: 1; }
-        .log-info h5 { font-size: 0.85rem; font-weight: 600; }
-        .log-info p { font-size: 0.7rem; color: #94a3b8; }
-
-        .upload-section { display: flex; flex-direction: column; gap: 15px; }
-        .upload-item { background: #F9FAFB; padding: 12px; border-radius: 12px; border: 1px dashed #D1D5DB; }
-        .upload-item label { display: block; margin-bottom: 5px; font-weight: 600; color: var(--text-muted); font-size: 0.75rem; }
-        .btn-upload { width: 100%; padding: 12px; background: var(--success); color: white; border: none; border-radius: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .health-val { font-size: 3rem; font-weight: 800; color: var(--success); }
 
         @media (max-width: 1200px) { .dashboard-grid { grid-template-columns: repeat(2, 1fr); } .grid-layout { grid-template-columns: 1fr; } }
         @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
@@ -98,8 +121,9 @@
             <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
             <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
             <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
+            <li class="nav-item"><a href="/lastik-yonetimi" class="nav-link"><i class="fa-solid fa-circle-dot"></i> {{ _('Lastik Yönetimi') }}</a></li>
         </nav>
-        <div class="user-profile">
+        <div class="user-profile" style="margin-top: auto; padding: 20px; background: #F9FAFB; border-radius: 16px; display: flex; align-items: center; gap: 12px;">
             <div class="user-avatar">{{ session['username'][0].upper() }}</div>
             <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
         </div>
@@ -107,14 +131,7 @@
 
     <main class="main-content">
         <header class="header">
-            <div class="header-title"><h1>{{ _('Telematik Dashboard') }}</h1><p>{{ _('Hoş geldiniz, operasyonlarınızın kontrolü sizde.') }}</p></div>
-            <div class="header-actions">
-                <select class="lang-select" onchange="window.location.href='/set_language/'+this.value">
-                    <option value="tr" {% if get_locale() == 'tr' %}selected{% endif %}>🇹🇷 TR</option>
-                    <option value="en" {% if get_locale() == 'en' %}selected{% endif %}>🇬🇧 EN</option>
-                </select>
-                <a href="/logout" class="btn-logout"><i class="fa-solid fa-right-from-bracket"></i> {{ _('Çıkış') }}</a>
-            </div>
+            <div class="header-title"><h1>{{ _('Telematik Dashboard') }}</h1><p>{{ _('Operasyonlarınızın merkezi kontrol noktası.') }}</p></div>
         </header>
 
         <div class="dashboard-grid">
@@ -140,50 +157,53 @@
             <section class="section-card">
                 <h3><i class="fa-solid fa-bolt" style="color: #F59E0B;"></i> {{ _('Hızlı İşlemler') }}</h3>
                 <div class="quick-actions">
-                    <a href="/ai-assistant" class="action-card" style="grid-column: span 2; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);">
+                    <a href="/ai-assistant" class="action-card" style="grid-column: span 2; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
                         <div class="action-icon" style="color: #667eea;"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
                         <h4 style="color: white; font-size: 1.2rem;">{{ _('AI ASİSTAN') }}</h4>
-                        <p style="color: rgba(255,255,255,0.8);">{{ _('Tüm sorularınızı veritabanı verileriyle yanıtlayan akıllı asistan.') }}</p>
+                        <p style="color: rgba(255,255,255,0.8);">{{ _('Akıllı veri analizi ve raporlama asistanı.') }}</p>
                     </a>
-                    <a href="/kargo-arac-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-truck-ramp-box"></i></div><h4>{{ _('Kargo Araçları') }}</h4><p>{{ _('Filo yakıt analizi.') }}</p></a>
+                    <a href="/kargo-arac-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-truck-ramp-box"></i></div><h4>{{ _('Kargo Araçları') }}</h4><p>{{ _('Yük ve yakıt analizi.') }}</p></a>
                     <a href="/binek-arac-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-car-side"></i></div><h4>{{ _('Binek Araçlar') }}</h4><p>{{ _('Maliyet takibi.') }}</p></a>
-                    <a href="/is-makinesi-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-tractor"></i></div><h4>{{ _('İş Makineleri') }}</h4><p>{{ _('Ağır hizmet analizi.') }}</p></a>
-                    <a href="/muhasebe" class="action-card"><div class="action-icon"><i class="fa-solid fa-calculator"></i></div><h4>{{ _('Muhasebe Analizi') }}</h4><p>{{ _('Finansal raporlar.') }}</p></a>
-                    <a href="/ai-analysis" class="action-card"><div class="action-icon"><i class="fa-solid fa-brain"></i></div><h4>{{ _('AI Tahmin') }}</h4><p>{{ _('Yakıt tahminleri.') }}</p></a>
-                    <a href="/bakim-analiz" class="action-card"><div class="action-icon"><i class="fa-solid fa-clipboard-check"></i></div><h4>{{ _('Bakım Paneli') }}</h4><p>{{ _('Özet raporlar.') }}</p></a>
+                    <a href="/is-makinesi-filtre" class="action-card"><div class="action-icon"><i class="fa-solid fa-tractor"></i></div><h4>{{ _('İş Makineleri') }}</h4><p>{{ _('Saat bazlı analiz.') }}</p></a>
+                    <a href="/muhasebe" class="action-card"><div class="action-icon"><i class="fa-solid fa-calculator"></i></div><h4>{{ _('Muhasebe Analizi') }}</h4><p>{{ _('Karlılık raporları.') }}</p></a>
                 </div>
             </section>
 
             <div style="display: flex; flex-direction: column; gap: 24px;">
-                <!-- AI Operasyon Analizi (YENİ) -->
                 <div class="insights-card">
-                    <h3><i class="fa-solid fa-robot"></i> {{ _('AI Operasyon Analizi') }}</h3>
-                    <div class="health-gauge">
-                        <div class="health-val">94%</div>
-                        <div class="health-lbl">{{ _('Filo Sağlık Skoru') }}</div>
-                    </div>
-                    <div style="margin-top: 20px;">
-                        <div class="log-item">
-                            <div class="log-icon" style="background: rgba(16, 185, 129, 0.2); color: var(--success);"><i class="fa-solid fa-check"></i></div>
-                            <div class="log-info"><h5>{{ _('Veri Senkronizasyonu') }}</h5><p>{{ _('Tüm kayıtlar güncel.') }}</p></div>
-                        </div>
-                        <div class="log-item">
-                            <div class="log-icon" style="background: rgba(245, 158, 11, 0.2); color: var(--warning);"><i class="fa-solid fa-triangle-exclamation"></i></div>
-                            <div class="log-info"><h5>{{ _('Anomali Tespiti') }}</h5><p>{{ _('2 araçta normal dışı tüketim.') }}</p></div>
-                        </div>
-                    </div>
+                    <h3><i class="fa-solid fa-robot"></i> {{ _('Operasyonel Sağlık') }}</h3>
+                    <div class="health-gauge"><div class="health-val">94%</div><div style="font-size: 0.8rem; color: #94A3B8;">{{ _('FİLO SAĞLIK SKORU') }}</div></div>
                 </div>
 
                 <div class="section-card">
                     <h3><i class="fa-solid fa-cloud-arrow-up" style="color: var(--primary);"></i> {{ _('Veri Yükleme') }}</h3>
                     <form action="/upload" method="POST" enctype="multipart/form-data" class="upload-section">
-                        <div class="upload-item"><label>⛽ {{ _('Yakıt Dosyası') }}</label><input type="file" name="motorin_file"></div>
-                        <div class="upload-item"><label>⚖️ {{ _('Kantar Dosyası') }}</label><input type="file" name="kantar_file"></div>
-                        <button type="submit" class="btn-upload"><i class="fa-solid fa-upload"></i> {{ _('Yükle ve İşle') }}</button>
+                        <label class="custom-file-upload">
+                            <i class="fa-solid fa-gas-pump"></i>
+                            <span>{{ _('YAKIT DOSYASI SEÇ') }}</span>
+                            <input type="file" name="motorin_file" onchange="showName(this, 'motorinName')">
+                            <div id="motorinName" class="file-name"></div>
+                        </label>
+                        <label class="custom-file-upload">
+                            <i class="fa-solid fa-weight-hanging"></i>
+                            <span>{{ _('KANTAR DOSYASI SEÇ') }}</span>
+                            <input type="file" name="kantar_file" onchange="showName(this, 'kantarName')">
+                            <div id="kantarName" class="file-name"></div>
+                        </label>
+                        <button type="submit" class="btn-upload"><i class="fa-solid fa-bolt"></i> {{ _('Yükle ve İşle') }}</button>
                     </form>
                 </div>
             </div>
         </div>
     </main>
+
+    <script>
+        function showName(input, targetId) {
+            const fileName = input.files[0].name;
+            const target = document.getElementById(targetId);
+            target.innerText = "✓ " + fileName;
+            target.style.display = "block";
+        }
+    </script>
 </body>
 </html>
