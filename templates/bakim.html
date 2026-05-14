@@ -28,13 +28,9 @@
             background: white;
             height: 100vh;
             position: fixed;
-            left: 0;
-            top: 0;
-            padding: 30px 20px;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid #E5E7EB;
-            z-index: 1000;
+            left: 0; top: 0; padding: 30px 20px;
+            display: flex; flex-direction: column;
+            border-right: 1px solid #E5E7EB; z-index: 1000;
         }
 
         .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 10px; text-decoration: none; }
@@ -44,18 +40,11 @@
         .nav-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
         .nav-item { margin-bottom: 8px; }
         .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 16px;
-            text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 500;
-            border-radius: 12px;
-            transition: all 0.2s;
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            text-decoration: none; color: var(--text-muted); font-weight: 500;
+            border-radius: 12px; transition: all 0.2s;
         }
         .nav-link:hover, .nav-link.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
-        .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
 
         .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 30px 40px; }
         
@@ -65,10 +54,7 @@
         /* Stats Cards */
         .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
         .summary-card {
-            background: white;
-            padding: 24px;
-            border-radius: 16px;
-            box-shadow: var(--shadow);
+            background: white; padding: 24px; border-radius: 16px; box-shadow: var(--shadow);
             border-left: 5px solid var(--primary);
         }
         .summary-val { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
@@ -79,16 +65,9 @@
         /* Tabs Styling */
         .tabs { display: flex; gap: 8px; margin-bottom: 25px; background: #F3F4F6; padding: 6px; border-radius: 14px; }
         .tab-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: transparent;
-            font-weight: 700;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            cursor: pointer;
-            border-radius: 10px;
-            transition: all 0.2s;
+            flex: 1; padding: 12px; border: none; background: transparent;
+            font-weight: 700; font-size: 0.85rem; color: var(--text-muted);
+            cursor: pointer; border-radius: 10px; transition: all 0.2s;
         }
         .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
@@ -100,58 +79,37 @@
         .form-group { display: flex; flex-direction: column; gap: 8px; }
         .form-group label { font-weight: 600; font-size: 0.85rem; color: #4B5563; }
         .form-control {
-            padding: 12px;
-            border: 2px solid #E5E7EB;
-            border-radius: 12px;
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.2s;
+            padding: 12px; border: 2px solid #E5E7EB; border-radius: 12px;
+            font-size: 0.95rem; outline: none; transition: all 0.2s;
         }
         .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(var(--primary-rgb), 0.1); }
 
         .btn-action {
-            padding: 14px 28px;
-            border-radius: 12px;
-            font-weight: 700;
-            cursor: pointer;
-            border: none;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            text-decoration: none;
+            padding: 14px 28px; border-radius: 12px; font-weight: 700;
+            cursor: pointer; border: none; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
         }
         .btn-save { background: var(--primary); color: white; }
         .btn-save:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(var(--primary-rgb), 0.3); }
-        .btn-open { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+        .btn-next { background: #F3F4F6; color: var(--primary); border: 1px solid #E5E7EB; margin-top: 20px; width: 100%; }
+        .btn-next:hover { background: #E5E7EB; }
 
         /* Table Styling */
         .table-container { overflow-x: auto; margin-top: 20px; }
         table { width: 100%; border-collapse: collapse; }
         th { padding: 16px; background: #F9FAFB; text-align: left; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
         td { padding: 16px; border-bottom: 1px solid #F3F4F6; font-size: 0.9rem; }
-        tr:hover { background: #FBFBFF; }
 
         .badge { padding: 5px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; }
-        .badge-periyodik { background: #D1FAE5; color: #065F46; }
-        .badge-ariza { background: #FEE2E2; color: #991B1B; }
-        .badge-lastik { background: #FEF3C7; color: #92400E; }
         .badge-status-open { background: #FFEDD5; color: #9A3412; }
         .badge-status-done { background: #DCFCE7; color: #166534; }
 
-        /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
-        .modal-content { background: white; width: 90%; max-width: 700px; border-radius: 24px; padding: 35px; max-height: 90vh; overflow-y: auto; position: relative; }
-        
         @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
     </style>
 </head>
 <body>
     <aside class="sidebar">
-        <a href="/" class="logo">
-            <i class="fa-solid fa-truck-fast"></i>
-            <h2>ANTİ-GRAVİTY</h2>
-        </a>
+        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
         <nav class="nav-menu">
             <li class="nav-item">
                 <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
@@ -165,13 +123,11 @@
             <li class="nav-item"><a href="/bakim" class="nav-link active"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
             <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
             <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
+            <li class="nav-item"><a href="/lastik-yonetimi" class="nav-link"><i class="fa-solid fa-circle-dot"></i> {{ _('Lastik Yönetimi') }}</a></li>
         </nav>
         <div class="user-profile">
             <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info">
-                <h4>{{ session['username'] }}</h4>
-                <p>{{ session['role'] }}</p>
-            </div>
+            <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
         </div>
     </aside>
 
@@ -203,11 +159,11 @@
 
         <div class="card">
             <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-plus-circle"></i> {{ _('Yeni Kayıt Oluştur') }}</h3>
-            <form action="/bakim-ekle" method="POST">
+            <form id="bakimForm" action="/bakim-ekle" method="POST">
                 <div class="tabs">
-                    <button type="button" class="tab-btn active" onclick="openTab(event, 'arac-bilgi')">1. {{ _('Araç & Bildirim') }}</button>
-                    <button type="button" class="tab-btn" onclick="openTab(event, 'ariza-detay')">2. {{ _('Arıza Detayları') }}</button>
-                    <button type="button" class="tab-btn" onclick="openTab(event, 'servis-maliyet')">3. {{ _('Servis & Maliyet') }}</button>
+                    <button type="button" id="tab-btn-1" class="tab-btn active" onclick="openTab('arac-bilgi', 1)">1. {{ _('Araç & Bildirim') }}</button>
+                    <button type="button" id="tab-btn-2" class="tab-btn" onclick="openTab('ariza-detay', 2)">2. {{ _('Arıza Detayları') }}</button>
+                    <button type="button" id="tab-btn-3" class="tab-btn" onclick="openTab('servis-maliyet', 3)">3. {{ _('Servis & Maliyet') }}</button>
                 </div>
 
                 <div id="arac-bilgi" class="tab-content active">
@@ -224,14 +180,11 @@
                             <input type="date" name="tarih" class="form-control" value="{{ today }}" required>
                         </div>
                         <div class="form-group">
-                            <label>{{ _('Bildiren Kişi') }}</label>
-                            <input type="text" name="bildiren_kisi" class="form-control" placeholder="{{ _('Şoför veya Sorumlu') }}">
-                        </div>
-                        <div class="form-group">
                             <label>{{ _('Kilometre (KM)') }} *</label>
                             <input type="number" name="km" class="form-control" required>
                         </div>
                     </div>
+                    <button type="button" class="btn-action btn-next" onclick="openTab('ariza-detay', 2)">{{ _('İlerle') }} <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
 
                 <div id="ariza-detay" class="tab-content">
@@ -247,30 +200,21 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>{{ _('Operasyon Durumu') }}</label>
-                            <select name="operasyon_durumu" class="form-control">
-                                <option value="Yürür Durumda">Yürür Durumda</option>
-                                <option value="Yolda Kaldı">Yolda Kaldı (Acil)</option>
-                                <option value="Tersanede/Garajda">Tersanede/Garajda</option>
-                            </select>
+                            <label>{{ _('Arıza Açıklaması') }}</label>
+                            <textarea name="yapilan_islem" class="form-control" rows="3"></textarea>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label>{{ _('Arıza Açıklaması / Şikayet') }}</label>
-                        <textarea name="yapilan_islem" class="form-control" rows="3"></textarea>
-                    </div>
+                    <button type="button" class="btn-action btn-next" onclick="openTab('servis-maliyet', 3)">{{ _('İlerle') }} <i class="fa-solid fa-arrow-right"></i></button>
                 </div>
 
                 <div id="servis-maliyet" class="tab-content">
                     <div class="form-grid">
                         <div class="form-group"><label>{{ _('Servis / Firma') }}</label><input type="text" name="servis_adi" class="form-control"></div>
-                        <div class="form-group"><label>{{ _('İşçilik Tutarı (TL)') }}</label><input type="number" step="0.01" name="iscilik_maliyeti" class="form-control" onchange="calculateTotal()"></div>
-                        <div class="form-group"><label>{{ _('Parça Tutarı (TL)') }}</label><input type="number" step="0.01" name="parca_maliyeti" class="form-control" onchange="calculateTotal()"></div>
-                        <div class="form-group"><label>{{ _('Toplam Maliyet (TL)') }}</label><input type="number" step="0.01" name="maliyet" class="form-control" readonly style="background: #F0FFF4; font-weight: 800;"></div>
+                        <div class="form-group"><label>{{ _('Toplam Maliyet (TL)') }}</label><input type="number" step="0.01" name="maliyet" class="form-control"></div>
                     </div>
                     <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px;">
                         <input type="hidden" name="durum" id="durum_input" value="Tamamlandı">
-                        <button type="submit" class="btn-action btn-open" onclick="document.getElementById('durum_input').value='Açık'"><i class="fa-solid fa-clock"></i> {{ _('Servis Bekliyor') }}</button>
+                        <button type="submit" class="btn-action" style="background: #FEF3C7; color: #92400E;" onclick="document.getElementById('durum_input').value='Açık'"><i class="fa-solid fa-clock"></i> {{ _('Servis Bekliyor') }}</button>
                         <button type="submit" class="btn-action btn-save" onclick="document.getElementById('durum_input').value='Tamamlandı'"><i class="fa-solid fa-check-double"></i> {{ _('Kaydı Tamamla') }}</button>
                     </div>
                 </div>
@@ -279,57 +223,30 @@
 
         <div class="card">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h3><i class="fa-solid fa-list-check"></i> {{ _('Bakım Geçmişi') }}</h3>
-                <form action="/bakim" method="GET">
-                    <select name="plaka" class="form-control" style="width: 200px;" onchange="this.form.submit()">
-                        <option value="">{{ _('Tüm Araçlar') }}</option>
-                        {% for p in plakalar %}<option value="{{ p }}" {{ 'selected' if selected_plaka==p else '' }}>{{ p }}</option>{% endfor %}
-                    </select>
-                </form>
+                <h3><i class="fa-solid fa-list-check"></i> {{ _('Son Kayıtlar') }}</h3>
+                <a href="/bakim-analiz" class="btn-action" style="background: white; border: 1px solid #E5E7EB; color: var(--primary);"><i class="fa-solid fa-chart-pie"></i> {{ _('Analiz Paneli') }}</a>
             </div>
-
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
                             <th>{{ _('Tarih') }}</th>
-                            <th>{{ _('Araç / KM') }}</th>
+                            <th>{{ _('Araç') }}</th>
+                            <th>{{ _('KM') }}</th>
                             <th>{{ _('Tür') }}</th>
-                            <th>{{ _('Açıklama') }}</th>
                             <th>{{ _('Maliyet') }}</th>
                             <th>{{ _('Durum') }}</th>
-                            <th>{{ _('İşlem') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for kayit in kayitlar %}
+                        {% for kayit in kayitlar[:10] %}
                         <tr>
                             <td>{{ kayit.tarih }}</td>
-                            <td><strong>{{ kayit.plaka }}</strong><br><small>{{ kayit.km }} KM</small></td>
-                            <td>
-                                <span class="badge {% if 'Periyodik' in kayit.bakim_tipi %}badge-periyodik{% elif 'Arıza' in kayit.bakim_tipi %}badge-ariza{% else %}badge-lastik{% endif %}">
-                                    {{ kayit.bakim_tipi }}
-                                </span>
-                            </td>
-                            <td>{{ kayit.yapilan_islem[:50] }}...</td>
-                            <td><strong>{{ "%.0f"|format(kayit.maliyet if kayit.maliyet else 0) }} ₺</strong></td>
-                            <td>
-                                {% if kayit.durum == 'Açık' %}
-                                <span class="badge badge-status-open">⏳ {{ _('Açık') }}</span>
-                                {% else %}
-                                <span class="badge badge-status-done">✅ {{ _('Tamamlandı') }}</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div style="display: flex; gap: 8px;">
-                                    {% if kayit.durum == 'Açık' %}
-                                    <button onclick="openUpdateModal({{ kayit.id }}, '{{ kayit.plaka }}')" class="btn-action" style="padding: 6px 12px; font-size: 0.75rem; background: var(--primary); color: white;"><i class="fa-solid fa-edit"></i></button>
-                                    {% endif %}
-                                    <form action="/bakim-sil/{{ kayit.id }}" method="POST" onsubmit="return confirm('Silmek istediğinize emin misiniz?');">
-                                        <button type="submit" class="btn-action" style="padding: 6px 12px; font-size: 0.75rem; background: #FEE2E2; color: #991B1B;"><i class="fa-solid fa-trash"></i></button>
-                                    </form>
-                                </div>
-                            </td>
+                            <td><strong>{{ kayit.plaka }}</strong></td>
+                            <td>{{ kayit.km }}</td>
+                            <td>{{ kayit.bakim_tipi }}</td>
+                            <td><strong>{{ "%.0f"|format(kayit.maliyet or 0) }} ₺</strong></td>
+                            <td><span class="badge {% if kayit.durum == 'Açık' %}badge-status-open{% else %}badge-status-done{% endif %}">{{ kayit.durum }}</span></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -338,56 +255,12 @@
         </div>
     </main>
 
-    <!-- Update Modal -->
-    <div id="updateModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modalPlaka" style="margin-bottom: 25px;"></h3>
-            <form id="updateForm" method="POST">
-                <div class="form-grid">
-                    <div class="form-group"><label>{{ _('Servis / Firma') }} *</label><input type="text" name="servis_adi" class="form-control" required></div>
-                    <div class="form-group"><label>{{ _('Servis Giriş') }} *</label><input type="date" name="servis_giris_tarihi" class="form-control" required></div>
-                    <div class="form-group"><label>{{ _('Servis Çıkış') }} *</label><input type="date" name="servis_cikis_tarihi" class="form-control" required></div>
-                </div>
-                <div class="form-grid" style="margin-top: 15px;">
-                    <div class="form-group"><label>{{ _('İşçilik (TL)') }}</label><input type="number" step="0.01" id="modal_iscilik" name="iscilik_maliyeti" class="form-control" onchange="calcModalTotal()"></div>
-                    <div class="form-group"><label>{{ _('Parça (TL)') }}</label><input type="number" step="0.01" id="modal_parca" name="parca_maliyeti" class="form-control" onchange="calcModalTotal()"></div>
-                    <div class="form-group"><label>{{ _('Toplam') }}</label><input type="number" step="0.01" id="modal_maliyet" name="maliyet" class="form-control" readonly></div>
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px;">
-                    <button type="button" onclick="document.getElementById('updateModal').style.display='none'" class="btn-action" style="background: #F3F4F6;">{{ _('İptal') }}</button>
-                    <button type="submit" class="btn-action btn-save">{{ _('Kaydet & Kapat') }}</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <script>
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tab-content");
-            for (i = 0; i < tabcontent.length; i++) tabcontent[i].classList.remove("active");
-            tablinks = document.getElementsByClassName("tab-btn");
-            for (i = 0; i < tablinks.length; i++) tablinks[i].classList.remove("active");
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.classList.add("active");
-        }
-
-        function calculateTotal() {
-            var iscilik = parseFloat(document.querySelector('input[name="iscilik_maliyeti"]').value) || 0;
-            var parca = parseFloat(document.querySelector('input[name="parca_maliyeti"]').value) || 0;
-            document.querySelector('input[name="maliyet"]').value = (iscilik + parca).toFixed(2);
-        }
-
-        function openUpdateModal(id, plaka) {
-            document.getElementById('updateModal').style.display = 'flex';
-            document.getElementById('updateForm').action = '/bakim-guncelle/' + id;
-            document.getElementById('modalPlaka').innerText = 'Plaka: ' + plaka;
-        }
-
-        function calcModalTotal() {
-            var iscilik = parseFloat(document.getElementById('modal_iscilik').value) || 0;
-            var parca = parseFloat(document.getElementById('modal_parca').value) || 0;
-            document.getElementById('modal_maliyet').value = (iscilik + parca).toFixed(2);
+        function openTab(tabId, step) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            document.getElementById('tab-btn-' + step).classList.add('active');
         }
     </script>
 </body>

@@ -1,407 +1,320 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lastik Yönetim Modülü</title>
+    <title>{{ _('Lastik Yönetimi - Telematik Dashboard') }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Base styles */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f4f7f6; color: #333; }
-        .navbar { background: #2c3e50; color: white; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; }
-        .navbar a { color: white; text-decoration: none; font-weight: bold; }
-        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        :root {
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --primary: #10B981; /* Lastik yönetimi için yeşil tonu */
+            --primary-rgb: 16, 185, 129;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --sidebar-width: 280px;
+            --radius: 20px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; }
+
+        /* Sidebar consistency */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            height: 100vh;
+            position: fixed;
+            left: 0; top: 0; padding: 30px 20px;
+            display: flex; flex-direction: column;
+            border-right: 1px solid #E5E7EB; z-index: 1000;
+        }
+
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 10px; text-decoration: none; }
+        .logo i { font-size: 1.8rem; color: #3B82F6; }
+        .logo h2 { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+
+        .nav-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link {
+            display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+            text-decoration: none; color: var(--text-muted); font-weight: 500;
+            border-radius: 12px; transition: all 0.2s;
+        }
+        .nav-link:hover, .nav-link.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
+
+        .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 30px 40px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-title h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.8px; }
+
+        .card { background: white; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); margin-bottom: 24px; }
         
         /* Tabs */
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 2px solid #ddd; }
-        .tab { padding: 12px 24px; cursor: pointer; font-weight: bold; color: #666; transition: 0.3s; border-bottom: 3px solid transparent; }
-        .tab:hover { color: #2980b9; }
-        .tab.active { color: #2980b9; border-bottom-color: #2980b9; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        
-        /* Cards & Tables */
-        .card { background: white; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
-        th { background: #f8f9fa; font-weight: 600; color: #2c3e50; }
-        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; background: #2980b9; color: white; transition: 0.2s; }
-        .btn:hover { background: #2471a3; }
-        .btn-danger { background: #e74c3c; }
-        .btn-danger:hover { background: #c0392b; }
-        
-        /* Grid / Form */
-        .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 15px; }
-        .form-group { display: flex; flex-direction: column; gap: 5px; }
-        .form-group label { font-weight: 600; font-size: 0.9em; color: #555; }
-        .form-group input, .form-group select { padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
-        
-        /* Truck Layout */
-        .truck-layout { display: flex; flex-direction: column; align-items: center; gap: 40px; margin-top: 30px; padding: 20px; background: #ecf0f1; border-radius: 12px; position: relative; }
-        .axle { display: flex; justify-content: center; gap: 80px; width: 100%; position: relative; }
-        .axle::before { content: ''; position: absolute; top: 50%; left: 30%; right: 30%; height: 8px; background: #bdc3c7; z-index: 1; transform: translateY(-50%); }
-        .tire-spot { width: 80px; height: 120px; background: #fff; border: 3px dashed #bdc3c7; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; cursor: pointer; z-index: 2; transition: 0.3s; position: relative; }
-        .tire-spot:hover { border-color: #2980b9; transform: scale(1.05); }
-        .tire-spot.occupied { border-style: solid; border-color: #27ae60; background: #eafaf1; }
-        .tire-spot .pos-label { font-size: 0.75rem; font-weight: bold; color: #7f8c8d; margin-bottom: 5px; }
-        .tire-spot .tire-info { font-size: 0.8rem; color: #2c3e50; font-weight: 600; display: none; }
-        .tire-spot.occupied .pos-label { color: #27ae60; }
-        .tire-spot.occupied .tire-info { display: block; }
+        .tabs { display: flex; gap: 8px; margin-bottom: 25px; background: #F3F4F6; padding: 6px; border-radius: 14px; }
+        .tab-btn {
+            flex: 1; padding: 12px; border: none; background: transparent;
+            font-weight: 700; font-size: 0.85rem; color: var(--text-muted);
+            cursor: pointer; border-radius: 10px; transition: all 0.2s;
+        }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
 
-        /* Dual Tires container */
-        .dual-tires { display: flex; gap: 5px; z-index: 2; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Truck Layout */
+        .truck-layout {
+            background: #F9FAFB;
+            border-radius: 30px;
+            padding: 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 60px;
+            border: 2px solid #E5E7EB;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .axle { display: flex; justify-content: center; gap: 120px; width: 100%; position: relative; }
+        .axle::after { content: ''; position: absolute; top: 50%; left: 20%; right: 20%; height: 6px; background: #D1D5DB; z-index: 0; transform: translateY(-50%); }
+
+        .tire-spot {
+            width: 70px; height: 110px;
+            background: white;
+            border: 3px dashed #CBD5E0;
+            border-radius: 12px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; z-index: 1; transition: all 0.3s;
+            position: relative;
+        }
+        .tire-spot:hover { border-color: var(--primary); transform: scale(1.1); box-shadow: 0 10px 20px rgba(0,0,0,0.05); }
+        .tire-spot.occupied { border-style: solid; border-color: var(--primary); background: #ECFDF5; }
+        
+        .pos-lbl { font-size: 0.6rem; font-weight: 800; color: #94A3B8; margin-bottom: 5px; text-align: center; }
+        .tire-info { font-size: 0.75rem; font-weight: 700; color: var(--text-main); text-align: center; }
+
+        .dual-tires { display: flex; gap: 10px; z-index: 1; }
 
         /* Modal */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); }
         .modal.active { display: flex; }
-        .modal-content { background: white; padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .modal-header h2 { font-size: 1.2rem; color: #2c3e50; }
-        .close-modal { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #7f8c8d; }
-        
-        /* Flash messages */
-        .flash-messages { margin-bottom: 20px; }
-        .flash { padding: 15px; border-radius: 4px; margin-bottom: 10px; font-weight: bold; }
-        .flash.success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .flash.error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .modal-content { background: white; padding: 30px; border-radius: 24px; width: 90%; max-width: 500px; box-shadow: var(--shadow); }
+
+        .form-control { width: 100%; padding: 12px; border: 2px solid #E5E7EB; border-radius: 12px; font-size: 0.95rem; margin-top: 5px; outline: none; }
+        .form-control:focus { border-color: var(--primary); }
+
+        .btn-action { padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; border: none; width: 100%; transition: all 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-danger { background: #FEE2E2; color: #991B1B; }
+
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
     </style>
 </head>
 <body>
-    <div class="navbar">
-        <h2>Kargo Filo - Lastik Yönetimi</h2>
-        <a href="/">← Ana Sayfa</a>
-    </div>
-
-    <div class="container">
-        <!-- Flash Messages -->
-        <div class="flash-messages">
-            {% with messages = get_flashed_messages(with_categories=true) %}
-                {% if messages %}
-                    {% for category, message in messages %}
-                        <div class="flash {{ category }}">{{ message }}</div>
-                    {% endfor %}
-                {% endif %}
-            {% endwith %}
+    <aside class="sidebar">
+        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
+        <nav class="nav-menu">
+            <li class="nav-item">
+                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {{ _('AI ASİSTAN (YENİ)') }}
+                </a>
+            </li>
+            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
+            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
+            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
+            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
+            <li class="nav-item"><a href="/lastik-yonetimi" class="nav-link active"><i class="fa-solid fa-circle-dot"></i> {{ _('Lastik Yönetimi') }}</a></li>
+        </nav>
+        <div class="user-profile">
+            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
+            <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
         </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-title">
+                <h1>🎡 {{ _('Lastik Yönetimi') }}</h1>
+                <p style="color: var(--text-muted);">{{ _('Lastik envanterini ve araç eşleşmelerini görsel olarak yönetin.') }}</p>
+            </div>
+            <a href="/" class="nav-link" style="background: white; box-shadow: var(--shadow);"><i class="fa-solid fa-arrow-left"></i></a>
+        </header>
 
         <div class="tabs">
-            <div class="tab active" onclick="switchTab('envanter', this)">📦 Lastik Envanteri</div>
-            <div class="tab" onclick="switchTab('eslesme', this)">🚛 Araç Lastik Eşleşme</div>
+            <button class="tab-btn active" onclick="switchTab('envanter', this)">📦 {{ _('Lastik Envanteri') }}</button>
+            <button class="tab-btn" onclick="switchTab('eslesme', this)">🚛 {{ _('Araç Lastik Eşleşme') }}</button>
         </div>
 
-        <!-- 1. ENVANTER SEKMESİ -->
         <div id="envanter" class="tab-content active">
             <div class="card">
-                <h3>Yeni Lastik Ekle</h3>
-                <form action="/lastik-ekle" method="POST" style="margin-top: 15px;">
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label>Marka / Model</label>
-                            <input type="text" name="marka" required placeholder="Örn: Michelin X Multi">
-                        </div>
-                        <div class="form-group">
-                            <label>Ebat</label>
-                            <input type="text" name="ebat" required placeholder="Örn: 315/80 R22.5">
-                        </div>
-                        <div class="form-group">
-                            <label>Seri No</label>
-                            <input type="text" name="seri_no" required placeholder="Barkod / Seri">
-                        </div>
-                        <div class="form-group">
-                            <label>Fiyat (₺)</label>
-                            <input type="number" step="0.01" name="fiyat" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Alınma Tarihi</label>
-                            <input type="date" name="alinma_tarihi" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn">➕ Lastik Ekle</button>
+                <h3><i class="fa-solid fa-plus-circle"></i> {{ _('Yeni Lastik Ekle') }}</h3>
+                <form action="/lastik-ekle" method="POST" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-top: 20px;">
+                    <div><label>{{ _('Marka') }}</label><input type="text" name="marka" class="form-control" required></div>
+                    <div><label>{{ _('Ebat') }}</label><input type="text" name="ebat" class="form-control" required></div>
+                    <div><label>{{ _('Seri No') }}</label><input type="text" name="seri_no" class="form-control" required></div>
+                    <div style="display: flex; align-items: flex-end;"><button type="submit" class="btn-action btn-primary">{{ _('Ekle') }}</button></div>
                 </form>
             </div>
 
             <div class="card">
-                <h3>Güncel Lastik Envanteri</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Marka</th>
-                            <th>Ebat</th>
-                            <th>Seri No</th>
-                            <th>Fiyat</th>
-                            <th>Alınma Tarihi</th>
-                            <th>Durum</th>
-                            <th>İşlem</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for lastik in lastikler %}
-                        <tr>
-                            <td><strong>{{ lastik.marka }}</strong></td>
-                            <td>{{ lastik.ebat }}</td>
-                            <td>{{ lastik.seri_no }}</td>
-                            <td>{{ "%.2f"|format(lastik.fiyat) }} ₺</td>
-                            <td>{{ lastik.alinma_tarihi }}</td>
-                            <td>
-                                {% if lastik.aktif == 1 %}
-                                    <span style="color: #27ae60; font-weight: bold;">Stokta/Aktif</span>
-                                {% else %}
-                                    <span style="color: #e74c3c; font-weight: bold;">Pasif/Hurda</span>
-                                {% endif %}
-                            </td>
-                            <td>
-                                <form action="/lastik-sil/{{ lastik.id }}" method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;" onclick="return confirm('Bu lastiği pasife çekmek istediğinize emin misiniz?');">SİL</button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <h3><i class="fa-solid fa-boxes-stacked"></i> {{ _('Envanter Listesi') }}</h3>
+                <div style="overflow-x: auto; margin-top: 20px;">
+                    <table>
+                        <thead>
+                            <tr><th>{{ _('Marka') }}</th><th>{{ _('Ebat') }}</th><th>{{ _('Seri No') }}</th><th>{{ _('Durum') }}</th><th>{{ _('İşlem') }}</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for l in lastikler %}
+                            <tr>
+                                <td><strong>{{ l.marka }}</strong></td><td>{{ l.ebat }}</td><td>{{ l.seri_no }}</td>
+                                <td><span class="badge" style="background: {% if l.aktif == 1 %}#D1FAE5; color: #065F46{% else %}#FEE2E2; color: #991B1B{% endif %};">{% if l.aktif == 1 %}{{ _('Stokta') }}{% else %}{{ _('Pasif') }}{% endif %}</span></td>
+                                <td><form action="/lastik-sil/{{ l.id }}" method="POST"><button type="submit" class="btn-danger" style="padding: 5px 10px; border-radius: 8px; border: none; cursor: pointer;"><i class="fa-solid fa-trash"></i></button></form></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- 2. EŞLEŞME SEKMESİ -->
         <div id="eslesme" class="tab-content">
             <div class="card">
-                <div class="form-group" style="max-width: 300px;">
-                    <label>Araç (Plaka) Seçin</label>
-                    <select id="plakaSelect" onchange="loadVehicleTires()">
-                        <option value="">-- Plaka Seçin --</option>
-                        {% for plaka in plakalar %}
-                            <option value="{{ plaka }}">{{ plaka }}</option>
-                        {% endfor %}
-                    </select>
-                </div>
+                <label>{{ _('Araç Seçiniz') }}</label>
+                <select id="plakaSelect" class="form-control" style="max-width: 300px;" onchange="loadVehicleTires()">
+                    <option value="">-- {{ _('Plaka Seçin') }} --</option>
+                    {% for p in plakalar %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+                </select>
             </div>
 
             <div class="card" id="truckMapCard" style="display: none;">
-                <h3 style="text-align: center; margin-bottom: 10px;">Araç Lastik Görünümü</h3>
-                <p style="text-align: center; color: #7f8c8d; font-size: 0.9em;">Lastik takmak veya sökmek için pozisyonlara tıklayın.</p>
-                
                 <div class="truck-layout">
-                    <!-- Ön Dingil (Tekli) -->
+                    <!-- Ön Dingil -->
                     <div class="axle">
-                        <div class="tire-spot" data-pos="ÖN-SOL" onclick="openTireModal(this)">
-                            <div class="pos-label">ÖN SOL</div>
-                            <div class="tire-info"></div>
-                        </div>
-                        <div class="tire-spot" data-pos="ÖN-SAĞ" onclick="openTireModal(this)">
-                            <div class="pos-label">ÖN SAĞ</div>
-                            <div class="tire-info"></div>
-                        </div>
+                        <div class="tire-spot" data-pos="ÖN-SOL" onclick="openTireModal(this)"><div class="pos-lbl">ÖN SOL</div><div class="tire-info"></div></div>
+                        <div class="tire-spot" data-pos="ÖN-SAĞ" onclick="openTireModal(this)"><div class="pos-lbl">ÖN SAĞ</div><div class="tire-info"></div></div>
                     </div>
-
-                    <!-- Çeker Dingil (Çiftli) -->
+                    <!-- Çeker Dingil -->
                     <div class="axle">
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ÇEKER-SOL-DIŞ" onclick="openTireModal(this)">
-                                <div class="pos-label">ÇEKER S-DIŞ</div><div class="tire-info"></div>
-                            </div>
-                            <div class="tire-spot" data-pos="ÇEKER-SOL-İÇ" onclick="openTireModal(this)">
-                                <div class="pos-label">ÇEKER S-İÇ</div><div class="tire-info"></div>
-                            </div>
+                            <div class="tire-spot" data-pos="ÇEKER-SOL-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">S-DIŞ</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ÇEKER-SOL-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">S-İÇ</div><div class="tire-info"></div></div>
                         </div>
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-İÇ" onclick="openTireModal(this)">
-                                <div class="pos-label">ÇEKER SĞ-İÇ</div><div class="tire-info"></div>
-                            </div>
-                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-DIŞ" onclick="openTireModal(this)">
-                                <div class="pos-label">ÇEKER SĞ-DIŞ</div><div class="tire-info"></div>
-                            </div>
+                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">SĞ-İÇ</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">SĞ-DIŞ</div><div class="tire-info"></div></div>
                         </div>
                     </div>
-                    
-                    <!-- Dorse / Arka Dingil (Çiftli - Örnek) -->
+                    <!-- Arka Dingil -->
                     <div class="axle">
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ARKA-SOL-DIŞ" onclick="openTireModal(this)">
-                                <div class="pos-label">ARKA S-DIŞ</div><div class="tire-info"></div>
-                            </div>
-                            <div class="tire-spot" data-pos="ARKA-SOL-İÇ" onclick="openTireModal(this)">
-                                <div class="pos-label">ARKA S-İÇ</div><div class="tire-info"></div>
-                            </div>
+                            <div class="tire-spot" data-pos="ARKA-SOL-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">A-SOL-D</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ARKA-SOL-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">A-SOL-İ</div><div class="tire-info"></div></div>
                         </div>
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ARKA-SAĞ-İÇ" onclick="openTireModal(this)">
-                                <div class="pos-label">ARKA SĞ-İÇ</div><div class="tire-info"></div>
-                            </div>
-                            <div class="tire-spot" data-pos="ARKA-SAĞ-DIŞ" onclick="openTireModal(this)">
-                                <div class="pos-label">ARKA SĞ-DIŞ</div><div class="tire-info"></div>
-                            </div>
+                            <div class="tire-spot" data-pos="ARKA-SAĞ-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">A-SAĞ-İ</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ARKA-SAĞ-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">A-SAĞ-D</div><div class="tire-info"></div></div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- Modals -->
+    <!-- Modal -->
     <div id="tireModal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h2 id="modalTitle">Lastik İşlemi</h2>
-                <button class="close-modal" onclick="closeModal()">×</button>
-            </div>
-            
-            <div id="sokmeAlani" style="display: none; background: #fff3cd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeeba;">
-                <h4 style="color: #856404; margin-bottom: 10px;">Şu an Takılı Lastik</h4>
-                <p><strong>Marka:</strong> <span id="currentMarka"></span></p>
-                <p><strong>Seri:</strong> <span id="currentSeri"></span></p>
-                <form id="sokForm" onsubmit="submitSokme(event)" style="margin-top: 15px;">
+            <h3 id="modalTitle" style="margin-bottom: 20px;"></h3>
+            <div id="sokmeAlani" style="display: none; background: #FFFBEB; padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                <p><strong>{{ _('Takılı Lastik:') }}</strong> <span id="currentMarka"></span> (<span id="currentSeri"></span>)</p>
+                <form onsubmit="submitSokme(event)" style="margin-top: 10px;">
                     <input type="hidden" id="sokDurumId">
-                    <div class="form-group">
-                        <label>Sökülme Tarihi</label>
-                        <input type="date" id="sokTarih" required>
-                    </div>
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label>Sökülme KM</label>
-                        <input type="number" id="sokKm" required>
-                    </div>
-                    <button type="submit" class="btn btn-danger" style="margin-top: 15px; width: 100%;">⏬ Lastiği Sök</button>
+                    <button type="submit" class="btn-action btn-danger"><i class="fa-solid fa-arrow-down"></i> {{ _('Lastiği Sök') }}</button>
                 </form>
             </div>
-
             <div id="takmaAlani">
-                <h4 style="color: #2c3e50; margin-bottom: 10px;">Yeni Lastik Tak</h4>
-                <form id="takForm" onsubmit="submitTakma(event)">
+                <form onsubmit="submitTakma(event)">
                     <input type="hidden" id="takPozisyon">
-                    <div class="form-group">
-                        <label>Envanterden Lastik Seç</label>
-                        <select id="takLastikId" required>
-                            <option value="">-- Seçiniz --</option>
-                            {% for l in lastikler %}
-                                {% if l.aktif == 1 %}
-                                <option value="{{ l.id }}">{{ l.marka }} ({{ l.ebat }}) - SN: {{ l.seri_no }}</option>
-                                {% endif %}
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label>Takılma Tarihi</label>
-                        <input type="date" id="takTarih" required>
-                    </div>
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label>Takılma KM</label>
-                        <input type="number" id="takKm" required>
-                    </div>
-                    <button type="submit" class="btn" style="margin-top: 15px; width: 100%;">⚙️ Lastiği Tak</button>
+                    <label>{{ _('Envanterden Seç') }}</label>
+                    <select id="takLastikId" class="form-control" required>
+                        <option value="">-- {{ _('Lastik Seçin') }} --</option>
+                        {% for l in lastikler %}{% if l.aktif == 1 %}<option value="{{ l.id }}">{{ l.marka }} - SN: {{ l.seri_no }}</option>{% endif %}{% endfor %}
+                    </select>
+                    <div style="margin-top: 15px;"><label>{{ _('Takılma Tarihi') }}</label><input type="date" id="takTarih" class="form-control" required></div>
+                    <div style="margin-top: 15px;"><label>{{ _('Takılma KM') }}</label><input type="number" id="takKm" class="form-control" required></div>
+                    <button type="submit" class="btn-action btn-primary" style="margin-top: 20px;">{{ _('Lastiği Tak') }}</button>
                 </form>
             </div>
+            <button onclick="closeModal()" style="margin-top: 10px; background: none; border: none; width: 100%; color: var(--text-muted); cursor: pointer;">{{ _('Kapat') }}</button>
         </div>
     </div>
 
     <script>
-        // Tab Switcher
-        function switchTab(tabId, el) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             el.classList.add('active');
-            document.getElementById(tabId).classList.add('active');
+            document.getElementById(id).classList.add('active');
         }
 
         let currentPlaka = "";
-
-        // API Fetch & Render
         async function loadVehicleTires() {
             currentPlaka = document.getElementById('plakaSelect').value;
-            const container = document.getElementById('truckMapCard');
-            if(!currentPlaka) {
-                container.style.display = 'none';
-                return;
-            }
-            container.style.display = 'block';
-            
-            // Reset UI
-            document.querySelectorAll('.tire-spot').forEach(spot => {
-                spot.classList.remove('occupied');
-                spot.querySelector('.tire-info').innerHTML = '';
-                spot.dataset.durumId = ''; // clear data
-                spot.dataset.marka = '';
-                spot.dataset.seri = '';
-            });
-
-            try {
-                const res = await fetch('/api/arac-lastikleri/' + currentPlaka);
-                const data = await res.json();
-                
-                if(data.status === 'success') {
-                    data.data.forEach(item => {
-                        const spot = document.querySelector(`.tire-spot[data-pos="${item.pozisyon}"]`);
-                        if(spot) {
-                            spot.classList.add('occupied');
-                            spot.querySelector('.tire-info').innerHTML = `${item.marka}<br><small>${item.seri_no}</small>`;
-                            spot.dataset.durumId = item.id;
-                            spot.dataset.marka = item.marka;
-                            spot.dataset.seri = item.seri_no;
-                        }
-                    });
-                }
-            } catch (err) {
-                console.error("Lastikler yüklenirken hata oluştu:", err);
+            const card = document.getElementById('truckMapCard');
+            if(!currentPlaka) { card.style.display='none'; return; }
+            card.style.display='block';
+            document.querySelectorAll('.tire-spot').forEach(s => { s.classList.remove('occupied'); s.querySelector('.tire-info').innerText=''; });
+            const res = await fetch('/api/arac-lastikleri/' + currentPlaka);
+            const data = await res.json();
+            if(data.status==='success') {
+                data.data.forEach(item => {
+                    const spot = document.querySelector(`.tire-spot[data-pos="${item.pozisyon}"]`);
+                    if(spot) {
+                        spot.classList.add('occupied');
+                        spot.querySelector('.tire-info').innerText = item.marka;
+                        spot.dataset.durumId = item.id; spot.dataset.marka = item.marka; spot.dataset.seri = item.seri_no;
+                    }
+                });
             }
         }
 
-        // Modal Logic
-        const modal = document.getElementById('tireModal');
-        
-        function openTireModal(spotEl) {
-            const pos = spotEl.dataset.pos;
-            const durumId = spotEl.dataset.durumId;
-            
-            document.getElementById('modalTitle').innerText = `İşlem: ${pos}`;
-            document.getElementById('takPozisyon').value = pos;
-            
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('takTarih').value = today;
-            document.getElementById('sokTarih').value = today;
-            document.getElementById('takKm').value = "";
-            document.getElementById('sokKm').value = "";
-            document.getElementById('takLastikId').value = "";
-            
-            if(durumId) {
-                // Already a tire here
-                document.getElementById('sokmeAlani').style.display = 'block';
-                document.getElementById('sokDurumId').value = durumId;
-                document.getElementById('currentMarka').innerText = spotEl.dataset.marka;
-                document.getElementById('currentSeri').innerText = spotEl.dataset.seri;
-            } else {
-                document.getElementById('sokmeAlani').style.display = 'none';
-            }
-            
-            modal.classList.add('active');
+        function openTireModal(spot) {
+            document.getElementById('modalTitle').innerText = spot.dataset.pos;
+            document.getElementById('takPozisyon').value = spot.dataset.pos;
+            document.getElementById('takTarih').value = new Date().toISOString().split('T')[0];
+            if(spot.dataset.durumId) {
+                document.getElementById('sokmeAlani').style.display='block';
+                document.getElementById('sokDurumId').value = spot.dataset.durumId;
+                document.getElementById('currentMarka').innerText = spot.dataset.marka;
+                document.getElementById('currentSeri').innerText = spot.dataset.seri;
+            } else { document.getElementById('sokmeAlani').style.display='none'; }
+            document.getElementById('tireModal').classList.add('active');
         }
+        function closeModal() { document.getElementById('tireModal').classList.remove('active'); }
 
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        // Form Submit
         async function submitTakma(e) {
             e.preventDefault();
-            const formData = new FormData();
-            formData.append('plaka', currentPlaka);
-            formData.append('lastik_id', document.getElementById('takLastikId').value);
-            formData.append('pozisyon', document.getElementById('takPozisyon').value);
-            formData.append('takilma_tarihi', document.getElementById('takTarih').value);
-            formData.append('takilma_km', document.getElementById('takKm').value);
-
-            await fetch('/api/lastik-tak', { method: 'POST', body: formData });
-            closeModal();
-            loadVehicleTires(); // Refresh
+            const fd = new FormData();
+            fd.append('plaka', currentPlaka); fd.append('lastik_id', document.getElementById('takLastikId').value);
+            fd.append('pozisyon', document.getElementById('takPozisyon').value); fd.append('takilma_tarihi', document.getElementById('takTarih').value);
+            fd.append('takilma_km', document.getElementById('takKm').value);
+            await fetch('/api/lastik-tak', { method: 'POST', body: fd });
+            closeModal(); loadVehicleTires();
         }
 
         async function submitSokme(e) {
             e.preventDefault();
-            const formData = new FormData();
-            formData.append('durum_id', document.getElementById('sokDurumId').value);
-            formData.append('sokulme_tarihi', document.getElementById('sokTarih').value);
-            formData.append('sokulme_km', document.getElementById('sokKm').value);
-
-            await fetch('/api/lastik-sok', { method: 'POST', body: formData });
-            closeModal();
-            loadVehicleTires(); // Refresh
+            const fd = new FormData();
+            fd.append('durum_id', document.getElementById('sokDurumId').value);
+            fd.append('sokulme_tarihi', new Date().toISOString().split('T')[0]);
+            fd.append('sokulme_km', '0'); // Örnek
+            await fetch('/api/lastik-sok', { method: 'POST', body: fd });
+            closeModal(); loadVehicleTires();
         }
     </script>
 </body>
