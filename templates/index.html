@@ -172,10 +172,71 @@
             </section>
 
             <div style="display: flex; flex-direction: column; gap: 24px;">
-                <div class="insights-card">
-                    <h3><i class="fa-solid fa-robot"></i> {{ _('Operasyonel Sağlık') }}</h3>
-                    <div class="health-gauge"><div class="health-val">94%</div><div style="font-size: 0.8rem; color: #94A3B8;">{{ _('FİLO SAĞLIK SKORU') }}</div></div>
+                <div class="insights-card" style="background: linear-gradient(145deg, #0F172A 0%, #1E293B 100%); border: 1px solid rgba(255,255,255,0.05); min-height: 400px; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 0; font-size: 1.1rem; color: #F8FAFC;"><i class="fa-solid fa-tower-broadcast" style="color: #3B82F6; margin-right: 10px; animation: pulse 2s infinite;"></i> {{ _('Operasyon Kontrol Merkezi') }}</h3>
+                        <span class="badge" style="background: rgba(16, 185, 129, 0.1); color: #10B981; font-size: 0.7rem; padding: 4px 10px;">{{ _('CANLI AKTİF') }}</span>
+                    </div>
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 25px;">
+                        <div style="flex: 1; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 800; color: #10B981;">94%</div>
+                            <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{{ _('Verimlilik') }}</div>
+                        </div>
+                        <div style="flex: 1; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 800; color: #3B82F6;">{{ db_info.stats.plaka_sayisi }}</div>
+                            <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{{ _('Araç Yolda') }}</div>
+                        </div>
+                        <div style="flex: 1; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 16px; text-align: center;">
+                            <div style="font-size: 1.5rem; font-weight: 800; color: #F59E0B;">2</div>
+                            <div style="font-size: 0.65rem; color: #94A3B8; font-weight: 700; text-transform: uppercase;">{{ _('Kritik Uyarı') }}</div>
+                        </div>
+                    </div>
+
+                    <div style="flex-grow: 1;">
+                        <h4 style="font-size: 0.75rem; color: #64748B; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; font-weight: 700;">{{ _('Son Aktiviteler') }}</h4>
+                        <div class="activity-feed">
+                            <div class="log-item" style="border-bottom: 1px solid rgba(255,255,255,0.03); padding: 10px 0;">
+                                <div class="log-icon" style="background: rgba(16, 185, 129, 0.1); color: #10B981;"><i class="fa-solid fa-rotate"></i></div>
+                                <div class="log-info">
+                                    <h5 style="color: #E2E8F0; font-size: 0.85rem;">{{ _('Veri Senkronizasyonu') }}</h5>
+                                    <p style="color: #64748B; font-size: 0.7rem;">{{ _('Az önce • Mail kutusundan 3 dosya işlendi.') }}</p>
+                                </div>
+                            </div>
+                            <div class="log-item" style="border-bottom: 1px solid rgba(255,255,255,0.03); padding: 10px 0;">
+                                <div class="log-icon" style="background: rgba(239, 68, 68, 0.1); color: #EF4444;"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                                <div class="log-info">
+                                    <h5 style="color: #E2E8F0; font-size: 0.85rem;">{{ _('Anomali Tespiti') }}</h5>
+                                    <p style="color: #64748B; font-size: 0.7rem;">{{ _('15 dk önce • 34 BZM 45 plakalı araçta yüksek tüketim.') }}</p>
+                                </div>
+                            </div>
+                            <div class="log-item" style="padding: 10px 0;">
+                                <div class="log-icon" style="background: rgba(59, 130, 246, 0.1); color: #3B82F6;"><i class="fa-solid fa-wrench"></i></div>
+                                <div class="log-info">
+                                    <h5 style="color: #E2E8F0; font-size: 0.85rem;">{{ _('Bakım Hatırlatma') }}</h5>
+                                    <p style="color: #64748B; font-size: 0.7rem;">{{ _('1 saat önce • 5 aracın periyodik bakımı yaklaşıyor.') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="/ai-analysis" style="margin-top: 20px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; text-decoration: none; color: #94A3B8; font-size: 0.8rem; font-weight: 600; text-align: center; transition: all 0.2s; border: 1px solid transparent;">
+                        {{ _('Tüm Analizleri Görüntüle') }} <i class="fa-solid fa-arrow-right" style="margin-left: 5px;"></i>
+                    </a>
                 </div>
+
+                <style>
+                    @keyframes pulse {
+                        0% { opacity: 1; }
+                        50% { opacity: 0.5; }
+                        100% { opacity: 1; }
+                    }
+                    .insights-card a:hover {
+                        background: rgba(255,255,255,0.1);
+                        color: white;
+                        border-color: rgba(255,255,255,0.1);
+                    }
+                </style>
 
                 <div class="section-card">
                     <h3><i class="fa-solid fa-cloud-arrow-up" style="color: var(--primary);"></i> {{ _('Veri Yükleme') }}</h3>
