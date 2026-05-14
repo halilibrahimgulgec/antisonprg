@@ -3,143 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap - Kargo Yakıt Analiz Sistemi</title>
+    <title>Giriş Yap - Telematik Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --primary: #3B82F6;
+            --primary-dark: #2563EB;
+            --bg-gradient: linear-gradient(135deg, #0F172A 0%, #1E293B 100%);
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
         }
 
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--bg-gradient);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Arka plan dekoratif elementler */
+        body::before {
+            content: '';
+            position: absolute;
+            width: 300px; height: 300px;
+            background: rgba(59, 130, 246, 0.15);
+            filter: blur(80px);
+            border-radius: 50%;
+            top: 10%; left: 10%;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            background: rgba(139, 92, 246, 0.1);
+            filter: blur(100px);
+            border-radius: 50%;
+            bottom: 5%; right: 5%;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            z-index: 10;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .login-card {
-            background: white;
-            border-radius: 16px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            width: 100%;
-            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 45px 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         }
 
-        .header {
+        .logo-section {
             text-align: center;
-            margin-bottom: 32px;
+            margin-bottom: 35px;
         }
 
-        .header h1 {
-            font-size: 1.5rem;
-            color: #2d3748;
-            margin-bottom: 8px;
+        .logo-icon {
+            width: 64px; height: 64px;
+            background: var(--primary);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 20px rgba(59, 130, 246, 0.3);
         }
 
-        .header p {
-            color: #718096;
-            font-size: 0.875rem;
-        }
+        .logo-icon i { font-size: 1.8rem; color: white; }
+        .logo-section h1 { font-size: 1.5rem; font-weight: 800; color: white; letter-spacing: -0.5px; }
+        .logo-section p { color: #94A3B8; font-size: 0.9rem; margin-top: 5px; }
 
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #4a5568;
-            font-size: 0.875rem;
-        }
-
-        .form-group input {
+        .form-group { margin-bottom: 24px; }
+        .form-group label { display: block; margin-bottom: 10px; font-weight: 600; font-size: 0.85rem; color: #CBD5E1; }
+        
+        .input-wrapper { position: relative; }
+        .input-wrapper i { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: #64748B; font-size: 1rem; }
+        
+        .form-control {
             width: 100%;
-            padding: 12px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus {
+            padding: 14px 14px 14px 48px;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            color: white;
+            font-size: 0.95rem;
+            transition: all 0.3s;
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
         }
 
-        .btn {
+        .btn-login {
             width: 100%;
             padding: 14px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary);
             color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
         }
-
-        .btn:hover {
+        .btn-login:hover {
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
         }
 
         .alert {
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 0.875rem;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+            font-size: 0.85rem;
             text-align: center;
+            font-weight: 600;
         }
+        .alert-error { background: rgba(239, 68, 68, 0.1); color: #FCA5A5; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .alert-success { background: rgba(16, 185, 129, 0.1); color: #6EE7B7; border: 1px solid rgba(16, 185, 129, 0.2); }
 
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .footer-text {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 0.8rem;
+            color: #64748B;
         }
     </style>
 </head>
 <body>
-    <div class="login-card">
-        <div class="header">
-            <h1>🚚 Analiz Sistemi</h1>
-            <p>Lütfen devam etmek için giriş yapın</p>
-        </div>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="logo-section">
+                <div class="logo-icon"><i class="fa-solid fa-truck-fast"></i></div>
+                <h1>ANTİ-GRAVİTY</h1>
+                <p>Telematik & Filo Yönetim Paneli</p>
+            </div>
 
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category if category != 'message' else 'error' }}">
-                        {{ message }}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category if category != 'message' else 'error' }}">
+                            <i class="fa-solid fa-circle-exclamation"></i> {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form action="/login" method="POST">
+                <div class="form-group">
+                    <label>Kullanıcı Adı</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-user"></i>
+                        <input type="text" name="username" class="form-control" placeholder="admin" required autofocus>
                     </div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+                </div>
+                <div class="form-group">
+                    <label>Şifre</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock"></i>
+                        <input type="password" name="password" class="form-control" placeholder="••••••••" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn-login">Giriş Yap <i class="fa-solid fa-arrow-right-to-bracket" style="margin-left: 8px;"></i></button>
+            </form>
 
-        <form action="/login" method="POST">
-            <div class="form-group">
-                <label for="username">Kullanıcı Adı</label>
-                <input type="text" id="username" name="username" required autofocus>
-            </div>
-            <div class="form-group">
-                <label for="password">Şifre</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn">Giriş Yap</button>
-        </form>
+            <p class="footer-text">© 2026 Anti-Gravity Telematics. Tüm hakları saklıdır.</p>
+        </div>
     </div>
 </body>
 </html>
