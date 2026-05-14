@@ -172,6 +172,37 @@ def index():
     db_info['stats'] = get_statistics()
     return render_template('index.html', db_info=db_info)
 
+@app.route('/sync')
+def sync_page():
+    """Otomatik veri çekme sayfası"""
+    return render_template('sync.html')
+
+@app.route('/veriler')
+def veriler_sayfasi():
+    """Veri yönetimi sayfası - yakıt, kantar ve takip verileri"""
+    from database import get_db_connection
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    # Son 50 yakıt verisi
+    cursor.execute('SELECT * FROM yakit ORDER BY islem_tarihi DESC LIMIT 50')
+    yakit_verileri = cursor.fetchall()
+    
+    # Son 50 kantar (agirlik) verisi
+    cursor.execute('SELECT * FROM agirlik ORDER BY tarih DESC LIMIT 50')
+    kantar_verileri = cursor.fetchall()
+    
+    # Son 50 takip verisi
+    cursor.execute('SELECT * FROM takip ORDER BY tarih DESC LIMIT 50')
+    takip_verileri = cursor.fetchall()
+    
+    conn.close()
+    return render_template('data_management.html', 
+                         yakit=yakit_verileri, 
+                         kantar=kantar_verileri, 
+                         takip=takip_verileri)
+
+
 @app.route('/muhasebe')
 def muhasebe():
     """Muhasebe sayfası"""

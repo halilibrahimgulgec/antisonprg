@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Veri Yönetimi - Telematik Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-color: #F3F4F6;
+            --primary: #3B82F6;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --sidebar-width: 280px;
+            --radius: 20px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; }
+
+        .sidebar { width: var(--sidebar-width); background: white; height: 100vh; position: fixed; left: 0; top: 0; padding: 30px 20px; border-right: 1px solid #E5E7EB; z-index: 1000; }
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; text-decoration: none; color: var(--text-main); }
+        .logo i { font-size: 1.8rem; color: var(--primary); }
+        .logo h2 { font-size: 1.25rem; font-weight: 800; }
+
+        .nav-link { display: flex; align-items: center; gap: 12px; padding: 12px 16px; text-decoration: none; color: var(--text-muted); font-weight: 500; border-radius: 12px; transition: all 0.2s; margin-bottom: 8px; }
+        .nav-link:hover, .nav-link.active { background: #EFF6FF; color: var(--primary); }
+
+        .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 40px; }
+        
+        .tabs { display: flex; gap: 10px; margin-bottom: 30px; background: white; padding: 10px; border-radius: 16px; box-shadow: var(--shadow); }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-weight: 700; color: var(--text-muted); cursor: pointer; border-radius: 12px; transition: all 0.2s; }
+        .tab-btn.active { background: var(--primary); color: white; }
+
+        .tab-content { display: none; background: white; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th { text-align: left; padding: 16px; background: #F9FAFB; font-size: 0.8rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid #E5E7EB; }
+        td { padding: 16px; border-bottom: 1px solid #F3F4F6; font-size: 0.9rem; }
+        tr:hover { background: #F8FAFC; }
+
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .badge-yakit { background: #DBEAFE; color: #1E40AF; }
+        .badge-kantar { background: #DCFCE7; color: #166534; }
+        .badge-takip { background: #FEF3C7; color: #92400E; }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
+        <nav class="nav-menu">
+            <li class="nav-item"><a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI ASİSTAN</a></li>
+            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
+            <li class="nav-item"><a href="/sync" class="nav-link"><i class="fa-solid fa-rotate"></i> Otomatik Veri Çekme</a></li>
+            <li class="nav-item"><a href="/veriler" class="nav-link active"><i class="fa-solid fa-table"></i> Veri Yönetimi</a></li>
+            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> Muhasebe</a></li>
+        </nav>
+    </aside>
+
+    <main class="main-content">
+        <header style="margin-bottom: 30px;">
+            <h1>📊 Veri Yönetimi</h1>
+            <p style="color: var(--text-muted);">Sisteme yüklenen tüm Excel verilerini buradan inceleyebilirsiniz.</p>
+        </header>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('yakitTab', this)">⛽ Yakıt Verileri</button>
+            <button class="tab-btn" onclick="switchTab('kantarTab', this)">⚖️ Kantar Verileri</button>
+            <button class="tab-btn" onclick="switchTab('takipTab', this)">📍 Takip Verileri</button>
+        </div>
+
+        <!-- Yakıt Verileri -->
+        <div id="yakitTab" class="tab-content active">
+            <h3><span class="badge badge-yakit">YAKIT</span> Son 50 Kayıt</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>Tarih</th><th>Plaka</th><th>Miktar (L)</th><th>KM</th><th>İstasyon</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in yakit %}
+                        <tr>
+                            <td>{{ item.islem_tarihi }}</td>
+                            <td><strong>{{ item.plaka }}</strong></td>
+                            <td>{{ item.yakit_miktari }}</td>
+                            <td>{{ item.km_bilgisi }}</td>
+                            <td>{{ item.istasyon_adi }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Kantar Verileri -->
+        <div id="kantarTab" class="tab-content">
+            <h3><span class="badge badge-kantar">KANTAR</span> Son 50 Kayıt</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>Tarih</th><th>Plaka</th><th>Miktar</th><th>Birim</th><th>Cari</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in kantar %}
+                        <tr>
+                            <td>{{ item.tarih }}</td>
+                            <td><strong>{{ item.plaka }}</strong></td>
+                            <td>{{ item.miktar }}</td>
+                            <td>{{ item.birim }}</td>
+                            <td>{{ item.cari_unvan }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Takip Verileri -->
+        <div id="takipTab" class="tab-content">
+            <h3><span class="badge badge-takip">TAKİP</span> Son 50 Kayıt</h3>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr><th>Tarih</th><th>Plaka</th><th>Hız</th><th>Konum</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in takip %}
+                        <tr>
+                            <td>{{ item.tarih }}</td>
+                            <td><strong>{{ item.plaka }}</strong></td>
+                            <td>{{ item.hiz }} km/h</td>
+                            <td>{{ item.konum }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function switchTab(id, el) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById(id).classList.add('active');
+        }
+    </script>
+</body>
+</html>
