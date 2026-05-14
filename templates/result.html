@@ -1,310 +1,261 @@
 <!DOCTYPE html>
-<html lang="tr">
-
+<html lang="{{ get_locale() }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analiz Sonuçları</title>
+    <title>{{ _('Analiz Sonuçları - Telematik Dashboard') }}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        :root {
+            --bg-color: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --primary: #3B82F6;
+            --primary-rgb: 59, 130, 246;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --sidebar-width: 280px;
+            --radius: 20px;
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
         }
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); display: flex; min-height: 100vh; }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            color: white;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-        }
-
-        .back-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: white;
-            text-decoration: none;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            transition: all 0.2s;
-        }
-
-        .back-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-
-        .card {
+        /* Sidebar consistency */
+        .sidebar {
+            width: var(--sidebar-width);
             background: white;
-            border-radius: 16px;
-            padding: 32px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            margin-bottom: 24px;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #E5E7EB;
+            z-index: 1000;
         }
 
-        .card h2 {
-            font-size: 1.5rem;
-            color: #2d3748;
-            margin-bottom: 24px;
+        .logo { display: flex; align-items: center; gap: 12px; margin-bottom: 40px; padding-left: 10px; text-decoration: none; }
+        .logo i { font-size: 1.8rem; color: var(--primary); }
+        .logo h2 { font-size: 1.25rem; font-weight: 800; color: var(--text-main); }
+
+        .nav-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
+        .nav-item { margin-bottom: 8px; }
+        .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 32px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 24px;
+            padding: 12px 16px;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 500;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: all 0.2s;
         }
+        .nav-link:hover, .nav-link.active { background: rgba(var(--primary-rgb), 0.1); color: var(--primary); }
+        .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
 
-        .stat-label {
-            font-size: 0.875rem;
-            opacity: 0.9;
-            margin-bottom: 8px;
+        .main-content { margin-left: var(--sidebar-width); flex-grow: 1; padding: 30px 40px; }
+        
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header-title h1 { font-size: 1.75rem; font-weight: 800; letter-spacing: -0.8px; }
+
+        /* Stats Grid */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card {
+            background: white;
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            border-left: 4px solid var(--primary);
         }
+        .stat-card.success { border-left-color: var(--success); }
+        .stat-card.warning { border-left-color: var(--warning); }
+        .stat-card.danger { border-left-color: var(--danger); }
+        .stat-lbl { font-size: 0.75rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .stat-val { font-size: 1.5rem; font-weight: 800; color: var(--text-main); }
 
-        .stat-value {
-            font-size: 2rem;
+        .card { background: white; border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .card h2 { font-size: 1.25rem; font-weight: 800; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        .btn-export {
+            padding: 10px 20px;
+            border-radius: 12px;
             font-weight: 700;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: white;
+            font-size: 0.85rem;
         }
+        .btn-excel { background: #10B981; }
+        .btn-pdf { background: #EF4444; }
+        .btn-export:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
 
-        .chart-container {
-            position: relative;
-            height: 400px;
-            margin: 20px 0;
-        }
+        /* Efficiency Widgets */
+        .efficiency-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 30px; }
+        .eff-card { padding: 20px; border-radius: 16px; background: #F9FAFB; border: 1px solid #E5E7EB; }
+        .eff-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; background: white; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .eff-plaka { font-weight: 700; }
+        .eff-val { font-weight: 800; font-size: 1.1rem; }
 
-        .table-container {
-            overflow-x: auto;
-        }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th { padding: 12px; background: #F9FAFB; text-align: left; font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; border-bottom: 2px solid #E5E7EB; }
+        td { padding: 12px; border-bottom: 1px solid #F3F4F6; font-size: 0.85rem; }
+        tr:hover { background: #FBFBFF; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th,
-        td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        th {
-            background: #f7fafc;
-            color: #2d3748;
-            font-weight: 600;
-        }
-
-        tr:hover {
-            background: #f7fafc;
-        }
-
-        @media (max-width: 768px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .chart-container {
-                height: 300px;
-            }
-        }
+        @media (max-width: 1024px) { .efficiency-grid { grid-template-columns: 1fr; } }
+        @media (max-width: 768px) { .sidebar { display: none; } .main-content { margin-left: 0; padding: 20px; } }
     </style>
 </head>
-
 <body>
-    <div class="container">
-        <a href="/" class="back-button">
-            ← Ana Sayfaya Dön
+    <aside class="sidebar">
+        <a href="/" class="logo">
+            <i class="fa-solid fa-truck-fast"></i>
+            <h2>ANTİ-GRAVİTY</h2>
         </a>
-
-        <div class="header">
-            <h1>
-                {% if genel_ozet.arac_tipi == 'Binek Araç' %}
-                🚗 Binek Araç Analiz Sonuçları
-                {% elif genel_ozet.arac_tipi == 'İş Makinesi' %}
-                🚜 İş Makinesi Analiz Sonuçları
-                {% else %}
-                🚛 Kargo Araçları Analiz Sonuçları
-                {% endif %}
-            </h1>
-            <p
-                style="margin-top: 16px; font-size: 1rem; opacity: 0.95; background: rgba(255,255,255,0.2); padding: 12px 24px; border-radius: 8px; display: inline-block;">
-                📅 <strong>Analiz Tarihi:</strong> {{ now.strftime('%d.%m.%Y %H:%M') if now else '' }}
-            </p>
-            <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
-                <button onclick="exportToExcel()"
-                    style="background: #27ae60; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.3s;">
-                    📊 Excel'e Aktar
-                </button>
-                <button onclick="exportToPDF()"
-                    style="background: #e74c3c; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.2); transition: all 0.3s;">
-                    📄 PDF'e Aktar
-                </button>
+        <nav class="nav-menu">
+            <li class="nav-item">
+                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    {{ _('AI ASİSTAN (YENİ)') }}
+                </a>
+            </li>
+            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
+            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
+            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
+            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
+            <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
+            <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
+        </nav>
+        <div class="user-profile">
+            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
+            <div class="user-info">
+                <h4>{{ session['username'] }}</h4>
+                <p>{{ session['role'] }}</p>
             </div>
         </div>
+    </aside>
+
+    <main class="main-content">
+        <header class="header">
+            <div class="header-title">
+                <h1>
+                    {% if genel_ozet.arac_tipi == 'Binek Araç' %}
+                    🚗 {{ _('Binek Araç Analiz Sonuçları') }}
+                    {% elif genel_ozet.arac_tipi == 'İş Makinesi' %}
+                    🚜 {{ _('İş Makinesi Analiz Sonuçları') }}
+                    {% else %}
+                    🚛 {{ _('Kargo Araçları Analiz Sonuçları') }}
+                    {% endif %}
+                </h1>
+                <p style="color: var(--text-muted);">{{ _('Analiz Tarihi:') }} {{ now.strftime('%d.%m.%Y %H:%M') if now else '' }}</p>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button onclick="exportToExcel()" class="btn-export btn-excel"><i class="fa-solid fa-file-excel"></i> Excel</button>
+                <button onclick="exportToPDF()" class="btn-export btn-pdf"><i class="fa-solid fa-file-pdf"></i> PDF</button>
+                <a href="/" class="nav-link" style="background: white; box-shadow: var(--shadow);"><i class="fa-solid fa-arrow-left"></i></a>
+            </div>
+        </header>
+
+        {% if not arac_detaylari and not tahminler %}
+        <div class="card" style="text-align: center; padding: 60px;">
+            <i class="fa-solid fa-triangle-exclamation" style="font-size: 3rem; color: var(--warning); margin-bottom: 20px;"></i>
+            <h3>{{ _('Veri Bulunamadı') }}</h3>
+            <p style="color: var(--text-muted); margin-top: 10px;">{{ _('Seçilen kriterlere uygun analiz verisi mevcut değil.') }}</p>
+        </div>
+        {% else %}
 
         <div class="stats-grid">
             <div class="stat-card">
-                {% if analiz_tipi == 'binek' %}
-                Alınan Yakıt Sayısı
-                {% elif analiz_tipi == 'is_makinesi' %}
-                Toplam Alınan Yakıt
-                {% else %}
-                Toplam Sefer
-                {% endif %}
-                <div class="stat-value">{{ sefer }}</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">Toplam Yakıt</div>
-                <div class="stat-value">{{ yakit }} L</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-label">
-                    {% if analiz_tipi == 'is_makinesi' %}Toplam Saat{% else %}Toplam KM{% endif %}
+                <div class="stat-lbl">
+                    {% if analiz_tipi == 'binek' %}{{ _('Alınan Yakıt Sayısı') }}
+                    {% elif analiz_tipi == 'is_makinesi' %}{{ _('Toplam Yakıt') }}
+                    {% else %}{{ _('Toplam Sefer') }}{% endif %}
                 </div>
-                <div class="stat-value">{{ "%.0f"|format(toplam_km) if toplam_km else '0' }}</div>
+                <div class="stat-val">{{ sefer }}</div>
             </div>
-            {% if insights %}
-            <div class="stat-card">
-                <div class="stat-label">Toplam Maliyet</div>
-                <div class="stat-value">₺{{ "%.2f"|format(insights.toplam_maliyet) }}</div>
+            <div class="stat-card success">
+                <div class="stat-lbl">{{ _('Toplam Yakıt') }}</div>
+                <div class="stat-val">{{ yakit }} L</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-label">Ortalama Fiyat</div>
-                <div class="stat-value">₺{{ "%.2f"|format(insights.ortalama_fiyat) }}/L</div>
+            <div class="stat-card warning">
+                <div class="stat-lbl">{% if analiz_tipi == 'is_makinesi' %}{{ _('Toplam Saat') }}{% else %}{{ _('Toplam KM') }}{% endif %}</div>
+                <div class="stat-val">{{ "%.0f"|format(toplam_km) if toplam_km else '0' }}</div>
             </div>
-            {% endif %}
-            <div class="stat-card">
-                <div class="stat-label">Ortalama Tüketim</div>
-                <div class="stat-value">
+            <div class="stat-card danger">
+                <div class="stat-lbl">{{ _('Ortalama Tüketim') }}</div>
+                <div class="stat-val">
                     {{ ortalama_tahmin }}
-                    {% if analiz_tipi == 'is_makinesi' %}L/Saat
-                    {% elif analiz_tipi == 'binek' %}L/100km
-                    {% else %}L{% endif %}
+                    <small style="font-size: 0.9rem;">
+                        {% if analiz_tipi == 'is_makinesi' %}L/Saat{% elif analiz_tipi == 'binek' %}L/100km{% else %}L{% endif %}
+                    </small>
                 </div>
             </div>
         </div>
 
         {% if plakalar and tahminler %}
         <div class="card">
-            <h2>📈 Plaka Bazlı Yakıt Tahminleri</h2>
-            <div class="chart-container">
+            <h2><i class="fa-solid fa-chart-column" style="color: var(--primary);"></i> {{ _('Plaka Bazlı Yakıt Tahminleri') }}</h2>
+            <div style="height: 350px; position: relative;">
                 <canvas id="tahminChart"></canvas>
             </div>
         </div>
+        {% endif %}
 
         {% if arac_detaylari and analiz_tipi != 'binek' and analiz_tipi != 'is_makinesi' %}
-        <div class="card"
-            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 24px;">
-            <h2 style="color: white; margin-bottom: 20px;">🏆 Verimlilik Sıralaması (KG/Litre)</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                <!-- En Verimli Araçlar -->
-                <div
-                    style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.3);">
-                    <h3 style="color: #c6f6d5; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.5rem;">🟢</span> En Verimli Araçlar
-                    </h3>
-                    {% set verimli_araclar = arac_detaylari|selectattr('kg_litre_orani', 'ne',
-                    None)|sort(attribute='kg_litre_orani', reverse=true)|list %}
-                    {% if verimli_araclar|length > 0 %}
-                    {% for arac in verimli_araclar[:5] %}
-                    <div
-                        style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 700; font-size: 1.1rem;">{{ arac.plaka }}</div>
-                            <div style="font-size: 0.85rem; opacity: 0.9;">{{ "{:,.0f}".format(arac.kg_toplam) }} kg
-                                taşıdı</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-weight: 700; font-size: 1.3rem; color: #c6f6d5;">{{
-                                "{:,.0f}".format(arac.kg_litre_orani) }}</div>
-                            <div style="font-size: 0.8rem; opacity: 0.8;">kg/litre</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <p style="opacity: 0.7; font-style: italic;">KG verisi olan araç bulunamadı</p>
-                    {% endif %}
+        <div class="efficiency-grid">
+            <div class="eff-card">
+                <h4 style="color: var(--success); margin-bottom: 15px;"><i class="fa-solid fa-trophy"></i> {{ _('En Verimli Araçlar (KG/L)') }}</h4>
+                {% set verimli_araclar = arac_detaylari|selectattr('kg_litre_orani', 'ne', None)|sort(attribute='kg_litre_orani', reverse=true)|list %}
+                {% for arac in verimli_araclar[:5] %}
+                <div class="eff-item">
+                    <span class="eff-plaka">{{ arac.plaka }}</span>
+                    <span class="eff-val" style="color: var(--success);">{{ "{:,.0f}".format(arac.kg_litre_orani) }}</span>
                 </div>
-
-                <!-- En Verimsiz Araçlar -->
-                <div
-                    style="background: rgba(255,255,255,0.15); backdrop-filter: blur(10px); padding: 20px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.3);">
-                    <h3 style="color: #fed7d7; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 1.5rem;">🔴</span> En Verimsiz Araçlar
-                    </h3>
-                    {% set verimsiz_araclar = arac_detaylari|selectattr('kg_litre_orani', 'ne',
-                    None)|sort(attribute='kg_litre_orani')|list %}
-                    {% if verimsiz_araclar|length > 0 %}
-                    {% for arac in verimsiz_araclar[:5] %}
-                    <div
-                        style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center;">
-                        <div>
-                            <div style="font-weight: 700; font-size: 1.1rem;">{{ arac.plaka }}</div>
-                            <div style="font-size: 0.85rem; opacity: 0.9;">{{ "{:,.0f}".format(arac.kg_toplam) }} kg
-                                taşıdı</div>
-                        </div>
-                        <div style="text-align: right;">
-                            <div style="font-weight: 700; font-size: 1.3rem; color: #fed7d7;">{{
-                                "{:,.0f}".format(arac.kg_litre_orani) }}</div>
-                            <div style="font-size: 0.8rem; opacity: 0.8;">kg/litre</div>
-                        </div>
-                    </div>
-                    {% endfor %}
-                    {% else %}
-                    <p style="opacity: 0.7; font-style: italic;">KG verisi olan araç bulunamadı</p>
-                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="eff-card">
+                <h4 style="color: var(--danger); margin-bottom: 15px;"><i class="fa-solid fa-triangle-exclamation"></i> {{ _('En Verimsiz Araçlar (KG/L)') }}</h4>
+                {% set verimsiz_araclar = arac_detaylari|selectattr('kg_litre_orani', 'ne', None)|sort(attribute='kg_litre_orani')|list %}
+                {% for arac in verimsiz_araclar[:5] %}
+                <div class="eff-item">
+                    <span class="eff-plaka">{{ arac.plaka }}</span>
+                    <span class="eff-val" style="color: var(--danger);">{{ "{:,.0f}".format(arac.kg_litre_orani) }}</span>
                 </div>
+                {% endfor %}
             </div>
         </div>
         {% endif %}
 
         <div class="card">
-            <h2>📋 Detaylı Araç Analiz Tablosu</h2>
+            <h2><i class="fa-solid fa-table-list" style="color: var(--primary);"></i> {{ _('Detaylı Araç Analiz Tablosu') }}</h2>
             <div class="table-container">
                 {% if analiz_tipi == 'binek' or analiz_tipi == 'is_makinesi' %}
                 <table>
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th>Plaka</th>
-                            <th>Toplam Yakıt (L)</th>
-                            <th>{% if analiz_tipi == 'is_makinesi' %}Toplam Saat{% else %}Toplam KM{% endif %}</th>
-                            <th>Yakıt Alımları</th>
-                            <th>Ortalama Yakıt (L)</th>
-                            <th>{% if analiz_tipi == 'is_makinesi' %}Tüketim (L/Saat){% else %}Tüketim (L/100km){% endif
-                                %}</th>
+                            <th>#</th>
+                            <th>{{ _('Plaka') }}</th>
+                            <th>{{ _('Yakıt (L)') }}</th>
+                            <th>{% if analiz_tipi == 'is_makinesi' %}{{ _('Saat') }}{% else %}{{ _('KM') }}{% endif %}</th>
+                            <th>{{ _('Alım') }}</th>
+                            <th>{{ _('Ort. L') }}</th>
+                            <th>{{ _('Tüketim') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -316,7 +267,7 @@
                             <td>{{ "%.0f"|format(arac.toplam_km) if arac.toplam_km > 0 else '-' }}</td>
                             <td>{{ arac.yakit_alimlari }}</td>
                             <td>{{ "%.2f"|format(arac.ortalama_yakit) }}</td>
-                            <td>{{ "%.2f"|format(arac.tuketim_100km) if arac.tuketim_100km > 0 else '-' }}</td>
+                            <td><span class="badge" style="font-weight: 800; color: var(--primary);">{{ "%.2f"|format(arac.tuketim_100km) if arac.tuketim_100km > 0 else '-' }}</span></td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -325,215 +276,36 @@
                 <table>
                     <thead>
                         <tr>
-                            <th rowspan="2">Sıra</th>
-                            <th rowspan="2">Plaka</th>
-                            <th colspan="2" style="background: #3498db; color: white;">KG</th>
-                            <th colspan="2" style="background: #9b59b6; color: white;">M2</th>
-                            <th colspan="2" style="background: #e74c3c; color: white;">M3</th>
-                            <th colspan="2" style="background: #e67e22; color: white;">ADET</th>
-                            <th colspan="2" style="background: #1abc9c; color: white;">MT</th>
-                            <th rowspan="2">Toplam KM</th>
-                            <th rowspan="2">Toplam Sefer</th>
-                            <th rowspan="2">Ort. Yakıt (L)</th>
-                            <th rowspan="2">KM/Litre</th>
-                            <th rowspan="2" style="background: #f39c12; color: white;">
-                                KG/Litre<br><small>(Verimlilik)</small></th>
-                        </tr>
-                        <tr>
-                            <th style="background: #3498db; color: white;">Miktar</th>
-                            <th style="background: #3498db; color: white;">Sefer</th>
-                            <th style="background: #9b59b6; color: white;">Miktar</th>
-                            <th style="background: #9b59b6; color: white;">Sefer</th>
-                            <th style="background: #e74c3c; color: white;">Miktar</th>
-                            <th style="background: #e74c3c; color: white;">Sefer</th>
-                            <th style="background: #e67e22; color: white;">Miktar</th>
-                            <th style="background: #e67e22; color: white;">Sefer</th>
-                            <th style="background: #1abc9c; color: white;">Miktar</th>
-                            <th style="background: #1abc9c; color: white;">Sefer</th>
+                            <th>#</th>
+                            <th>{{ _('Plaka') }}</th>
+                            <th>{{ _('KG') }}</th>
+                            <th>{{ _('KM') }}</th>
+                            <th>{{ _('Sefer') }}</th>
+                            <th>{{ _('KM/L') }}</th>
+                            <th style="background: #F9FAFB;">{{ _('KG/L (Verim)') }}</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% if arac_detaylari %}
                         {% for arac in arac_detaylari %}
                         <tr>
                             <td>{{ loop.index }}</td>
                             <td><strong>{{ arac.plaka }}</strong></td>
-                            <!-- KG -->
-                            <td style="background: #ecf0f1;">
-                                {% if arac.kg_toplam %}
-                                {{ "{:,.2f}".format(arac.kg_toplam) }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td style="background: #ecf0f1;">
-                                {% if arac.kg_sefer > 0 %}
-                                {{ arac.kg_sefer }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <!-- M2 -->
-                            <td style="background: #f4ecf7;">
-                                {% if arac.m2_toplam %}
-                                {{ "{:,.2f}".format(arac.m2_toplam) }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td style="background: #f4ecf7;">
-                                {% if arac.m2_sefer > 0 %}
-                                {{ arac.m2_sefer }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <!-- M3 -->
-                            <td style="background: #fadbd8;">
-                                {% if arac.m3_toplam %}
-                                {{ "{:,.2f}".format(arac.m3_toplam) }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td style="background: #fadbd8;">
-                                {% if arac.m3_sefer > 0 %}
-                                {{ arac.m3_sefer }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <!-- ADET -->
-                            <td style="background: #fdebd0;">
-                                {% if arac.adet_toplam %}
-                                {{ arac.adet_toplam }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td style="background: #fdebd0;">
-                                {% if arac.adet_sefer > 0 %}
-                                {{ arac.adet_sefer }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <!-- MT -->
-                            <td style="background: #d5f4e6;">
-                                {% if arac.mt_toplam %}
-                                {{ "{:,.2f}".format(arac.mt_toplam) }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td style="background: #d5f4e6;">
-                                {% if arac.mt_sefer > 0 %}
-                                {{ arac.mt_sefer }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <!-- Genel Bilgiler -->
-                            <td>
-                                {% if arac.toplam_km %}
-                                {{ "{:,.2f}".format(arac.toplam_km) }}
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td><strong>{{ arac.sefer_sayisi }}</strong></td>
-                            <td>{{ arac.ortalama_yakit }} L</td>
-                            <td>
-                                {% if arac.km_litre_orani %}
-                                {{ arac.km_litre_orani }} km/L
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
-                            </td>
-                            <td
-                                style="{% if arac.kg_litre_orani and arac.kg_litre_orani < 800 %}color: #e74c3c; font-weight: 700;{% elif arac.kg_litre_orani and arac.kg_litre_orani > 1200 %}color: #27ae60; font-weight: 700;{% endif %}">
-                                {% if arac.kg_litre_orani %}
-                                {{ "{:,.0f}".format(arac.kg_litre_orani) }} kg/L
-                                {% else %}
-                                <span style="color: #95a5a6;">-</span>
-                                {% endif %}
+                            <td>{{ "{:,.0f}".format(arac.kg_toplam) if arac.kg_toplam else '-' }}</td>
+                            <td>{{ "{:,.0f}".format(arac.toplam_km) if arac.toplam_km else '-' }}</td>
+                            <td>{{ arac.sefer_sayisi }}</td>
+                            <td>{{ arac.km_litre_orani or '-' }}</td>
+                            <td style="font-weight: 800; {% if arac.kg_litre_orani and arac.kg_litre_orani < 800 %}color: var(--danger);{% elif arac.kg_litre_orani and arac.kg_litre_orani > 1200 %}color: var(--success);{% endif %}">
+                                {{ "{:,.0f}".format(arac.kg_litre_orani) if arac.kg_litre_orani else '-' }}
                             </td>
                         </tr>
                         {% endfor %}
-                        {% else %}
-                        {% for plaka, tahmin in zip(plakalar, tahminler) %}
-                        <tr>
-                            <td>{{ loop.index }}</td>
-                            <td><strong>{{ plaka }}</strong></td>
-                            <td colspan="15">{{ tahmin }} L</td>
-                        </tr>
-                        {% endfor %}
-                        {% endif %}
                     </tbody>
                 </table>
                 {% endif %}
             </div>
         </div>
-
-        {% if arac_detaylari and analiz_tipi != 'binek' and analiz_tipi != 'is_makinesi' %}
-        <div class="card">
-            <h2>💡 Verimlilik Göstergeleri</h2>
-            <div style="background: #f7fafc; padding: 20px; border-radius: 8px;">
-                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 16px;">
-                    <strong>KM/Litre:</strong> 1 litre yakıt ile gidilen kilometre. Yakıt verimliliğini gösterir.
-                </p>
-                <p style="color: #4a5568; line-height: 1.8; margin-bottom: 16px;">
-                    <strong>⭐ KG/Litre (Verimlilik Metriği):</strong> 1 litre yakıt ile kaç kg yük taşındı.
-                    <strong>YÜKSEK = VERİMLİ!</strong> Örnek: 1200 kg/L = 1 litre ile 1200 kg taşıdı (çok verimli), 600
-                    kg/L = 1 litre ile sadece 600 kg taşıdı (verimsiz).
-                </p>
-                <div
-                    style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 20px;">
-                    <div
-                        style="background: #c6f6d5; padding: 16px; border-radius: 8px; border-left: 4px solid #27ae60;">
-                        <div style="font-size: 0.875rem; color: #22543d; margin-bottom: 4px;">🟢 Mükemmel Verimlilik
-                        </div>
-                        <div style="font-size: 1.25rem; font-weight: 700; color: #22543d;">&gt; 1200 kg/L</div>
-                        <div style="font-size: 0.75rem; color: #22543d; margin-top: 4px;">Az yakıtla çok yük taşıyor
-                        </div>
-                    </div>
-                    <div
-                        style="background: #fef5e7; padding: 16px; border-radius: 8px; border-left: 4px solid #f39c12;">
-                        <div style="font-size: 0.875rem; color: #975a16; margin-bottom: 4px;">🟡 Orta Verimlilik</div>
-                        <div style="font-size: 1.25rem; font-weight: 700; color: #975a16;">800 - 1200 kg/L</div>
-                        <div style="font-size: 0.75rem; color: #975a16; margin-top: 4px;">Normal yük/yakıt oranı</div>
-                    </div>
-                    <div
-                        style="background: #fed7d7; padding: 16px; border-radius: 8px; border-left: 4px solid #e74c3c;">
-                        <div style="font-size: 0.875rem; color: #c53030; margin-bottom: 4px;">🔴 Düşük Verimlilik</div>
-                        <div style="font-size: 1.25rem; font-weight: 700; color: #c53030;">&lt; 800 kg/L</div>
-                        <div style="font-size: 0.75rem; color: #c53030; margin-top: 4px;">Çok yakıt az yük - VERİMSİZ!
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         {% endif %}
-        {% else %}
-        <div class="card">
-            <p style="text-align: center; color: #718096; padding: 40px;">
-                {% if genel_ozet.arac_tipi %}
-                ⚠️ {{ genel_ozet.arac_tipi }} için veri bulunamadı.<br><br>
-                Lütfen Araç Yönetimi'nden araçlarınızı {{ genel_ozet.arac_tipi }} olarak sınıflandırın ve yakıt
-                verilerinizi yükleyin.
-                {% else %}
-                ⚠️ Analiz verisi bulunamadı. Lütfen veritabanınızı kontrol edin.
-                {% endif %}
-            </p>
-            <div style="text-align: center; margin-top: 20px;">
-                <a href="/arac-yonetimi"
-                    style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; display: inline-block;">
-                    🚛 Araç Yönetimine Git
-                </a>
-            </div>
-        </div>
-        {% endif %}
-    </div>
+    </main>
 
     <script>
         {% if plakalar and tahminler %}
@@ -541,112 +313,39 @@
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: {{ plakalar| tojson }},
-            datasets: [{
-                label: 'Yakıt Tahmini (L)',
-                data: {{ tahminler| tojson }},
-            backgroundColor: 'rgba(102, 126, 234, 0.8)',
-            borderColor: 'rgba(102, 126, 234, 1)',
-            borderWidth: 2,
-            borderRadius: 8
+                labels: {{ plakalar|tojson }},
+                datasets: [{
+                    label: 'Yakıt Tahmini (L)',
+                    data: {{ tahminler|tojson }},
+                    backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                    borderRadius: 10
                 }]
             },
-            options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function (value) {
-                            return value + ' L';
-                        }
-                    }
-                }
-            }
-        }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
         });
         {% endif %}
 
-        // Export fonksiyonları
         function exportToExcel() {
-            const aracDetaylari = {{ arac_detaylari| tojson if arac_detaylari else '[]' | safe
-        }};
-
-        if (!aracDetaylari || aracDetaylari.length === 0) {
-            alert('Export edilecek veri bulunamadı!');
-            return;
-        }
-
-        fetch('/export-excel', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ arac_detaylari: aracDetaylari })
-        })
-            .then(response => {
-                if (!response.ok) throw new Error('Export başarısız');
-                return response.blob();
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `yakit_analizi_${new Date().getTime()}.xlsx`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            })
-            .catch(error => {
-                console.error('Export error:', error);
-                alert('Excel export başarısız: ' + error.message);
-            });
+            const data = {{ arac_detaylari|tojson if arac_detaylari else '[]' | safe }};
+            if (data.length === 0) { alert('Veri yok!'); return; }
+            fetch('/export-excel', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ arac_detaylari: data }) })
+                .then(r => r.blob()).then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `analiz_${new Date().getTime()}.xlsx`;
+                    document.body.appendChild(a); a.click();
+                });
         }
 
         function exportToPDF() {
-            const aracDetaylari = {{ arac_detaylari| tojson if arac_detaylari else '[]' | safe
-        }};
-
-        if (!aracDetaylari || aracDetaylari.length === 0) {
-            alert('Export edilecek veri bulunamadı!');
-            return;
-        }
-
-        fetch('/export-pdf', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ arac_detaylari: aracDetaylari })
-        })
-            .then(response => {
-                if (!response.ok) throw new Error('Export başarısız');
-                return response.blob();
-            })
-            .then(blob => {
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `yakit_analizi_${new Date().getTime()}.pdf`;
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            })
-            .catch(error => {
-                console.error('Export error:', error);
-                alert('PDF export başarısız: ' + error.message);
-            });
+            const data = {{ arac_detaylari|tojson if arac_detaylari else '[]' | safe }};
+            if (data.length === 0) { alert('Veri yok!'); return; }
+            fetch('/export-pdf', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ arac_detaylari: data }) })
+                .then(r => r.blob()).then(blob => {
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a'); a.href = url; a.download = `analiz_${new Date().getTime()}.pdf`;
+                    document.body.appendChild(a); a.click();
+                });
         }
     </script>
 </body>
-
 </html>
