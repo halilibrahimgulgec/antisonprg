@@ -125,9 +125,15 @@
             <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
             <li class="nav-item"><a href="/lastik-yonetimi" class="nav-link"><i class="fa-solid fa-circle-dot"></i> {{ _('Lastik Yönetimi') }}</a></li>
         </nav>
-        <div class="user-profile" style="margin-top: auto; padding: 20px; background: #F9FAFB; border-radius: 16px; display: flex; align-items: center; gap: 12px;">
-            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
+        <div class="user-profile" style="margin-top: auto; padding: 20px; background: #F9FAFB; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <div class="user-avatar">{{ session['username'][0].upper() }}</div>
+                <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
+            </div>
+            <div class="language-selector" style="display: flex; gap: 8px;">
+                <a href="/set_language/tr" title="Türkçe" style="text-decoration: none; font-size: 1.2rem; opacity: {{ '1' if session.get('lang', 'tr') == 'tr' else '0.5' }}; transition: opacity 0.3s;">🇹🇷</a>
+                <a href="/set_language/en" title="English" style="text-decoration: none; font-size: 1.2rem; opacity: {{ '1' if session.get('lang') == 'en' else '0.5' }}; transition: opacity 0.3s;">🇬🇧</a>
+            </div>
         </div>
     </aside>
 
