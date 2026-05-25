@@ -241,6 +241,11 @@ TÜRKÇE ve RESMİ cevap ver:"""
 
     def ask_with_db_query(self, question):
         """Veritabanı sorgusu ile desteklenmiş soru"""
+        import re
+        def format_plaka(match):
+            return (match.group(1) + match.group(2) + match.group(3)).upper()
+        # Plakaları standart formata çevir (Örn: 46 ahr 076 -> 46AHR076)
+        question = re.sub(r'\b([0-9]{2})\s*([a-zA-ZçÇğĞıİöÖşŞüÜ]{1,3})\s*([0-9]{2,4})\b', format_plaka, question)
         question_lower = question.lower()
         
         db_result = None
@@ -295,17 +300,18 @@ TÜRKÇE ve RESMİ cevap ver:"""
                 return {'status': 'success', 'answer': answer}
 
         elif any(keyword in question_lower for keyword in ['plaka', 'araç']):
-            words = question.split()
-            for word in words:
-                if len(word) > 5 and word.isupper():
-                    db_result = self.query_database('plaka_yakit', {'plaka': word})
-                    if db_result:
-                        answer = f"🚗 <strong>{word} Yakıt Bilgileri:</strong><br><br>"
-                        answer += f"• Toplam Yakıt: <strong>{db_result['toplam_yakit']:.2f} Litre</strong><br>"
-                        answer += f"• Toplam KM: <strong>{db_result['toplam_km']:,} km</strong><br>"
-                        answer += f"• Kayıt Sayısı: <strong>{db_result['kayit_sayisi']}</strong>"
-                        return {'status': 'success', 'answer': answer}
-                    break
+            if 'ne zaman' not in question_lower and 'son' not in question_lower and 'nerede' not in question_lower:
+                words = question.split()
+                for word in words:
+                    if len(word) > 5 and word.isupper() and any(c.isalpha() for c in word):
+                        db_result = self.query_database('plaka_yakit', {'plaka': word})
+                        if db_result and db_result.get('toplam_yakit'):
+                            answer = f"🚗 <strong>{word} Yakıt Bilgileri:</strong><br><br>"
+                            answer += f"• Toplam Yakıt: <strong>{db_result.get('toplam_yakit', 0):.2f} Litre</strong><br>"
+                            answer += f"• Toplam KM: <strong>{db_result.get('toplam_km', 0):,} km</strong><br>"
+                            answer += f"• Kayıt Sayısı: <strong>{db_result.get('kayit_sayisi', 0)}</strong>"
+                            return {'status': 'success', 'answer': answer}
+                        break
 
         # Eğer export isteniyor ama spesifik sorgu yok ise, aktif araçları ver
         if export_type and not db_result:
@@ -360,6 +366,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             # Aşama 1: SQL Üretimi
             sql_prompt = f'''Sen uzman bir veritabanı mühendisisin.
             Aşağıdaki SQLite veritabanı şemasına dayanarak, kullanıcının sorusunu cevaplayacak SADECE BİR adet 'SELECT' sorgusu yaz.
+            ÖNEMLİ KURAL: Plaka bilgileri veritabanında HER ZAMAN BÜYÜK HARFLE ve BİTİŞİK tutulur (Örn: 34ABC123). Plaka ararken LIKE '%PLAKA%' veya tam eşleşme kullan.
             Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
             Kullanıcının sorusu: {question}
             Şema: {schema}'''
