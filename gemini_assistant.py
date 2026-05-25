@@ -366,7 +366,8 @@ TÜRKÇE ve RESMİ cevap ver:"""
             # Aşama 1: SQL Üretimi
             sql_prompt = f'''Sen uzman bir veritabanı mühendisisin.
             Aşağıdaki SQLite veritabanı şemasına dayanarak, kullanıcının sorusunu cevaplayacak SADECE BİR adet 'SELECT' sorgusu yaz.
-            ÖNEMLİ KURAL: Plaka bilgileri veritabanında HER ZAMAN BÜYÜK HARFLE ve BİTİŞİK tutulur (Örn: 34ABC123). Plaka ararken LIKE '%PLAKA%' veya tam eşleşme kullan.
+            ÖNEMLİ KURAL 1: Plaka bilgileri veritabanında HER ZAMAN BÜYÜK HARFLE ve BİTİŞİK tutulur (Örn: 34ABC123). Plaka ararken tam eşleşme (plaka = '46AHR076') kullan.
+            ÖNEMLİ KURAL 2: Soru "mazot", "benzin", "yakıt" içeriyorsa 'stok_adi' sütununa göre FİLTRELEME YAPMA. Yakıt tablosundaki tüm kayıtlar zaten yakıt alımıdır.
             Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
             Kullanıcının sorusu: {question}
             Şema: {schema}'''
