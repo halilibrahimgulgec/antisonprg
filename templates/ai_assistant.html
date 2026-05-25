@@ -135,7 +135,7 @@
         #userInput {
             border: 2px solid #dee2e6;
             border-radius: 25px;
-            padding: 15px 100px 15px 20px;
+            padding: 15px 160px 15px 20px;
             font-size: 16px;
             transition: all 0.3s;
         }
@@ -143,6 +143,43 @@
         #userInput:focus {
             border-color: #667eea;
             box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+
+        #micBtn {
+            position: absolute;
+            right: 110px;
+            top: 7px;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            padding: 0;
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            color: #6c757d;
+            transition: all 0.3s;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #micBtn:hover {
+            background: #e9ecef;
+            color: #667eea;
+            border-color: #667eea;
+        }
+
+        #micBtn.recording {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+            animation: pulse-red 1.5s infinite;
+        }
+
+        @keyframes pulse-red {
+            0% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 53, 69, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
         }
 
         #sendBtn {
@@ -329,7 +366,10 @@
                 </button>
             </div>
             <div class="input-group">
-                <input type="text" class="form-control" id="userInput" placeholder="Sorunuzu yazın..." autocomplete="off">
+                <input type="text" class="form-control" id="userInput" placeholder="Sorunuzu yazın veya mikrofona konuşun..." autocomplete="off">
+                <button class="btn" id="micBtn" type="button" title="Sesli Soru Sor">
+                    <i class="fas fa-microphone"></i>
+                </button>
                 <button class="btn" id="sendBtn" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i> Gönder
                 </button>
@@ -487,6 +527,75 @@
             } catch (error) {
                 alert('Geçmiş temizlenirken hata oluştu.');
             }
+        }
+
+        // Web Speech API - Sesli Giriş
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const micBtn = document.getElementById('micBtn');
+        const userInputBox = document.getElementById('userInput');
+        
+        if (SpeechRecognition) {
+            const recognition = new SpeechRecognition();
+            recognition.lang = 'tr-TR';
+            recognition.continuous = false;
+            recognition.interimResults = true;
+            
+            let isRecording = false;
+
+            micBtn.addEventListener('click', () => {
+                if (isRecording) {
+                    recognition.stop();
+                } else {
+                    recognition.start();
+                }
+            });
+
+            recognition.onstart = () => {
+                isRecording = true;
+                micBtn.classList.add('recording');
+                userInputBox.placeholder = "Dinliyorum...";
+            };
+
+            recognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                if (finalTranscript) {
+                     userInputBox.value = finalTranscript;
+                } else {
+                     userInputBox.value = interimTranscript;
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error', event.error);
+                isRecording = false;
+                micBtn.classList.remove('recording');
+                userInputBox.placeholder = "Sorunuzu yazın veya mikrofona konuşun...";
+            };
+
+            recognition.onend = () => {
+                isRecording = false;
+                micBtn.classList.remove('recording');
+                userInputBox.placeholder = "Sorunuzu yazın veya mikrofona konuşun...";
+                
+                if (userInputBox.value.trim() !== '' && !isWaiting) {
+                    setTimeout(() => {
+                        sendMessage();
+                    }, 500);
+                }
+            };
+        } else {
+            micBtn.style.display = 'none';
+            console.warn('Tarayıcınız sesli girişi desteklemiyor.');
         }
 
         checkStatus();
