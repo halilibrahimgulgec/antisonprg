@@ -130,9 +130,9 @@
                 <div class="user-avatar">{{ session['username'][0].upper() }}</div>
                 <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
             </div>
-            <div class="language-selector" style="display: flex; gap: 8px;">
-                <a href="/set_language/tr" title="Türkçe" style="text-decoration: none; font-size: 1.2rem; opacity: {{ '1' if session.get('lang', 'tr') == 'tr' else '0.5' }}; transition: opacity 0.3s;">🇹🇷</a>
-                <a href="/set_language/en" title="English" style="text-decoration: none; font-size: 1.2rem; opacity: {{ '1' if session.get('lang') == 'en' else '0.5' }}; transition: opacity 0.3s;">🇬🇧</a>
+            <div class="language-selector" style="display: flex; gap: 4px; background: #e2e8f0; padding: 4px; border-radius: 20px;">
+                <a href="/set_language/tr" title="Türkçe" style="text-decoration: none; font-size: 0.8rem; font-weight: bold; color: {{ 'white' if session.get('lang', 'tr') == 'tr' else '#64748b' }}; background: {{ '#10b981' if session.get('lang', 'tr') == 'tr' else 'transparent' }}; padding: 4px 8px; border-radius: 16px; transition: all 0.3s;">TR</a>
+                <a href="/set_language/en" title="English" style="text-decoration: none; font-size: 0.8rem; font-weight: bold; color: {{ 'white' if session.get('lang') == 'en' else '#64748b' }}; background: {{ '#10b981' if session.get('lang') == 'en' else 'transparent' }}; padding: 4px 8px; border-radius: 16px; transition: all 0.3s;">EN</a>
             </div>
         </div>
     </aside>

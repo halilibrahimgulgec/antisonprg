@@ -197,3 +197,48 @@ msgstr "Upload and Process Files"
 msgid "Desteklenen formatlar: .xlsx, .xls, .csv"
 msgstr "Supported formats: .xlsx, .xls, .csv"
 
+
+#: templates/index.html:115
+msgid "AI ASİSTAN (YENİ)"
+msgstr "AI ASSISTANT (NEW)"
+
+#: templates/index.html:118
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/index.html:119
+msgid "Otomatik Veri Çekme"
+msgstr "Automatic Data Extraction"
+
+#: templates/index.html:120
+msgid "Veri Yönetimi"
+msgstr "Data Management"
+
+#: templates/index.html:122
+msgid "Filo Yönetimi"
+msgstr "Fleet Management"
+
+#: templates/index.html:123
+msgid "Bakım & Onarım"
+msgstr "Maintenance & Repair"
+
+#: templates/index.html:124
+msgid "AI Analiz"
+msgstr "AI Analysis"
+
+#: templates/index.html:125
+msgid "Şoför Yönetimi"
+msgstr "Driver Management"
+
+#: templates/index.html:126
+msgid "Lastik Yönetimi"
+msgstr "Tire Management"
+
+#: templates/index.html:136
+msgid "Telematik Dashboard"
+msgstr "Telematics Dashboard"
+
+#: templates/index.html:136
+msgid "Operasyonlarınızın merkezi kontrol noktası."
+msgstr "Central control point of your operations."
+
