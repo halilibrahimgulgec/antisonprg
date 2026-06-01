@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#2c3e50">
-    <title>Şoför Tesis Paneli - Kargo Filo</title>
+    <title>{{ _('Şoför Tesis Paneli - Kargo Filo') }}</title>
     <!-- Styles -->
     <style>
         :root { --primary: #3498db; --success: #2ecc71; --danger: #e74c3c; --warning: #f1c40f; --dark: #2c3e50; }
@@ -61,9 +61,9 @@
 <body>
 
     <div class="header">
-        <a href="/sofor-logout" class="logout-btn">Çıkış</a>
+        <a href="/sofor-logout" class="logout-btn">{{ _('Çıkış') }}</a>
         <h1>Hoşgeldin, {{ sofor_adi }}</h1>
-        <p>Kargo Filo Operasyon Paneli</p>
+        <p>{{ _('Kargo Filo Operasyon Paneli') }}</p>
     </div>
 
     <div class="container">
@@ -71,28 +71,28 @@
         <!-- Aktif Sefer Var -->
         <div class="status-card" style="border-top: 5px solid var(--success);">
             <div class="status-icon">🚚</div>
-            <div class="status-title">Aktif Seferiniz Sürüyor</div>
-            <div class="status-desc">Plaka: <strong>{{ aktif_sefer.plaka }}</strong><br>Başlangıç: {{ aktif_sefer.baslangic_zaman.split()[1] if aktif_sefer.baslangic_zaman else '' }}</div>
-            <button class="btn-large btn-stop" onclick="openModal('bitirModal')">Seferi Bitir & Raporla</button>
+            <div class="status-title">{{ _('Aktif Seferiniz Sürüyor') }}</div>
+            <div class="status-desc">{{ _('Plaka:') }} <strong>{{ aktif_sefer.plaka }}</strong><br>Başlangıç: {{ aktif_sefer.baslangic_zaman.split()[1] if aktif_sefer.baslangic_zaman else '' }}</div>
+            <button class="btn-large btn-stop" onclick="openModal('bitirModal')">{{ _('Seferi Bitir & Raporla') }}</button>
         </div>
         
-        <h3 style="margin: 25px 0 15px 0; font-size: 1.1rem; color: var(--dark);">Yolda Gerçekleşenler</h3>
+        <h3 style="margin: 25px 0 15px 0; font-size: 1.1rem; color: var(--dark);">{{ _('Yolda Gerçekleşenler') }}</h3>
         <div class="grid">
             <div class="action-card" onclick="openModal('yakitModal')">
                 <div class="action-icon">⛽</div>
-                <div class="action-label">Yakıt Fişi Ekle</div>
+                <div class="action-label">{{ _('Yakıt Fişi Ekle') }}</div>
             </div>
             <div class="action-card" onclick="openModal('hasarModal')" style="border-left: 3px solid var(--danger);">
                 <div class="action-icon">💥</div>
-                <div class="action-label">Hasar/Kaza Bildir</div>
+                <div class="action-label">{{ _('Hasar/Kaza Bildir') }}</div>
             </div>
             <div class="action-card" onclick="openModal('arizaModal')" style="border-left: 3px solid var(--warning);">
                 <div class="action-icon">🔧</div>
-                <div class="action-label">Arıza Bildir</div>
+                <div class="action-label">{{ _('Arıza Bildir') }}</div>
             </div>
             <div class="action-card" onclick="openModal('evrakModal')">
                 <div class="action-icon">📸</div>
-                <div class="action-label">Evrak Gönder</div>
+                <div class="action-label">{{ _('Evrak Gönder') }}</div>
             </div>
         </div>
 
@@ -100,22 +100,22 @@
         <!-- Aktif Sefer Yok -->
         <div class="status-card" style="border-top: 5px solid #bdc3c7;">
             <div class="status-icon">☕</div>
-            <div class="status-title">Şu an seferde değilsiniz</div>
-            <div class="status-desc">Yeni bir yola çıkmak için aracınızı seçin ve seferi başlatın.</div>
-            <button class="btn-large btn-start" onclick="openModal('baslatModal')">Yeni Sefer Başlat</button>
+            <div class="status-title">{{ _('Şu an seferde değilsiniz') }}</div>
+            <div class="status-desc">{{ _('Yeni bir yola çıkmak için aracınızı seçin ve seferi başlatın.') }}</div>
+            <button class="btn-large btn-start" onclick="openModal('baslatModal')">{{ _('Yeni Sefer Başlat') }}</button>
         </div>
         
         <div class="grid">
             <div class="action-card disabled">
                 <div class="action-icon">⛽</div>
-                <div class="action-label">Yakıt Fişi Ekle</div>
+                <div class="action-label">{{ _('Yakıt Fişi Ekle') }}</div>
             </div>
             <div class="action-card disabled">
                 <div class="action-icon">💥</div>
-                <div class="action-label">Hasar/Kaza Bildir</div>
+                <div class="action-label">{{ _('Hasar/Kaza Bildir') }}</div>
             </div>
         </div>
-        <p style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: #95a5a6;">İşlem menüleri sefere çıktıktan sonra açılır.</p>
+        <p style="text-align: center; margin-top: 20px; font-size: 0.85rem; color: #95a5a6;">{{ _('İşlem menüleri sefere çıktıktan sonra açılır.') }}</p>
         {% endif %}
     </div>
 
@@ -125,24 +125,24 @@
     <div id="baslatModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Sefer Başlat</h3>
+                <h3>{{ _('Sefer Başlat') }}</h3>
                 <button class="close-btn" onclick="closeModal('baslatModal')">✕</button>
             </div>
             <form onsubmit="submitSeferBaslat(event)">
                 <div class="form-group">
-                    <label>Araç Seçin (Plaka)</label>
+                    <label>{{ _('Araç Seçin (Plaka)') }}</label>
                     <select id="baslatPlaka" required>
-                        <option value="">-- Araç Seç --</option>
+                        <option value="">{{ _('-- Araç Seç --') }}</option>
                         {% for p in plakalar %}
                             <option value="{{ p }}">{{ p }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Başlangıç Kilometresi</label>
-                    <input type="number" id="baslatKm" placeholder="Örn: 254000" required>
+                    <label>{{ _('Başlangıç Kilometresi') }}</label>
+                    <input type="number" id="baslatKm" placeholder="{{ _('Örn: 254000') }}" required>
                 </div>
-                <button type="submit" class="btn-submit">🚀 Yola Çık</button>
+                <button type="submit" class="btn-submit">{{ _('🚀 Yola Çık') }}</button>
             </form>
         </div>
     </div>
@@ -151,19 +151,19 @@
     <div id="bitirModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Seferi Tamamla</h3>
+                <h3>{{ _('Seferi Tamamla') }}</h3>
                 <button class="close-btn" onclick="closeModal('bitirModal')">✕</button>
             </div>
             <form onsubmit="submitSeferBitir(event)">
                 <input type="hidden" id="bitirSeferId" value="{{ aktif_sefer.id if aktif_sefer else '' }}">
                 <div class="form-group">
-                    <label>Bitiş Kilometresi</label>
-                    <input type="number" id="bitirKm" placeholder="Güncel KM sayacı" required>
+                    <label>{{ _('Bitiş Kilometresi') }}</label>
+                    <input type="number" id="bitirKm" placeholder="{{ _('Güncel KM sayacı') }}" required>
                 </div>
                 <div class="form-group" style="padding: 15px; background: #fef9e7; border-radius: 8px; border-left: 4px solid #f1c40f;">
-                    <p style="font-size: 0.85rem; color: #d35400; margin: 0;"><strong>Dikkat:</strong> Seferi tamamladıktan sonra sisteme raporlanır ve aktif işlem yapamazsınız.</p>
+                    <p style="font-size: 0.85rem; color: #d35400; margin: 0;"><strong>{{ _('Dikkat:') }}</strong> {{ _('Seferi tamamladıktan sonra sisteme raporlanır ve aktif işlem yapamazsınız.') }}</p>
                 </div>
-                <button type="submit" class="btn-submit" style="background: var(--danger);">🏁 Seferi Kapat</button>
+                <button type="submit" class="btn-submit" style="background: var(--danger);">{{ _('🏁 Seferi Kapat') }}</button>
             </form>
         </div>
     </div>
@@ -172,20 +172,20 @@
     <div id="yakitModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Yakıt Fişi Yükle</h3>
+                <h3>{{ _('Yakıt Fişi Yükle') }}</h3>
                 <button class="close-btn" onclick="closeModal('yakitModal')">✕</button>
             </div>
             <form onsubmit="submitYakit(event)">
-                <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 20px;">Fiş fotoğrafını çekin veya galeriden seçin.</p>
+                <p style="color: #7f8c8d; font-size: 0.9rem; margin-bottom: 20px;">{{ _('Fiş fotoğrafını çekin veya galeriden seçin.') }}</p>
                 <div class="form-group">
-                    <label>Fiş Fotoğrafı</label>
+                    <label>{{ _('Fiş Fotoğrafı') }}</label>
                     <input type="file" id="yakitFotograf" accept="image/*" capture="environment" required>
                 </div>
                 <div class="form-group">
-                    <label>Alınan Litre</label>
-                    <input type="number" id="yakitLitre" step="0.01" placeholder="Litre" required>
+                    <label>{{ _('Alınan Litre') }}</label>
+                    <input type="number" id="yakitLitre" step="0.01" placeholder="{{ _('Litre') }}" required>
                 </div>
-                <button type="submit" class="btn-submit">Kaydet</button>
+                <button type="submit" class="btn-submit">{{ _('Kaydet') }}</button>
             </form>
         </div>
     </div>
@@ -194,26 +194,26 @@
     <div id="hasarModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Kaza/Hasar Bildirimi</h3>
+                <h3>{{ _('Kaza/Hasar Bildirimi') }}</h3>
                 <button class="close-btn" onclick="closeModal('hasarModal')">✕</button>
             </div>
             <form onsubmit="submitHasar(event)">
                 <div class="form-group">
-                    <label>Durum Özeti</label>
-                    <textarea id="hasarAciklama" rows="3" placeholder="Ne oldu? Kısa açıklama..." required></textarea>
+                    <label>{{ _('Durum Özeti') }}</label>
+                    <textarea id="hasarAciklama" rows="3" placeholder="{{ _('Ne oldu? Kısa açıklama...') }}" required></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Hasar Fotoğrafı</label>
+                    <label>{{ _('Hasar Fotoğrafı') }}</label>
                     <input type="file" id="hasarFotograf" accept="image/*" capture="environment">
                 </div>
                 <div class="form-group">
-                    <label>Konum</label>
-                    <button type="button" onclick="getLocation()" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px dashed var(--primary); background: #ebf5fb; color: var(--primary); font-weight: bold; font-size: 0.9rem; cursor: pointer;">📍 Mevcut Konumumu Al</button>
-                    <div id="locationStatus" style="font-size: 0.8rem; margin-top: 5px; color: var(--success); display: none;">✓ Konum alındı</div>
+                    <label>{{ _('Konum') }}</label>
+                    <button type="button" onclick="getLocation()" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px dashed var(--primary); background: #ebf5fb; color: var(--primary); font-weight: bold; font-size: 0.9rem; cursor: pointer;">{{ _('📍 Mevcut Konumumu Al') }}</button>
+                    <div id="locationStatus" style="font-size: 0.8rem; margin-top: 5px; color: var(--success); display: none;">{{ _('✓ Konum alındı') }}</div>
                     <input type="hidden" id="konumEnlem">
                     <input type="hidden" id="konumBoylam">
                 </div>
-                <button type="submit" class="btn-submit" style="background: var(--danger);">Merkeze Bildir</button>
+                <button type="submit" class="btn-submit" style="background: var(--danger);">{{ _('Merkeze Bildir') }}</button>
             </form>
         </div>
     </div>
@@ -221,19 +221,19 @@
     <div id="arizaModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Arıza Bildirimi</h3>
+                <h3>{{ _('Arıza Bildirimi') }}</h3>
                 <button class="close-btn" onclick="closeModal('arizaModal')">✕</button>
             </div>
             <form onsubmit="submitAriza(event)">
                 <div class="form-group">
-                    <label>İletişim Numarası</label>
-                    <input type="tel" id="arizaTelefon" placeholder="05XX XXX XX XX" required>
+                    <label>{{ _('İletişim Numarası') }}</label>
+                    <input type="tel" id="arizaTelefon" placeholder="{{ _('05XX XXX XX XX') }}" required>
                 </div>
                 <div class="form-group">
-                    <label>Sorun Nedir?</label>
-                    <textarea id="arizaAciklama" rows="3" placeholder="Örn: Motor ısındı, fren balatası ses yapıyor..." required></textarea>
+                    <label>{{ _('Sorun Nedir?') }}</label>
+                    <textarea id="arizaAciklama" rows="3" placeholder="{{ _('Örn: Motor ısındı, fren balatası ses yapıyor...') }}" required></textarea>
                 </div>
-                <button type="submit" class="btn-submit" style="background: var(--warning); color: #2c3e50;">Yetkili Servise İlet</button>
+                <button type="submit" class="btn-submit" style="background: var(--warning); color: #2c3e50;">{{ _('Yetkili Servise İlet') }}</button>
             </form>
         </div>
     </div>
@@ -242,29 +242,29 @@
     <div id="evrakModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Evrak Gönder</h3>
+                <h3>{{ _('Evrak Gönder') }}</h3>
                 <button class="close-btn" onclick="closeModal('evrakModal')">✕</button>
             </div>
             <form onsubmit="submitEvrak(event)">
                 <div class="form-group">
-                    <label>Evrak Türü</label>
+                    <label>{{ _('Evrak Türü') }}</label>
                     <select id="evrakTipi" required>
-                        <option value="">Seçiniz...</option>
-                        <option value="İrsaliye">İrsaliye</option>
-                        <option value="Fatura">Fatura</option>
-                        <option value="Kantar Fişi">Kantar Fişi</option>
-                        <option value="Diğer">Diğer</option>
+                        <option value="">{{ _('Seçiniz...') }}</option>
+                        <option value="İrsaliye">{{ _('İrsaliye') }}</option>
+                        <option value="Fatura">{{ _('Fatura') }}</option>
+                        <option value="Kantar Fişi">{{ _('Kantar Fişi') }}</option>
+                        <option value="Diğer">{{ _('Diğer') }}</option>
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Evrak Fotoğrafı</label>
+                    <label>{{ _('Evrak Fotoğrafı') }}</label>
                     <input type="file" id="evrakFotograf" accept="image/*" capture="environment" required>
                 </div>
                 <div class="form-group">
-                    <label>Açıklama (Opsiyonel)</label>
-                    <input type="text" id="evrakAciklama" placeholder="Evrakla ilgili notunuz...">
+                    <label>{{ _('Açıklama (Opsiyonel)') }}</label>
+                    <input type="text" id="evrakAciklama" placeholder="{{ _('Evrakla ilgili notunuz...') }}">
                 </div>
-                <button type="submit" class="btn-submit" style="background: var(--primary);">Gönder</button>
+                <button type="submit" class="btn-submit" style="background: var(--primary);">{{ _('Gönder') }}</button>
             </form>
         </div>
     </div>
@@ -324,9 +324,9 @@
                     document.getElementById('konumEnlem').value = pos.coords.latitude;
                     document.getElementById('konumBoylam').value = pos.coords.longitude;
                     status.style.display = 'block';
-                    status.innerText = `✓ Konum alındı: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
+                    status.innerText = `{{ _('✓ Konum alındı') }}: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
                 }, (err) => {
-                    alert("Konum alınamadı. Cihaz izinlerinizi kontrol edin.");
+                    alert("{{ _('Konum') }} alınamadı. Cihaz izinlerinizi kontrol edin.");
                 });
             } else {
                 alert("Tarayıcınız konum özelliğini desteklemiyor.");
@@ -337,10 +337,10 @@
             e.preventDefault();
             const btn = e.target.querySelector('button');
             btn.disabled = true;
-            btn.innerText = 'Gönderiliyor...';
+            btn.innerText = '{{ _('Gönder') }}iliyor...';
 
             const formData = new FormData();
-            formData.append('litre', document.getElementById('yakitLitre').value);
+            formData.append('litre', document.getElementById('yakit{{ _('Litre') }}').value);
             formData.append('fotograf', document.getElementById('yakitFotograf').files[0]);
 
             const res = await fetch('/api/yakit-bildir', { method: 'POST', body: formData });
@@ -354,7 +354,7 @@
                 alert("Hata: " + data.message);
             }
             btn.disabled = false;
-            btn.innerText = 'Kaydet';
+            btn.innerText = '{{ _('Kaydet') }}';
         }
 
         async function submitHasar(e) {
@@ -385,7 +385,7 @@
                 alert("Hata: " + data.message);
             }
             btn.disabled = false;
-            btn.innerText = 'Merkeze Bildir';
+            btn.innerText = '{{ _('Merkeze Bildir') }}';
         }
 
         async function submitAriza(e) {
@@ -409,14 +409,14 @@
                 alert("Hata: " + data.message);
             }
             btn.disabled = false;
-            btn.innerText = 'Yetkili Servise İlet';
+            btn.innerText = '{{ _('Yetkili Servise İlet') }}';
         }
 
         async function submitEvrak(e) {
             e.preventDefault();
             const btn = e.target.querySelector('button');
             btn.disabled = true;
-            btn.innerText = 'Gönderiliyor...';
+            btn.innerText = '{{ _('Gönder') }}iliyor...';
 
             const formData = new FormData();
             formData.append('evrak_tipi', document.getElementById('evrakTipi').value);
@@ -434,7 +434,7 @@
                 alert("Hata: " + data.message);
             }
             btn.disabled = false;
-            btn.innerText = 'Gönder';
+            btn.innerText = '{{ _('Gönder') }}';
         }
     </script>
 </body>

@@ -106,36 +106,7 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <div class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></div>
-        <nav class="nav-menu">
-            <li class="nav-item">
-                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    {{ _('AI ASİSTAN (YENİ)') }}
-                </a>
-            </li>
-            <li class="nav-item"><a href="/" class="nav-link active"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
-            <li class="nav-item"><a href="/sync" class="nav-link"><i class="fa-solid fa-rotate"></i> {{ _('Otomatik Veri Çekme') }}</a></li>
-            <li class="nav-item"><a href="/veriler" class="nav-link"><i class="fa-solid fa-table"></i> {{ _('Veri Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
-            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
-            <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
-            <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/lastik-yonetimi" class="nav-link"><i class="fa-solid fa-circle-dot"></i> {{ _('Lastik Yönetimi') }}</a></li>
-        </nav>
-        <div class="user-profile" style="margin-top: auto; padding: 20px; background: #F9FAFB; border-radius: 16px; display: flex; align-items: center; justify-content: space-between; gap: 12px;">
-            <div style="display: flex; align-items: center; gap: 12px;">
-                <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-                <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
-            </div>
-            <div class="language-selector" style="display: flex; gap: 4px; background: #e2e8f0; padding: 4px; border-radius: 20px;">
-                <a href="/set_language/tr" title="Türkçe" style="text-decoration: none; font-size: 0.8rem; font-weight: bold; color: {{ 'white' if session.get('lang', 'tr') == 'tr' else '#64748b' }}; background: {{ '#10b981' if session.get('lang', 'tr') == 'tr' else 'transparent' }}; padding: 4px 8px; border-radius: 16px; transition: all 0.3s;">TR</a>
-                <a href="/set_language/en" title="English" style="text-decoration: none; font-size: 0.8rem; font-weight: bold; color: {{ 'white' if session.get('lang') == 'en' else '#64748b' }}; background: {{ '#10b981' if session.get('lang') == 'en' else 'transparent' }}; padding: 4px 8px; border-radius: 16px; transition: all 0.3s;">EN</a>
-            </div>
-        </div>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <header class="header">

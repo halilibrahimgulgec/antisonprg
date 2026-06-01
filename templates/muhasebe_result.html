@@ -92,27 +92,7 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
-        <nav class="nav-menu">
-            <li class="nav-item">
-                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    {{ _('AI ASİSTAN (YENİ)') }}
-                </a>
-            </li>
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link active"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
-            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
-            <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
-            <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
-        </nav>
-        <div class="user-profile">
-            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
-        </div>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <header class="header">

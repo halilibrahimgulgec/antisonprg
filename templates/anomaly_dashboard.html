@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anomali Dashboard - AI Analiz</title>
+    <title>{{ _('Anomali Dashboard - AI Analiz') }}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -316,74 +316,74 @@
 </head>
 <body>
     <div class="container">
-        <a href="/ai-analysis" class="back-link">← AI Analiz</a>
+        <a href="/ai-analysis" class="back-link">{{ _('← AI Analiz') }}</a>
 
         <div class="header">
-            <h1>📊 Anomali Dashboard</h1>
-            <p>Kapsamlı anomali analizi ve görselleştirme</p>
+            <h1>{{ _('📊 Anomali Dashboard') }}</h1>
+            <p>{{ _('Kapsamlı anomali analizi ve görselleştirme') }}</p>
         </div>
 
         <!-- İstatistikler -->
         <div class="stats-grid">
             <div class="stat-card danger">
-                <div class="stat-label">Toplam Anomali</div>
+                <div class="stat-label">{{ _('Toplam Anomali') }}</div>
                 <div class="stat-value">{{ result.toplam_anomali }}</div>
             </div>
             <div class="stat-card warning">
-                <div class="stat-label">Aşırı Yüksek Tüketim</div>
+                <div class="stat-label">{{ _('Aşırı Yüksek Tüketim') }}</div>
                 <div class="stat-value">{{ result.anomali_tipleri.asiri_yuksek }}</div>
             </div>
             <div class="stat-card warning">
-                <div class="stat-label">Aşırı Düşük Tüketim</div>
+                <div class="stat-label">{{ _('Aşırı Düşük Tüketim') }}</div>
                 <div class="stat-value">{{ result.anomali_tipleri.asiri_dusuk }}</div>
             </div>
             <div class="stat-card success">
-                <div class="stat-label">Eksik KM Bilgisi</div>
+                <div class="stat-label">{{ _('Eksik KM Bilgisi') }}</div>
                 <div class="stat-value">{{ result.anomali_tipleri.eksik_km }}</div>
             </div>
         </div>
 
         <!-- Filtreler -->
         <div class="filter-section">
-            <h3 style="color: #2d3748; margin-bottom: 16px;">🔍 Filtrele</h3>
+            <h3 style="color: #2d3748; margin-bottom: 16px;">{{ _('🔍 Filtrele') }}</h3>
             <div class="filter-grid">
                 <div class="filter-group">
-                    <label>Plaka</label>
+                    <label>{{ _('Plaka') }}</label>
                     <select id="plakaFilter">
-                        <option value="">Tüm Plakalar</option>
+                        <option value="">{{ _('Tüm Plakalar') }}</option>
                         {% for plaka in plakalar %}
                         <option value="{{ plaka }}">{{ plaka }}</option>
                         {% endfor %}
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Anomali Tipi</label>
+                    <label>{{ _('Anomali Tipi') }}</label>
                     <select id="tipFilter">
-                        <option value="">Tümü</option>
-                        <option value="asiri_yuksek">Aşırı Yüksek</option>
-                        <option value="asiri_dusuk">Aşırı Düşük</option>
-                        <option value="eksik_km">Eksik KM</option>
-                        <option value="anormal_fiyat">Anormal Fiyat</option>
+                        <option value="">{{ _('Tümü') }}</option>
+                        <option value="asiri_yuksek">{{ _('Aşırı Yüksek') }}</option>
+                        <option value="asiri_dusuk">{{ _('Aşırı Düşük') }}</option>
+                        <option value="eksik_km">{{ _('Eksik KM') }}</option>
+                        <option value="anormal_fiyat">{{ _('Anormal Fiyat') }}</option>
                     </select>
                 </div>
                 <div class="filter-group">
-                    <label>Başlangıç Tarihi</label>
+                    <label>{{ _('Başlangıç Tarihi') }}</label>
                     <input type="date" id="startDate">
                 </div>
                 <div class="filter-group">
-                    <label>Bitiş Tarihi</label>
+                    <label>{{ _('Bitiş Tarihi') }}</label>
                     <input type="date" id="endDate">
                 </div>
             </div>
             <div class="filter-buttons">
-                <button class="btn btn-primary" onclick="applyFilters()">Filtrele</button>
-                <button class="btn btn-secondary" onclick="resetFilters()">Sıfırla</button>
+                <button class="btn btn-primary" onclick="applyFilters()">{{ _('Filtrele') }}</button>
+                <button class="btn btn-secondary" onclick="resetFilters()">{{ _('Sıfırla') }}</button>
             </div>
         </div>
 
         <!-- En Çok Anomalisi Olan Araçlar -->
         <div class="top-vehicles">
-            <h3>🚨 Sürekli Anomali Olan Araçlar (Top 10)</h3>
+            <h3>{{ _('🚨 Sürekli Anomali Olan Araçlar (Top 10)') }}</h3>
             {% if result.top_anomali_plakalar %}
             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 12px;">
                 {% for plaka, count in result.top_anomali_plakalar %}
@@ -394,25 +394,25 @@
                 {% endfor %}
             </div>
             {% else %}
-            <p style="color: #718096; text-align: center; padding: 20px;">Veri yok</p>
+            <p style="color: #718096; text-align: center; padding: 20px;">{{ _('Veri yok') }}</p>
             {% endif %}
         </div>
 
         <!-- Grafikler -->
         <div class="chart-grid">
             <div class="chart-container">
-                <h3>Anomali Tipleri Dağılımı</h3>
+                <h3>{{ _('Anomali Tipleri Dağılımı') }}</h3>
                 <canvas id="anomalyTypeChart"></canvas>
             </div>
             <div class="chart-container">
-                <h3>Aylık Anomali Trendi</h3>
+                <h3>{{ _('Aylık Anomali Trendi') }}</h3>
                 <canvas id="monthlyTrendChart"></canvas>
             </div>
         </div>
 
         <div class="chart-grid">
             <div class="chart-container">
-                <h3>En Çok Anomalisi Olan Plakalar</h3>
+                <h3>{{ _('En Çok Anomalisi Olan Plakalar') }}</h3>
                 <canvas id="topPlakalarChart"></canvas>
             </div>
         </div>
@@ -422,14 +422,14 @@
             <table id="anomalyTable">
                 <thead>
                     <tr>
-                        <th>Plaka</th>
-                        <th>Tarih</th>
-                        <th>Yakıt (L)</th>
-                        <th>KM</th>
-                        <th>Fiyat</th>
-                        <th>Skor</th>
-                        <th>Tip</th>
-                        <th>Sebep</th>
+                        <th>{{ _('Plaka') }}</th>
+                        <th>{{ _('Tarih') }}</th>
+                        <th>{{ _('Yakıt (L)') }}</th>
+                        <th>{{ _('KM') }}</th>
+                        <th>{{ _('Fiyat') }}</th>
+                        <th>{{ _('Skor') }}</th>
+                        <th>{{ _('Tip') }}</th>
+                        <th>{{ _('Sebep') }}</th>
                     </tr>
                 </thead>
                 <tbody id="anomalyTableBody">
@@ -453,13 +453,13 @@
                         </td>
                         <td>
                             {% if anomali.tip == 'asiri_yuksek' %}
-                                <span class="badge badge-danger">Aşırı Yüksek</span>
+                                <span class="badge badge-danger">{{ _('Aşırı Yüksek') }}</span>
                             {% elif anomali.tip == 'asiri_dusuk' %}
-                                <span class="badge badge-warning">Aşırı Düşük</span>
+                                <span class="badge badge-warning">{{ _('Aşırı Düşük') }}</span>
                             {% elif anomali.tip == 'eksik_km' %}
-                                <span class="badge badge-info">Eksik KM</span>
+                                <span class="badge badge-info">{{ _('Eksik KM') }}</span>
                             {% elif anomali.tip == 'anormal_fiyat' %}
-                                <span class="badge badge-warning">Anormal Fiyat</span>
+                                <span class="badge badge-warning">{{ _('Anormal Fiyat') }}</span>
                             {% endif %}
                         </td>
                         <td style="white-space: pre-line; font-size: 0.75rem;">{{ anomali.sebep }}</td>
@@ -472,23 +472,23 @@
 
     <script>
         // Veri
-        const anomaliTipleri = {{ result.anomali_tipleri | tojson }};
+        const anomali{{ _('Tip') }}leri = {{ result.anomali_tipleri | tojson }};
         const tarihDagilim = {{ result.tarih_dagilim | tojson }};
-        const topPlakalar = {{ result.top_anomali_plakalar | tojson }};
+        const top{{ _('Plaka') }}lar = {{ result.top_anomali_plakalar | tojson }};
         const tumAnomaliler = {{ result.anomaliler | tojson }};
 
-        // Grafik 1: Anomali Tipleri
+        // Grafik 1: Anomali {{ _('Tip') }}leri
         const ctx1 = document.getElementById('anomalyTypeChart').getContext('2d');
         new Chart(ctx1, {
             type: 'doughnut',
             data: {
-                labels: ['Aşırı Yüksek', 'Aşırı Düşük', 'Eksik KM', 'Anormal Fiyat'],
+                labels: ['{{ _('Aşırı Yüksek') }}', '{{ _('Aşırı Düşük') }}', '{{ _('Eksik KM') }}', '{{ _('Anormal Fiyat') }}'],
                 datasets: [{
                     data: [
-                        anomaliTipleri.asiri_yuksek,
-                        anomaliTipleri.asiri_dusuk,
-                        anomaliTipleri.eksik_km,
-                        anomaliTipleri.anormal_fiyat
+                        anomali{{ _('Tip') }}leri.asiri_yuksek,
+                        anomali{{ _('Tip') }}leri.asiri_dusuk,
+                        anomali{{ _('Tip') }}leri.eksik_km,
+                        anomali{{ _('Tip') }}leri.anormal_fiyat
                     ],
                     backgroundColor: [
                         '#f5576c',
@@ -541,11 +541,11 @@
             }
         });
 
-        // Grafik 3: Top Plakalar
-        const plakaLabels = topPlakalar.map(item => item[0]);
-        const plakaValues = topPlakalar.map(item => item[1]);
+        // Grafik 3: Top {{ _('Plaka') }}lar
+        const plakaLabels = top{{ _('Plaka') }}lar.map(item => item[0]);
+        const plakaValues = top{{ _('Plaka') }}lar.map(item => item[1]);
 
-        const ctx3 = document.getElementById('topPlakalarChart').getContext('2d');
+        const ctx3 = document.getElementById('top{{ _('Plaka') }}larChart').getContext('2d');
         new Chart(ctx3, {
             type: 'bar',
             data: {
@@ -571,7 +571,7 @@
             }
         });
 
-        // Filtreleme Fonksiyonları
+        // {{ _('Filtrele') }}me Fonksiyonları
         function applyFilters() {
             const plaka = document.getElementById('plakaFilter').value;
             const tip = document.getElementById('tipFilter').value;

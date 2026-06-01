@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performans Analizi - Kargo Sistemi</title>
+    <title>{{ _('Performans Analizi - Kargo Sistemi') }}</title>
     <style>
         * {
             margin: 0;
@@ -174,36 +174,36 @@
         {% endif %}
         {% endwith %}
 
-        <a href="/ai-analysis" class="back-link">← AI Analiz</a>
+        <a href="/ai-analysis" class="back-link">{{ _('← AI Analiz') }}</a>
 
         <div class="header">
-            <h1>📊 Araç Performans Analizi</h1>
-            <p>Yakıt/KM oranı ve tonaj bazlı verimlilik analizi</p>
+            <h1>{{ _('📊 Araç Performans Analizi') }}</h1>
+            <p>{{ _('Yakıt/KM oranı ve tonaj bazlı verimlilik analizi') }}</p>
         </div>
 
         <div class="card">
-            <h2>🎯 Analiz Özellikleri</h2>
+            <h2>{{ _('🎯 Analiz Özellikleri') }}</h2>
             <div class="feature-grid">
                 <div class="feature-box">
-                    <h3>⛽ Yakıt/KM Oranı</h3>
-                    <p>Araçların kilometre başına yakıt tüketim oranını hesaplayın</p>
+                    <h3>{{ _('⛽ Yakıt/KM Oranı') }}</h3>
+                    <p>{{ _('Araçların kilometre başına yakıt tüketim oranını hesaplayın') }}</p>
                 </div>
                 <div class="feature-box">
-                    <h3>📦 Tonaj Analizi</h3>
-                    <p>Taşınan toplam tonaj ve verimlilik metrikleri</p>
+                    <h3>{{ _('📦 Tonaj Analizi') }}</h3>
+                    <p>{{ _('Taşınan toplam tonaj ve verimlilik metrikleri') }}</p>
                 </div>
                 <div class="feature-box">
-                    <h3>💰 Maliyet Analizi</h3>
-                    <p>KM başına yakıt maliyeti ve bütçe optimizasyonu</p>
+                    <h3>{{ _('💰 Maliyet Analizi') }}</h3>
+                    <p>{{ _('KM başına yakıt maliyeti ve bütçe optimizasyonu') }}</p>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <h2>🏆 Araç Tipi Bazlı Performans Karşılaştırması</h2>
+            <h2>{{ _('🏆 Araç Tipi Bazlı Performans Karşılaştırması') }}</h2>
             <div class="info-box">
-                <p>Her araç tipi için özelleştirilmiş performans metrikleri. Araç tipine göre detaylı analiz ve
-                    karşılaştırma yapın.</p>
+                <p>{{ _('Her araç tipi için özelleştirilmiş performans metrikleri. Araç tipine göre detaylı analiz ve') }}
+                    {{ _('karşılaştırma yapın.') }}</p>
             </div>
 
             <div
@@ -212,11 +212,11 @@
                     <input type="hidden" name="arac_tipi" value="KARGO ARACI">
                     <div class="feature-box" style="cursor: pointer; transition: transform 0.2s;"
                         onclick="this.closest('form').submit();">
-                        <h3>🚛 Kargo Araçları</h3>
-                        <p>Ana malzeme bazlı tonaj ve verimlilik analizi</p>
+                        <h3>{{ _('🚛 Kargo Araçları') }}</h3>
+                        <p>{{ _('Ana malzeme bazlı tonaj ve verimlilik analizi') }}</p>
                         <button type="submit" class="btn btn-success"
                             style="margin-top: 16px; background: white; color: #3498db;">
-                            Analiz Et →
+                            {{ _('Analiz Et →') }}
                         </button>
                     </div>
                 </form>
@@ -226,11 +226,11 @@
                     <div class="feature-box"
                         style="cursor: pointer; transition: transform 0.2s; background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);"
                         onclick="this.closest('form').submit();">
-                        <h3>🏗️ İş Makineleri</h3>
-                        <p>Yakıt verimliliği ve operasyonel performans</p>
+                        <h3>{{ _('🏗️ İş Makineleri') }}</h3>
+                        <p>{{ _('Yakıt verimliliği ve operasyonel performans') }}</p>
                         <button type="submit" class="btn btn-success"
                             style="margin-top: 16px; background: white; color: #f39c12;">
-                            Analiz Et →
+                            {{ _('Analiz Et →') }}
                         </button>
                     </div>
                 </form>
@@ -240,11 +240,11 @@
                     <div class="feature-box"
                         style="cursor: pointer; transition: transform 0.2s; background: linear-gradient(135deg, #16a085 0%, #27ae60 100%);"
                         onclick="this.closest('form').submit();">
-                        <h3>🚗 Binek Araçlar</h3>
-                        <p>KM/Litre oranı ve yakıt ekonomisi</p>
+                        <h3>{{ _('🚗 Binek Araçlar') }}</h3>
+                        <p>{{ _('KM/Litre oranı ve yakıt ekonomisi') }}</p>
                         <button type="submit" class="btn btn-success"
                             style="margin-top: 16px; background: white; color: #16a085;">
-                            Analiz Et →
+                            {{ _('Analiz Et →') }}
                         </button>
                     </div>
                 </form>
@@ -252,16 +252,16 @@
         </div>
 
         <div class="card">
-            <h2>🔍 Detaylı Araç Analizi</h2>
+            <h2>{{ _('🔍 Detaylı Araç Analizi') }}</h2>
             <div class="info-box">
-                <p>Belirli bir araç için tarih aralığında detaylı performans analizi yapın. Yakıt tüketimi, tonaj,
-                    maliyet ve verimlilik skorlarını görün.</p>
+                <p>{{ _('Belirli bir araç için tarih aralığında detaylı performans analizi yapın. Yakıt tüketimi, tonaj,') }}
+                    {{ _('maliyet ve verimlilik skorlarını görün.') }}</p>
             </div>
             <form method="POST" action="/performans-detay">
                 <div class="form-group">
-                    <label for="plaka">Araç Plakası</label>
+                    <label for="plaka">{{ _('Araç Plakası') }}</label>
                     <input type="text" name="plaka" id="plaka" class="form-control"
-                        placeholder="Plaka numarası yazın..." required autocomplete="off" list="plaka-list">
+                        placeholder="{{ _('Plaka numarası yazın...') }}" required autocomplete="off" list="plaka-list">
                     <datalist id="plaka-list">
                         {% for plaka in plakalar %}
                         <option value="{{ plaka }}">
@@ -271,17 +271,17 @@
 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px;">
                     <div class="form-group">
-                        <label for="baslangic_tarihi">Başlangıç Tarihi (Opsiyonel)</label>
+                        <label for="baslangic_tarihi">{{ _('Başlangıç Tarihi (Opsiyonel)') }}</label>
                         <input type="date" name="baslangic_tarihi" id="baslangic_tarihi" class="form-control">
                     </div>
                     <div class="form-group">
-                        <label for="bitis_tarihi">Bitiş Tarihi (Opsiyonel)</label>
+                        <label for="bitis_tarihi">{{ _('Bitiş Tarihi (Opsiyonel)') }}</label>
                         <input type="date" name="bitis_tarihi" id="bitis_tarihi" class="form-control">
                     </div>
                 </div>
 
                 <button type="submit" class="btn btn-primary">
-                    🔬 Detaylı Analiz Yap
+                    {{ _('🔬 Detaylı Analiz Yap') }}
                 </button>
             </form>
         </div>

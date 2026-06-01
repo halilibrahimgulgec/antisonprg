@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performans Karşılaştırma - AI Analiz</title>
+    <title>{{ _('Performans Karşılaştırma - AI Analiz') }}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <style>
         * {
@@ -228,58 +228,58 @@
 
 <body>
     <div class="container">
-        <a href="/performans-analizi" class="back-link">← Performans Analizi</a>
+        <a href="/performans-analizi" class="back-link">{{ _('← Performans Analizi') }}</a>
 
         {% if selected_arac_tipi == 'KARGO ARACI' %}
         <div class="header" style="background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);">
-            <h1>🚛 Kargo Araçları Performans Analizi</h1>
-            <p>Ana malzeme bazlı tonaj ve verimlilik karşılaştırması</p>
+            <h1>{{ _('🚛 Kargo Araçları Performans Analizi') }}</h1>
+            <p>{{ _('Ana malzeme bazlı tonaj ve verimlilik karşılaştırması') }}</p>
         </div>
         {% elif selected_arac_tipi == 'İŞ MAKİNESİ' %}
         <div class="header" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);">
-            <h1>🏭 İş Makineleri Performans Analizi</h1>
-            <p>Yakıt verimliliği ve operasyonel performans karşılaştırması</p>
+            <h1>{{ _('🏭 İş Makineleri Performans Analizi') }}</h1>
+            <p>{{ _('Yakıt verimliliği ve operasyonel performans karşılaştırması') }}</p>
         </div>
         {% elif selected_arac_tipi == 'BİNEK ARAÇ' %}
         <div class="header" style="background: linear-gradient(135deg, #16a085 0%, #27ae60 100%);">
-            <h1>🚗 Binek Araçlar Performans Analizi</h1>
-            <p>KM/Litre oranı ve yakıt ekonomisi karşılaştırması</p>
+            <h1>{{ _('🚗 Binek Araçlar Performans Analizi') }}</h1>
+            <p>{{ _('KM/Litre oranı ve yakıt ekonomisi karşılaştırması') }}</p>
         </div>
         {% else %}
         <div class="header">
-            <h1>📊 Araç Performans Karşılaştırması</h1>
-            <p>Tüm araçların yakıt verimliliği ve performans metrikleri</p>
+            <h1>{{ _('📊 Araç Performans Karşılaştırması') }}</h1>
+            <p>{{ _('Tüm araçların yakıt verimliliği ve performans metrikleri') }}</p>
         </div>
         {% endif %}
 
         {% if selected_arac_tipi == 'KARGO ARACI' %}
         <div class="card">
-            <h3 style="color: #2d3748; margin-bottom: 20px;">🔍 Ana Malzeme Filtresi</h3>
+            <h3 style="color: #2d3748; margin-bottom: 20px;">{{ _('🔍 Ana Malzeme Filtresi') }}</h3>
             <form method="POST" action="/performans-karsilastirma" style="display: flex; gap: 16px; align-items: end;">
                 <input type="hidden" name="arac_tipi" value="KARGO ARACI">
                 <div class="form-group" style="flex: 1; margin-bottom: 0;">
-                    <label for="ana_malzeme">Ana Malzeme Türü</label>
+                    <label for="ana_malzeme">{{ _('Ana Malzeme Türü') }}</label>
                     <select name="ana_malzeme" id="ana_malzeme" class="form-control">
-                        <option value="" {% if not selected_malzeme %}selected{% endif %}>Tüm Malzemeler</option>
-                        <option value="KUM" {% if selected_malzeme=='KUM' %}selected{% endif %}>🟡 KUM</option>
-                        <option value="BETON" {% if selected_malzeme=='BETON' %}selected{% endif %}>🔴 BETON</option>
-                        <option value="PARKE" {% if selected_malzeme=='PARKE' %}selected{% endif %}>🟣 PARKE</option>
+                        <option value="" {% if not selected_malzeme %}selected{% endif %}>{{ _('Tüm Malzemeler') }}</option>
+                        <option value="KUM" {% if selected_malzeme=='KUM' %}selected{% endif %}>{{ _('🟡 KUM') }}</option>
+                        <option value="BETON" {% if selected_malzeme=='BETON' %}selected{% endif %}>{{ _('🔴 BETON') }}</option>
+                        <option value="PARKE" {% if selected_malzeme=='PARKE' %}selected{% endif %}>{{ _('🟣 PARKE') }}</option>
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary" style="margin-bottom: 0;">Filtrele</button>
+                <button type="submit" class="btn btn-primary" style="margin-bottom: 0;">{{ _('Filtrele') }}</button>
             </form>
         </div>
         {% endif %}
 
         <div class="card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
-            <h3 style="color: white; margin-bottom: 16px;">📥 Rapor İndirme</h3>
+            <h3 style="color: white; margin-bottom: 16px;">{{ _('📥 Rapor İndirme') }}</h3>
             <div style="display: flex; gap: 12px;">
                 <form method="POST" action="/performans-export-pdf" style="display: inline;">
                     <input type="hidden" name="arac_tipi" value="{{ selected_arac_tipi or '' }}">
                     <input type="hidden" name="ana_malzeme" value="{{ selected_malzeme or '' }}">
                     <button type="submit" class="btn btn-danger"
                         style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);">
-                        📄 PDF İndir
+                        {{ _('📄 PDF İndir') }}
                     </button>
                 </form>
                 <form method="POST" action="/performans-export-excel" style="display: inline;">
@@ -287,7 +287,7 @@
                     <input type="hidden" name="ana_malzeme" value="{{ selected_malzeme or '' }}">
                     <button type="submit" class="btn btn-success"
                         style="background: linear-gradient(135deg, #27ae60 0%, #229954 100%);">
-                        📊 Excel İndir
+                        {{ _('📊 Excel İndir') }}
                     </button>
                 </form>
             </div>
@@ -295,24 +295,24 @@
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-label">Ortalama KM/Litre</div>
+                <div class="stat-label">{{ _('Ortalama KM/Litre') }}</div>
                 <div class="stat-value">{{ "{:,.2f}".format(result.ortalama_km_litre).replace(',', 'X').replace('.',
                     ',').replace('X', '.') }} km/L</div>
             </div>
             <div class="stat-card success">
-                <div class="stat-label">Ortalama KM Başına Maliyet</div>
+                <div class="stat-label">{{ _('Ortalama KM Başına Maliyet') }}</div>
                 <div class="stat-value">{{ "{:,.2f}".format(result.ortalama_km_maliyet).replace(',', 'X').replace('.',
                     ',').replace('X', '.') }} TL/KM</div>
             </div>
             <div class="stat-card">
-                <div class="stat-label">Toplam Araç</div>
+                <div class="stat-label">{{ _('Toplam Araç') }}</div>
                 <div class="stat-value">{{ result.tum_araclar|length }}</div>
             </div>
         </div>
 
         <div class="top-section">
             <div class="vehicle-list">
-                <h3>🏆 En Verimli Araçlar (Top 5)</h3>
+                <h3>{{ _('🏆 En Verimli Araçlar (Top 5)') }}</h3>
                 {% for arac in result.en_verimli %}
                 <div class="vehicle-item">
                     <span class="vehicle-plaka">{{ arac.plaka }}</span>
@@ -324,7 +324,7 @@
             </div>
 
             <div class="vehicle-list">
-                <h3>⚠️ En Verimsiz Araçlar (Top 5)</h3>
+                <h3>{{ _('⚠️ En Verimsiz Araçlar (Top 5)') }}</h3>
                 {% for arac in result.en_verimsiz %}
                 <div class="vehicle-item">
                     <span class="vehicle-plaka">{{ arac.plaka }}</span>
@@ -338,30 +338,30 @@
 
         <div class="chart-grid">
             <div class="chart-container">
-                <h3>KM/Litre Oranı (Top 15)</h3>
+                <h3>{{ _('KM/Litre Oranı (Top 15)') }}</h3>
                 <canvas id="yakitKmChart"></canvas>
             </div>
             <div class="chart-container">
-                <h3>KM Başına Maliyet (Top 15)</h3>
+                <h3>{{ _('KM Başına Maliyet (Top 15)') }}</h3>
                 <canvas id="maliyetChart"></canvas>
             </div>
         </div>
 
         <div class="card">
-            <h3 style="color: #2d3748; margin-bottom: 20px;">📋 Detaylı Performans Tablosu</h3>
+            <h3 style="color: #2d3748; margin-bottom: 20px;">{{ _('📋 Detaylı Performans Tablosu') }}</h3>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Plaka</th>
-                            <th>Ana Malzeme</th>
-                            <th>Toplam Yakıt (L)</th>
-                            <th>Toplam KM</th>
-                            <th>Taşıma Miktarı</th>
-                            <th>KM/Litre</th>
-                            <th>KM/Maliyet</th>
-                            <th>Verimlilik (Yük/L)</th>
-                            <th>Verimlilik</th>
+                            <th>{{ _('Plaka') }}</th>
+                            <th>{{ _('Ana Malzeme') }}</th>
+                            <th>{{ _('Toplam Yakıt (L)') }}</th>
+                            <th>{{ _('Toplam KM') }}</th>
+                            <th>{{ _('Taşıma Miktarı') }}</th>
+                            <th>{{ _('KM/Litre') }}</th>
+                            <th>{{ _('KM/Maliyet') }}</th>
+                            <th>{{ _('Verimlilik (Yük/L)') }}</th>
+                            <th>{{ _('Verimlilik') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -370,11 +370,11 @@
                             <td><strong>{{ arac.plaka }}</strong></td>
                             <td>
                                 {% if arac.ana_malzeme == 'KUM' %}
-                                <span class="badge" style="background: #FEF3C7; color: #92400E;">🟡 KUM</span>
+                                <span class="badge" style="background: #FEF3C7; color: #92400E;">{{ _('🟡 KUM') }}</span>
                                 {% elif arac.ana_malzeme == 'BETON' %}
-                                <span class="badge" style="background: #FEE2E2; color: #991B1B;">🔴 BETON</span>
+                                <span class="badge" style="background: #FEE2E2; color: #991B1B;">{{ _('🔴 BETON') }}</span>
                                 {% elif arac.ana_malzeme == 'PARKE' %}
-                                <span class="badge" style="background: #E9D5FF; color: #6B21A8;">🟣 PARKE</span>
+                                <span class="badge" style="background: #E9D5FF; color: #6B21A8;">{{ _('🟣 PARKE') }}</span>
                                 {% else %}
                                 <span class="badge" style="background: #E5E7EB; color: #374151;">{{ arac.ana_malzeme
                                     }}</span>
@@ -397,15 +397,15 @@
                             <td>
                                 {% if selected_arac_tipi == 'KARGO ARACI' and selected_malzeme %}
                                 {% if arac.ton_basina_yakit > result.ortalama_ton_yakit %}
-                                <span class="badge badge-success">İyi</span>
+                                <span class="badge badge-success">{{ _('İyi') }}</span>
                                 {% else %}
-                                <span class="badge badge-danger">Kötü</span>
+                                <span class="badge badge-danger">{{ _('Kötü') }}</span>
                                 {% endif %}
                                 {% else %}
                                 {% if arac.km_litre_orani > result.ortalama_km_litre %}
-                                <span class="badge badge-success">İyi</span>
+                                <span class="badge badge-success">{{ _('İyi') }}</span>
                                 {% else %}
-                                <span class="badge badge-danger">Kötü</span>
+                                <span class="badge badge-danger">{{ _('Kötü') }}</span>
                                 {% endif %}
                                 {% endif %}
                             </td>
@@ -433,7 +433,7 @@
             data: {
                 labels: plakalar,
                 datasets: [{
-                    label: 'KM/Litre',
+                    label: '{{ _('KM/Litre') }}',
                     data: kmLitre,
                     backgroundColor: '#27ae60'
                 }]

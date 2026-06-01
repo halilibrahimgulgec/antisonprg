@@ -146,33 +146,7 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <a href="/" class="logo">
-            <i class="fa-solid fa-truck-fast"></i>
-            <h2>ANTİ-GRAVİTY</h2>
-        </a>
-        <nav class="nav-menu">
-            <li class="nav-item">
-                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    {{ _('AI ASİSTAN (YENİ)') }}
-                </a>
-            </li>
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
-            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link active"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
-            <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
-            <li class="nav-item"><a href="/soforler" class="nav-link"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
-        </nav>
-        <div class="user-profile">
-            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info">
-                <h4>{{ session['username'] }}</h4>
-                <p>{{ session['role'] }}</p>
-            </div>
-        </div>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <header class="header">
@@ -248,7 +222,7 @@
                             <td><strong>{{ arac.plaka }}</strong></td>
                             <td><span class="badge {% if arac.sahip == 'BİZİM' %}badge-bizim{% else %}badge-taseron{% endif %}">{{ arac.sahip }}</span></td>
                             <td><span class="badge badge-aktif" style="background: #F3E8FF; color: #7E22CE;">{{ arac.arac_tipi }}</span></td>
-                            <td><span class="badge {% if arac.aktif %}badge-aktif{% else %}badge-pasif{% endif %}">{% if arac.aktif %}Aktif{% else %}Pasif{% endif %}</span></td>
+                            <td><span class="badge {% if arac.aktif %}badge-aktif{% else %}badge-pasif{% endif %}">{% if arac.aktif %}{{ _('Aktif') }}{% else %}{{ _('Pasif') }}{% endif %}</span></td>
                             <td><small>{{ arac.varsayilan_malzeme or '-' }}</small></td>
                             <td>
                                 <div style="display: flex; gap: 5px;">
@@ -271,12 +245,12 @@
     <div id="addModal" class="modal"><div class="modal-content">
         <h3 style="margin-bottom: 25px;"><i class="fa-solid fa-plus-circle"></i> {{ _('Yeni Araç Ekle') }}</h3>
         <form method="POST" action="/arac-ekle">
-            <div class="form-group"><label>{{ _('Plaka') }} *</label><input type="text" name="plaka" class="form-control" required placeholder="34XXX00"></div>
+            <div class="form-group"><label>{{ _('Plaka') }} *</label><input type="text" name="plaka" class="form-control" required placeholder="{{ _('34XXX00') }}"></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>{{ _('Sahip') }}</label><select name="sahip" class="form-control"><option value="BİZİM">BİZİM</option><option value="TAŞERON">TAŞERON</option></select></div>
-                <div class="form-group"><label>{{ _('Araç Tipi') }}</label><select name="arac_tipi" class="form-control"><option value="KARGO ARACI">KARGO ARACI</option><option value="İŞ MAKİNESİ">İŞ MAKİNESİ</option><option value="BİNEK ARAÇ">BİNEK ARAÇ</option></select></div>
+                <div class="form-group"><label>{{ _('Sahip') }}</label><select name="sahip" class="form-control"><option value="BİZİM">{{ _('BİZİM') }}</option><option value="TAŞERON">{{ _('TAŞERON') }}</option></select></div>
+                <div class="form-group"><label>{{ _('Araç Tipi') }}</label><select name="arac_tipi" class="form-control"><option value="KARGO ARACI">{{ _('KARGO ARACI') }}</option><option value="İŞ MAKİNESİ">{{ _('İŞ MAKİNESİ') }}</option><option value="BİNEK ARAÇ">{{ _('BİNEK ARAÇ') }}</option></select></div>
             </div>
-            <div class="form-group"><label>{{ _('Varsayılan Malzeme') }}</label><select name="varsayilan_malzeme" class="form-control"><option value="">Otomatik (Kantar)</option><option value="BETON">BETON</option><option value="KUM">KUM</option><option value="PARKE">PARKE</option></select></div>
+            <div class="form-group"><label>{{ _('Varsayılan Malzeme') }}</label><select name="varsayilan_malzeme" class="form-control"><option value="">{{ _('Otomatik (Kantar)') }}</option><option value="BETON">{{ _('BETON') }}</option><option value="KUM">{{ _('KUM') }}</option><option value="PARKE">{{ _('PARKE') }}</option></select></div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
                 <button type="button" onclick="document.getElementById('addModal').style.display='none'" class="btn-action btn-gray" style="padding: 10px 20px;">{{ _('İptal') }}</button>
                 <button type="submit" class="btn-action btn-blue" style="padding: 10px 30px;">{{ _('Kaydet') }}</button>
@@ -290,8 +264,8 @@
             <input type="hidden" name="plaka" id="edit_plaka">
             <div class="form-group"><label>{{ _('Plaka') }}</label><input type="text" id="edit_plaka_display" class="form-control" disabled></div>
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group"><label>{{ _('Sahip') }}</label><select name="sahip" id="edit_sahip" class="form-control"><option value="BİZİM">BİZİM</option><option value="TAŞERON">TAŞERON</option></select></div>
-                <div class="form-group"><label>{{ _('Durum') }}</label><select name="aktif" id="edit_aktif" class="form-control"><option value="1">Aktif</option><option value="0">Pasif</option></select></div>
+                <div class="form-group"><label>{{ _('Sahip') }}</label><select name="sahip" id="edit_sahip" class="form-control"><option value="BİZİM">{{ _('BİZİM') }}</option><option value="TAŞERON">{{ _('TAŞERON') }}</option></select></div>
+                <div class="form-group"><label>{{ _('Durum') }}</label><select name="aktif" id="edit_aktif" class="form-control"><option value="1">{{ _('Aktif') }}</option><option value="0">{{ _('Pasif') }}</option></select></div>
             </div>
             <div class="form-group"><label>{{ _('Notlar') }}</label><textarea name="notlar" id="edit_notlar" class="form-control"></textarea></div>
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">

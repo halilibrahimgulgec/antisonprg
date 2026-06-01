@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saha Bildirim Merkezi</title>
+    <title>{{ _('Saha Bildirim Merkezi') }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f4f7f6; color: #333; }
@@ -55,14 +55,14 @@
 
     <div class="header">
         <a href="/" class="back-btn">←</a>
-        <h1>📲 Saha Bildirim Merkezi</h1>
-        <p>Şoförlerden gelen son kayıtlar</p>
+        <h1>{{ _('📲 Saha Bildirim Merkezi') }}</h1>
+        <p>{{ _('Şoförlerden gelen son kayıtlar') }}</p>
     </div>
 
     <div class="tabs">
         <button class="tab-btn active" onclick="openTab('arizalar')">Arızalar ({{ bildirimler.arizalar|length }})</button>
-        <button class="tab-btn" onclick="openTab('evraklar')">Evraklar ({{ bildirimler.evraklar|length }})</button>
-        <button class="tab-btn" onclick="openTab('hasarlar')">Hasarlar ({{ bildirimler.hasarlar|length }})</button>
+        <button class="tab-btn" onclick="openTab('evraklar')">{{ _('Evrak') }}lar ({{ bildirimler.evraklar|length }})</button>
+        <button class="tab-btn" onclick="openTab('hasarlar')">{{ _('Hasar') }}lar ({{ bildirimler.hasarlar|length }})</button>
         <button class="tab-btn" onclick="openTab('yakitlar')">Yakıt Fişleri ({{ bildirimler.yakit_fisleri|length }})</button>
     </div>
 
@@ -81,11 +81,11 @@
                     {% if b.iletisim_tel %}
                         <a href="tel:{{ b.iletisim_tel }}" class="telefon">📞 {{ b.iletisim_tel }}</a>
                     {% endif %}
-                    <div class="aciklama" style="margin-top: 10px;"><strong>Not:</strong> {{ b.yapilan_islem }}</div>
+                    <div class="aciklama" style="margin-top: 10px;"><strong>{{ _('Not:') }}</strong> {{ b.yapilan_islem }}</div>
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state"><i>🔧</i>Henüz açık bir arıza bildirimi yok.</div>
+                <div class="empty-state"><i>🔧</i>{{ _('Henüz açık bir arıza bildirimi yok.') }}</div>
             {% endif %}
         </div>
 
@@ -102,11 +102,11 @@
                     {% if e.aciklama %}
                         <div class="aciklama">{{ e.aciklama }}</div>
                     {% endif %}
-                    <img src="{{ e.fotograf_yolu }}" class="thumbnail" onclick="openLightbox(this.src)" alt="Evrak">
+                    <img src="{{ e.fotograf_yolu }}" class="thumbnail" onclick="openLightbox(this.src)" alt="{{ _('Evrak') }}">
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state"><i>📸</i>Henüz gönderilmiş bir evrak yok.</div>
+                <div class="empty-state"><i>📸</i>{{ _('Henüz gönderilmiş bir evrak yok.') }}</div>
             {% endif %}
         </div>
 
@@ -122,15 +122,15 @@
                     <div class="sofor-info">👨‍✈️ {{ h.sofor_adi or 'Bilinmiyor' }}</div>
                     <div class="aciklama">{{ h.aciklama }}</div>
                     {% if h.fotograf_yolu %}
-                        <img src="{{ h.fotograf_yolu }}" class="thumbnail" onclick="openLightbox(this.src)" alt="Hasar">
+                        <img src="{{ h.fotograf_yolu }}" class="thumbnail" onclick="openLightbox(this.src)" alt="{{ _('Hasar') }}">
                     {% endif %}
                     {% if h.konum_enlem %}
-                        <a href="https://maps.google.com/?q={{ h.konum_enlem }},{{ h.konum_boylam }}" target="_blank" class="telefon" style="background:#e3f2fd; color:#1976d2; margin-top:10px; display:block; text-align:center;">📍 Haritada Göster</a>
+                        <a href="https://maps.google.com/?q={{ h.konum_enlem }},{{ h.konum_boylam }}" target="_blank" class="telefon" style="background:#e3f2fd; color:#1976d2; margin-top:10px; display:block; text-align:center;">{{ _('📍 Haritada Göster') }}</a>
                     {% endif %}
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state"><i>💥</i>Fotoğraflı/Konumlu hasar bildirimi yok.</div>
+                <div class="empty-state"><i>💥</i>{{ _('Fotoğraflı/Konumlu hasar bildirimi yok.') }}</div>
             {% endif %}
         </div>
 
@@ -144,11 +144,11 @@
                         <span class="tarih">{{ y.tarih_sirala[:16] }}</span>
                     </div>
                     <div class="sofor-info">👨‍✈️ {{ y.sofor_adi or 'Bilinmiyor' }} - {{ y.yakit_miktari }} Litre</div>
-                    <img src="{{ y.fis_fotograf_yolu }}" class="thumbnail" onclick="openLightbox(this.src)" alt="Yakıt Fişi">
+                    <img src="{{ y.fis_fotograf_yolu }}" class="thumbnail" onclick="openLightbox(this.src)" alt="{{ _('Yakıt Fişi') }}">
                 </div>
                 {% endfor %}
             {% else %}
-                <div class="empty-state"><i>⛽</i>Fotoğraflı yakıt fişi yok.</div>
+                <div class="empty-state"><i>⛽</i>{{ _('Fotoğraflı yakıt fişi yok.') }}</div>
             {% endif %}
         </div>
 
@@ -157,8 +157,8 @@
     <!-- Lightbox -->
     <div id="lightbox" class="lightbox">
         <span class="close-lightbox" onclick="closeLightbox()">✕</span>
-        <img id="lightbox-img" src="" alt="Büyük Görsel">
-        <a id="lightbox-download" href="" download class="btn-download">⬇ İndir</a>
+        <img id="lightbox-img" src="" alt="{{ _('Büyük Görsel') }}">
+        <a id="lightbox-download" href="" download class="btn-download">{{ _('⬇ İndir') }}</a>
     </div>
 
     <script>

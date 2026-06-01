@@ -116,33 +116,7 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <a href="/" class="logo">
-            <i class="fa-solid fa-truck-fast"></i>
-            <h2>ANTİ-GRAVİTY</h2>
-        </a>
-        <nav class="nav-menu">
-            <li class="nav-item">
-                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    {{ _('AI ASİSTAN (YENİ)') }}
-                </a>
-            </li>
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
-            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
-            <li class="nav-item"><a href="/ai-analysis" class="nav-link"><i class="fa-solid fa-microchip"></i> {{ _('AI Analiz') }}</a></li>
-            <li class="nav-item"><a href="/soforler" class="nav-link active"><i class="fa-solid fa-user-tie"></i> {{ _('Şoför Yönetimi') }}</a></li>
-        </nav>
-        <div class="user-profile">
-            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info">
-                <h4>{{ session['username'] }}</h4>
-                <p>{{ session['role'] }}</p>
-            </div>
-        </div>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <header class="header">
@@ -171,7 +145,7 @@
                     </div>
                     <div class="form-group">
                         <label>{{ _('Telefon') }}</label>
-                        <input type="text" name="telefon" class="form-control" placeholder="05XX XXX XX XX">
+                        <input type="text" name="telefon" class="form-control" placeholder="{{ _('05XX XXX XX XX') }}">
                     </div>
                     <div class="form-group">
                         <label>{{ _('TC Kimlik No') }}</label>
@@ -241,7 +215,7 @@
                 <div class="form-group"><label>{{ _('Ad Soyad') }} *</label><input type="text" name="ad_soyad" id="m_ad_soyad" class="form-control" required></div>
                 <div class="form-group"><label>{{ _('Telefon') }}</label><input type="text" name="telefon" id="m_telefon" class="form-control"></div>
                 <div class="form-group"><label>{{ _('TC No') }}</label><input type="text" name="tc_no" id="m_tc_no" class="form-control" maxlength="11"></div>
-                <div class="form-group"><label>{{ _('Durum') }}</label><select name="aktif" id="m_aktif" class="form-control"><option value="1">Aktif</option><option value="0">Pasif</option></select></div>
+                <div class="form-group"><label>{{ _('Durum') }}</label><select name="aktif" id="m_aktif" class="form-control"><option value="1">{{ _('Aktif') }}</option><option value="0">{{ _('Pasif') }}</option></select></div>
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px;">
                     <button type="button" onclick="document.getElementById('updateModal').style.display='none'" class="btn-action" style="background: #F3F4F6; color: #4B5563;">{{ _('İptal') }}</button>
                     <button type="submit" class="btn-action">{{ _('Kaydet') }}</button>

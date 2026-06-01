@@ -173,113 +173,113 @@
 </head>
 <body>
     <div class="container">
-        <a href="/performans-analizi" class="back-link">← Performans Analizi</a>
+        <a href="/performans-analizi" class="back-link">{{ _('← Performans Analizi') }}</a>
 
         <div class="header">
-            <h1>🚛 Detaylı Performans Analizi</h1>
+            <h1>{{ _('🚛 Detaylı Performans Analizi') }}</h1>
             <div class="plaka-badge">{{ result.plaka }}</div>
             <div class="tarih-badge">📅 {{ result.tarih_araligi }}</div>
         </div>
 
         <div class="card">
-            <h3 style="color: #2d3748; margin-bottom: 20px;">📊 Genel Özet</h3>
+            <h3 style="color: #2d3748; margin-bottom: 20px;">{{ _('📊 Genel Özet') }}</h3>
             <div class="stats-grid">
                 <div class="stat-card">
-                    <div class="stat-label">Toplam Yakıt</div>
-                    <div class="stat-value">{{ result.ozet.toplam_yakit }}<span class="stat-unit">L</span></div>
+                    <div class="stat-label">{{ _('Toplam Yakıt') }}</div>
+                    <div class="stat-value">{{ result.ozet.toplam_yakit }}<span class="stat-unit">{{ _('L') }}</span></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Toplam KM</div>
-                    <div class="stat-value">{{ result.ozet.toplam_km }}<span class="stat-unit">KM</span></div>
+                    <div class="stat-label">{{ _('Toplam KM') }}</div>
+                    <div class="stat-value">{{ result.ozet.toplam_km }}<span class="stat-unit">{{ _('KM') }}</span></div>
                 </div>
                 <div class="stat-card success">
-                    <div class="stat-label">Sefer Sayısı</div>
+                    <div class="stat-label">{{ _('Sefer Sayısı') }}</div>
                     <div class="stat-value">{{ result.ozet.sefer_sayisi }}</div>
                 </div>
                 <div class="stat-card warning">
-                    <div class="stat-label">Toplam Maliyet</div>
-                    <div class="stat-value">{{ result.ozet.toplam_maliyet }}<span class="stat-unit">TL</span></div>
+                    <div class="stat-label">{{ _('Toplam Maliyet') }}</div>
+                    <div class="stat-value">{{ result.ozet.toplam_maliyet }}<span class="stat-unit">{{ _('TL') }}</span></div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-label">Toplam Tonaj</div>
-                    <div class="stat-value">{{ result.ozet.toplam_tonaj }}<span class="stat-unit">Ton</span></div>
+                    <div class="stat-label">{{ _('Toplam Tonaj') }}</div>
+                    <div class="stat-value">{{ result.ozet.toplam_tonaj }}<span class="stat-unit">{{ _('Ton') }}</span></div>
                 </div>
                 <div class="stat-card success">
-                    <div class="stat-label">Yüklenme Sayısı</div>
+                    <div class="stat-label">{{ _('Yüklenme Sayısı') }}</div>
                     <div class="stat-value">{{ result.ozet.yuklenme_sayisi }}</div>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <h3 style="color: #2d3748; margin-bottom: 20px;">⚡ Performans Metrikleri</h3>
+            <h3 style="color: #2d3748; margin-bottom: 20px;">{{ _('⚡ Performans Metrikleri') }}</h3>
             <div class="performance-grid">
                 <div class="performance-card {% if result.performans.km_litre_orani > 6 %}good{% elif result.performans.km_litre_orani < 4 %}bad{% endif %}">
-                    <div class="performance-label">KM/Litre Oranı</div>
+                    <div class="performance-label">{{ _('KM/Litre Oranı') }}</div>
                     <div class="performance-value">{{ result.performans.km_litre_orani }}</div>
-                    <div class="performance-desc">Kilometre / Litre</div>
+                    <div class="performance-desc">{{ _('Kilometre / Litre') }}</div>
                 </div>
                 <div class="performance-card">
-                    <div class="performance-label">KM Başına Maliyet</div>
+                    <div class="performance-label">{{ _('KM Başına Maliyet') }}</div>
                     <div class="performance-value">{{ result.performans.km_basina_maliyet }}</div>
-                    <div class="performance-desc">TL / Kilometre</div>
+                    <div class="performance-desc">{{ _('TL / Kilometre') }}</div>
                 </div>
                 <div class="performance-card">
-                    <div class="performance-label">Ton Başına Yakıt</div>
+                    <div class="performance-label">{{ _('Ton Başına Yakıt') }}</div>
                     <div class="performance-value">{{ result.performans.ton_basina_yakit if result.ozet.toplam_tonaj > 0 else 'N/A' }}</div>
-                    <div class="performance-desc">Litre / Ton</div>
+                    <div class="performance-desc">{{ _('Litre / Ton') }}</div>
                 </div>
                 <div class="performance-card {% if result.performans.verimlilik_skoru < 15 %}good{% elif result.performans.verimlilik_skoru > 25 %}bad{% endif %}">
-                    <div class="performance-label">Verimlilik Skoru</div>
+                    <div class="performance-label">{{ _('Verimlilik Skoru') }}</div>
                     <div class="performance-value">{{ result.performans.verimlilik_skoru }}</div>
-                    <div class="performance-desc">Düşük = İyi</div>
+                    <div class="performance-desc">{{ _('Düşük = İyi') }}</div>
                 </div>
             </div>
         </div>
 
         {% if result.trend.aylik_yakit %}
         <div class="chart-container">
-            <h3>📈 Aylık Yakıt Tüketim Trendi</h3>
+            <h3>{{ _('📈 Aylık Yakıt Tüketim Trendi') }}</h3>
             <canvas id="yakitTrendChart"></canvas>
         </div>
 
         <div class="chart-container">
-            <h3>📍 Aylık Kilometre Trendi</h3>
+            <h3>{{ _('📍 Aylık Kilometre Trendi') }}</h3>
             <canvas id="kmTrendChart"></canvas>
         </div>
         {% endif %}
 
         <div class="card">
-            <h3 style="color: #2d3748; margin-bottom: 16px;">💡 Değerlendirme</h3>
+            <h3 style="color: #2d3748; margin-bottom: 16px;">{{ _('💡 Değerlendirme') }}</h3>
             <div style="background: #f7fafc; padding: 20px; border-radius: 8px; line-height: 1.8; color: #4a5568;">
                 {% if result.performans.verimlilik_skoru < 15 %}
-                    <p><strong style="color: #27ae60;">✅ Mükemmel Performans!</strong></p>
-                    <p>Bu araç çok verimli çalışıyor. Yakıt tüketimi optimal seviyede.</p>
+                    <p><strong style="color: #27ae60;">{{ _('✅ Mükemmel Performans!') }}</strong></p>
+                    <p>{{ _('Bu araç çok verimli çalışıyor. Yakıt tüketimi optimal seviyede.') }}</p>
                 {% elif result.performans.verimlilik_skoru < 20 %}
-                    <p><strong style="color: #3498db;">✓ İyi Performans</strong></p>
-                    <p>Araç genel olarak iyi performans gösteriyor. Küçük iyileştirmeler yapılabilir.</p>
+                    <p><strong style="color: #3498db;">{{ _('✓ İyi Performans') }}</strong></p>
+                    <p>{{ _('Araç genel olarak iyi performans gösteriyor. Küçük iyileştirmeler yapılabilir.') }}</p>
                 {% elif result.performans.verimlilik_skoru < 25 %}
-                    <p><strong style="color: #f39c12;">⚠️ Orta Performans</strong></p>
-                    <p>Yakıt tüketimi ortalamanın üzerinde. Sürücü eğitimi ve araç bakımı önerilir.</p>
+                    <p><strong style="color: #f39c12;">{{ _('⚠️ Orta Performans') }}</strong></p>
+                    <p>{{ _('Yakıt tüketimi ortalamanın üzerinde. Sürücü eğitimi ve araç bakımı önerilir.') }}</p>
                 {% else %}
-                    <p><strong style="color: #e74c3c;">❌ Düşük Performans</strong></p>
-                    <p>Ciddi verimlilik sorunu var. Acil araç kontrolü ve sürücü değerlendirmesi gerekli.</p>
+                    <p><strong style="color: #e74c3c;">{{ _('❌ Düşük Performans') }}</strong></p>
+                    <p>{{ _('Ciddi verimlilik sorunu var. Acil araç kontrolü ve sürücü değerlendirmesi gerekli.') }}</p>
                 {% endif %}
 
                 <hr style="margin: 16px 0; border: none; border-top: 1px solid #e2e8f0;">
 
-                <p><strong>Öneriler:</strong></p>
+                <p><strong>{{ _('Öneriler:') }}</strong></p>
                 <ul style="margin-left: 20px; margin-top: 8px;">
                     {% if result.performans.km_litre_orani < 4 %}
-                        <li>Yüksek yakıt tüketimi - Araç servisine götürün</li>
-                        <li>Sürücü davranışlarını inceleyin</li>
+                        <li>{{ _('Yüksek yakıt tüketimi - Araç servisine götürün') }}</li>
+                        <li>{{ _('Sürücü davranışlarını inceleyin') }}</li>
                     {% endif %}
                     {% if result.ozet.toplam_tonaj == 0 %}
-                        <li>Tonaj bilgisi eksik - Veri girişi kontrol edilmeli</li>
+                        <li>{{ _('Tonaj bilgisi eksik - Veri girişi kontrol edilmeli') }}</li>
                     {% endif %}
-                    <li>Düzenli araç bakımı yapın</li>
-                    <li>Lastik basınçlarını kontrol edin</li>
-                    <li>Gereksiz ağırlık taşımayın</li>
+                    <li>{{ _('Düzenli araç bakımı yapın') }}</li>
+                    <li>{{ _('Lastik basınçlarını kontrol edin') }}</li>
+                    <li>{{ _('Gereksiz ağırlık taşımayın') }}</li>
                 </ul>
             </div>
         </div>
@@ -301,7 +301,7 @@
             data: {
                 labels: aylar,
                 datasets: [{
-                    label: 'Yakıt Tüketimi (L)',
+                    label: 'Yakıt Tüketimi ({{ _('L') }})',
                     data: yakitDegerleri,
                     borderColor: '#3498db',
                     backgroundColor: 'rgba(52, 152, 219, 0.1)',
@@ -324,7 +324,7 @@
             }
         });
 
-        // KM Trend Grafiği
+        // {{ _('KM') }} Trend Grafiği
         const ctx2 = document.getElementById('kmTrendChart').getContext('2d');
         new Chart(ctx2, {
             type: 'line',

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-05-25 20:53+0300\n"
+"POT-Creation-Date: 2026-06-01 22:15+0300\n"
 "PO-Revision-Date: 2026-04-30 23:43+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: en <LL@li.org>\n"
@@ -18,142 +18,41 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: app_db_strings.py:6
-msgid "BİNEK ARAÇ"
-msgstr "PASSENGER CAR"
-
-#: app_db_strings.py:7
-msgid "İŞ MAKİNESİ"
-msgstr "HEAVY MACHINERY"
-
-#: app_db_strings.py:8
-msgid "KARGO ARACI"
-msgstr "CARGO TRUCK"
-
-#: app_db_strings.py:9 templates/index.html:173
-msgid "Kargo Araçları"
-msgstr "Cargo Vehicles"
-
-#: app_db_strings.py:10
-msgid "Binek Araçları"
-msgstr "Passenger Vehicles"
-
-#: app_db_strings.py:11 templates/index.html:175
-msgid "İş Makineleri"
-msgstr "Construction Machinery"
-
-#: app_db_strings.py:12
-msgid "BİZİM"
-msgstr "OUR OWN"
-
-#: app_db_strings.py:13
-msgid "TAŞERON"
-msgstr "SUBCONTRACTOR"
-
 #: templates/ai_analysis.html:6
 msgid "AI Analiz & Tahmin - Telematik Dashboard"
 msgstr "AI Analysis and Forecasting - Telematics Dashboard"
 
-#: templates/ai_analysis.html:126 templates/arac_yonetimi.html:158
-#: templates/bakim.html:117 templates/bakim_analiz.html:83
-#: templates/binek_arac_filtre.html:139 templates/index.html:115
-#: templates/is_makinesi_filtre.html:139 templates/kargo_arac_filtre.html:140
-#: templates/lastik_yonetimi.html:125 templates/muhasebe.html:143
-#: templates/muhasebe_result.html:101 templates/result.html:135
-#: templates/soforler.html:128
-msgid "AI ASİSTAN (YENİ)"
-msgstr "AI ASSISTANT (NEW)"
-
-#: templates/ai_analysis.html:129 templates/ai_analysis.html:204
-#: templates/arac_yonetimi.html:161 templates/bakim.html:120
-#: templates/bakim_analiz.html:86 templates/binek_arac_filtre.html:142
-#: templates/index.html:118 templates/is_makinesi_filtre.html:142
-#: templates/kargo_arac_filtre.html:143 templates/lastik_yonetimi.html:128
-#: templates/muhasebe.html:146 templates/muhasebe_result.html:104
-#: templates/result.html:138 templates/soforler.html:131
-msgid "Dashboard"
-msgstr "Dashboard"
-
-#: templates/ai_analysis.html:130 templates/arac_yonetimi.html:162
-#: templates/bakim.html:121 templates/bakim_analiz.html:87
-#: templates/binek_arac_filtre.html:143 templates/index.html:121
-#: templates/index.html:176 templates/is_makinesi_filtre.html:143
-#: templates/kargo_arac_filtre.html:144 templates/lastik_yonetimi.html:129
-#: templates/muhasebe.html:147 templates/muhasebe.html:165
-#: templates/muhasebe_result.html:105 templates/result.html:139
-#: templates/soforler.html:132
-msgid "Muhasebe Analizi"
-msgstr "Accounting Analysis"
-
-#: templates/ai_analysis.html:131 templates/arac_yonetimi.html:163
-#: templates/bakim.html:122 templates/bakim_analiz.html:88
-#: templates/binek_arac_filtre.html:144 templates/index.html:122
-#: templates/is_makinesi_filtre.html:144 templates/kargo_arac_filtre.html:145
-#: templates/lastik_yonetimi.html:130 templates/muhasebe.html:148
-#: templates/muhasebe_result.html:106 templates/result.html:140
-#: templates/soforler.html:133
-msgid "Filo Yönetimi"
-msgstr "Fleet Management"
-
-#: templates/ai_analysis.html:132 templates/arac_yonetimi.html:164
-#: templates/bakim.html:123 templates/bakim_analiz.html:89
-#: templates/binek_arac_filtre.html:145 templates/index.html:123
-#: templates/is_makinesi_filtre.html:145 templates/kargo_arac_filtre.html:146
-#: templates/lastik_yonetimi.html:131 templates/muhasebe.html:149
-#: templates/muhasebe_result.html:107 templates/result.html:141
-#: templates/soforler.html:134
-msgid "Bakım & Onarım"
-msgstr "Maintenance & Repair"
-
-#: templates/ai_analysis.html:133 templates/arac_yonetimi.html:165
-#: templates/bakim.html:124 templates/bakim_analiz.html:90
-#: templates/binek_arac_filtre.html:146 templates/index.html:124
-#: templates/is_makinesi_filtre.html:146 templates/kargo_arac_filtre.html:147
-#: templates/muhasebe.html:150 templates/muhasebe_result.html:108
-#: templates/result.html:142 templates/soforler.html:135
-msgid "AI Analiz"
-msgstr "AI Analysis"
-
-#: templates/ai_analysis.html:134 templates/arac_yonetimi.html:166
-#: templates/bakim.html:125 templates/bakim_analiz.html:91
-#: templates/binek_arac_filtre.html:147 templates/index.html:125
-#: templates/is_makinesi_filtre.html:147 templates/kargo_arac_filtre.html:148
-#: templates/muhasebe.html:151 templates/muhasebe_result.html:109
-#: templates/result.html:143 templates/soforler.html:136
-msgid "Şoför Yönetimi"
-msgstr "Driver Management"
-
-#: templates/ai_analysis.html:148
+#: templates/ai_analysis.html:122
 msgid "AI Analiz & Tahmin"
 msgstr "AI Analysis and Prediction"
 
-#: templates/ai_analysis.html:149
+#: templates/ai_analysis.html:123
 msgid "Yapay zeka motoru ile geleceği öngörün."
 msgstr "Predict the future with artificial intelligence engine."
 
-#: templates/ai_analysis.html:151 templates/arac_yonetimi.html:183
-#: templates/bakim.html:140 templates/binek_arac_filtre.html:164
-#: templates/is_makinesi_filtre.html:164 templates/kargo_arac_filtre.html:165
-#: templates/muhasebe.html:170 templates/soforler.html:153
+#: templates/ai_analysis.html:125 templates/arac_yonetimi.html:157
+#: templates/bakim.html:119 templates/binek_arac_filtre.html:138
+#: templates/is_makinesi_filtre.html:138 templates/kargo_arac_filtre.html:139
+#: templates/muhasebe.html:144 templates/soforler.html:127
 msgid "Geri"
 msgstr "Back"
 
-#: templates/ai_analysis.html:164
+#: templates/ai_analysis.html:138
 msgid "Yakıt Tüketim Tahmini"
 msgstr "Fuel Consumption Estimation"
 
-#: templates/ai_analysis.html:165
+#: templates/ai_analysis.html:139
 msgid ""
 "Random Forest algoritması ile araçların gelecekteki yakıt tüketimini "
 "öngörün."
 msgstr ""
 "Predict future fuel consumption of vehicles with Random Forest algorithm."
 
-#: templates/ai_analysis.html:168 templates/index.html:215
+#: templates/ai_analysis.html:142 templates/index.html:186
 msgid "Anomali Tespiti"
 msgstr "Anomaly Detection"
 
-#: templates/ai_analysis.html:169
+#: templates/ai_analysis.html:143
 msgid ""
 "Isolation Forest ile alışılmadık yakıt tüketimlerini ve kaçakları otomatik "
 "bulun."
@@ -161,196 +60,674 @@ msgstr ""
 "Automatically detect unusual fuel consumption and leaks with Isolation "
 "Forest."
 
-#: templates/ai_analysis.html:174
+#: templates/ai_analysis.html:148
 msgid "Bireysel Araç Tahmini"
 msgstr "Individual Vehicle Estimate"
 
-#: templates/ai_analysis.html:178
+#: templates/ai_analysis.html:152 templates/performans_analizi.html:262
 msgid "Araç Plakası"
 msgstr "The license plate number was"
 
-#: templates/ai_analysis.html:183
+#: templates/ai_analysis.html:153 templates/arac_yonetimi.html:248
+msgid "34XXX00"
+msgstr "34XXX00"
+
+#: templates/ai_analysis.html:157
 msgid "Tahmin Tipi"
 msgstr "Forecast Type"
 
-#: templates/ai_analysis.html:185
+#: templates/ai_analysis.html:159
 msgid "Tek Gün Tahmini"
 msgstr "Single Day Forecast"
 
-#: templates/ai_analysis.html:186
+#: templates/ai_analysis.html:160
 msgid "Gelecek 30 Gün Tahmini"
 msgstr "Next 30 Days Forecast"
 
-#: templates/ai_analysis.html:190 templates/bakim.html:233
+#: templates/ai_analysis.html:164 templates/ai_anomaly_result.html:185
+#: templates/ai_predict_result.html:175 templates/anomaly_dashboard.html:426
+#: templates/bakim.html:212 templates/data_management.html:73
+#: templates/data_management.html:96 templates/data_management.html:119
+#: templates/hasar_ceza.html:172 templates/hasar_ceza.html:193
 msgid "Tarih"
 msgstr "History"
 
-#: templates/ai_analysis.html:194
+#: templates/ai_analysis.html:168
 msgid "TAHMİNİ BAŞLAT"
 msgstr "START PREDICTION"
 
-#: templates/ai_analysis.html:200
+#: templates/ai_analysis.html:174
 msgid "Anomali Analizi"
 msgstr "Anomaly Analysis"
 
-#: templates/ai_analysis.html:201
+#: templates/ai_analysis.html:175
 msgid "Tüm veritabanı taranarak normal dışı yakıt tüketimleri raporlanır."
 msgstr ""
 "The entire database is scanned and abnormal fuel consumption is reported."
 
-#: templates/ai_analysis.html:203
+#: templates/ai_analysis.html:177
 msgid "Tespit Et"
 msgstr "Detect"
 
-#: templates/ai_analysis.html:208
+#: templates/ai_analysis.html:178 templates/sidebar.html:165
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: templates/ai_analysis.html:182
 msgid "Toplu Tahmin"
 msgstr "Mass Forecast"
 
-#: templates/ai_analysis.html:209
+#: templates/ai_analysis.html:183
 msgid "Tüm filo için gelecek ay bütçe planlaması tahminlerini oluşturun."
 msgstr "Create next month budget planning forecasts for the entire fleet."
 
-#: templates/ai_analysis.html:210
+#: templates/ai_analysis.html:184
 msgid "Tüm Filoyu Tahmin Et"
 msgstr "Guess the Entire Fleet"
+
+#: templates/ai_anomaly_result.html:6
+msgid "Anomali Tespiti - AI Analiz"
+msgstr "Anomaly Detection"
+
+#: templates/ai_anomaly_result.html:144 templates/ai_bulk_result.html:145
+#: templates/ai_predict_result.html:86
+msgid "← AI Analiz Sayfası"
+msgstr "AI Analysis"
+
+#: templates/ai_anomaly_result.html:147
+msgid "🚨 Anomali Tespiti Sonuçları"
+msgstr "Anomaly Detection"
+
+#: templates/ai_anomaly_result.html:148
+msgid "AI ile tespit edilen anormal yakıt tüketimleri"
+msgstr "Abnormal fuel consumptions detected by AI"
+
+#: templates/ai_anomaly_result.html:152
+msgid "📊 Genel Durum"
+msgstr "📊 General Condition"
+
+#: templates/ai_anomaly_result.html:155 templates/anomaly_dashboard.html:329
+msgid "Toplam Anomali"
+msgstr "Total Cost"
+
+#: templates/ai_anomaly_result.html:159
+msgid "Gösterilen"
+msgstr "shown"
+
+#: templates/ai_anomaly_result.html:163
+msgid "Risk Durumu"
+msgstr "Situation"
+
+#: templates/ai_anomaly_result.html:178
+msgid "⚠️ Tespit Edilen Anomaliler"
+msgstr "⚠️ Detected Anomalies"
+
+#: templates/ai_anomaly_result.html:184 templates/ai_bulk_result.html:195
+#: templates/ai_bulk_result.html:297 templates/ai_predict_result.html:98
+#: templates/ai_predict_result.html:171 templates/anomaly_dashboard.html:351
+#: templates/anomaly_dashboard.html:425 templates/anomaly_dashboard.html:477
+#: templates/anomaly_dashboard.html:544 templates/anomaly_dashboard.html:545
+#: templates/anomaly_dashboard.html:546 templates/anomaly_dashboard.html:548
+#: templates/arac_yonetimi.html:210 templates/arac_yonetimi.html:248
+#: templates/arac_yonetimi.html:265 templates/bakim.html:151
+#: templates/data_management.html:73 templates/data_management.html:96
+#: templates/data_management.html:119 templates/hasar_ceza.html:87
+#: templates/hasar_ceza.html:129 templates/hasar_ceza.html:172
+#: templates/hasar_ceza.html:193 templates/muhasebe_result.html:162
+#: templates/performans_karsilastirma.html:356 templates/result.html:227
+#: templates/result.html:254
+msgid "Plaka"
+msgstr "Number plate"
+
+#: templates/ai_anomaly_result.html:186 templates/anomaly_dashboard.html:427
+#: templates/result.html:228
+msgid "Yakıt (L)"
+msgstr "Fuel (L)"
+
+#: templates/ai_anomaly_result.html:187 templates/anomaly_dashboard.html:428
+#: templates/bakim.html:214 templates/data_management.html:73
+#: templates/performans_detay.html:193 templates/performans_detay.html:327
+#: templates/result.html:229 templates/result.html:256
+msgid "KM"
+msgstr "KM"
+
+#: templates/ai_anomaly_result.html:188
+msgid "Birim Fiyat"
+msgstr "Make it OUR"
+
+#: templates/ai_anomaly_result.html:189
+msgid "Anomali Skoru"
+msgstr "Anomaly Detection"
+
+#: templates/ai_anomaly_result.html:190 templates/anomaly_dashboard.html:432
+msgid "Sebep"
+msgstr "Trip"
+
+#: templates/ai_anomaly_result.html:218
+msgid "🎉 Hiç anomali tespit edilmedi! Tüm yakıt tüketimleri normal görünüyor."
+msgstr "🎉 No anomalies detected!All fuel consumption appears normal."
+
+#: templates/ai_anomaly_result.html:224
+msgid "💡 Anomali Skoru Hakkında"
+msgstr "💡 About Anomaly Score"
+
+#: templates/ai_anomaly_result.html:226
+msgid ""
+"Anomali skoru ne kadar düşükse, kayıt o kadar anormaldir. Negatif değerler, "
+"kaydın normal davranıştan saptığını gösterir."
+msgstr ""
+"The lower the anomaly score, the more normal the recording.Negative values "
+"​​indicate that the recording deviates from normal behavior."
+
+#: templates/ai_anomaly_result.html:227
+msgid "Yüksek risk skorlu kayıtları öncelikli olarak inceleyin."
+msgstr "Examine records with high risk scores as a priority."
+
+#: templates/ai_anomaly_result.html:233 templates/ai_bulk_result.html:249
+msgid "Yeni Analiz Yap"
+msgstr "AI Analysis"
+
+#: templates/ai_assistant.html:6
+msgid "AI Asistan - Yakıt Tahmin Sistemi"
+msgstr "AI Assistant - Fuel Estimation System"
+
+#: templates/ai_assistant.html:331
+msgid "AI Asistan (Gemini)"
+msgstr "AI ASSISTANT (NEW)"
+
+#: templates/ai_assistant.html:336
+msgid "Geçmişi Temizle"
+msgstr "Clear History"
+
+#: templates/ai_assistant.html:339
+msgid "Ana Sayfa"
+msgstr "Home Page"
+
+#: templates/ai_assistant.html:347 templates/ai_assistant.html:522
+msgid "Merhaba! Ben AI Asistanınızım"
+msgstr "Hello!I am your AI Assistant"
+
+#: templates/ai_assistant.html:348 templates/ai_assistant.html:523
+msgid ""
+"Size yakıt tüketimi, araç performansı, lojistik ve sistem hakkında yardımcı "
+"olabilirim."
+msgstr ""
+"I can help you with fuel consumption, vehicle performance, logistics and "
+"systems."
+
+#: templates/ai_assistant.html:349 templates/ai_assistant.html:524
+msgid ""
+"Aşağıdaki hızlı sorulardan birini seçebilir veya kendi sorunuzu "
+"yazabilirsiniz."
+msgstr ""
+"You can choose one of the quick questions below or write your own question."
+
+#: templates/ai_assistant.html:356
+msgid "En fazla yakıt tüketenler"
+msgstr "License Plate Based Fuel Estimates"
+
+#: templates/ai_assistant.html:359
+msgid "Son yakıt alımları"
+msgstr "Latest Records"
+
+#: templates/ai_assistant.html:362
+msgid "Aktif araç sayısı"
+msgstr "ACTIVE VEHICLES"
+
+#: templates/ai_assistant.html:365
+msgid "Günlük görevler"
+msgstr "Daily quests"
+
+#: templates/ai_assistant.html:369 templates/ai_assistant.html:582
+#: templates/ai_assistant.html:588
+msgid "Sorunuzu yazın veya mikrofona konuşun..."
+msgstr "Type your question or speak into the microphone..."
+
+#: templates/ai_assistant.html:370
+msgid "Sesli Soru Sor"
+msgstr "Ask a Question by Voice"
+
+#: templates/ai_assistant.html:374 templates/sofor_paneli.html:267
+#: templates/sofor_paneli.html:340 templates/sofor_paneli.html:419
+#: templates/sofor_paneli.html:437
+msgid "Gönder"
+msgstr "Back"
+
+#: templates/ai_bulk_result.html:6
+msgid "Toplu Tahmin - AI Analiz"
+msgstr "Mass Forecast"
+
+#: templates/ai_bulk_result.html:148
+msgid "📦 Toplu Yakıt Tahmin Raporu"
+msgstr "Mass Forecast"
+
+#: templates/ai_bulk_result.html:149
+msgid "Tüm araçlar için gelecek ay tahminleri"
+msgstr "Create next month budget planning forecasts for the entire fleet."
+
+#: templates/ai_bulk_result.html:153 templates/performans_detay.html:185
+msgid "📊 Genel Özet"
+msgstr "📊 General Summary"
+
+#: templates/ai_bulk_result.html:156 templates/arac_yonetimi.html:161
+#: templates/performans_karsilastirma.html:308
+msgid "Toplam Araç"
+msgstr "Total Vehicle"
+
+#: templates/ai_bulk_result.html:160
+msgid "Gelecek Ay Toplam"
+msgstr "Next 30 Days Forecast"
+
+#: templates/ai_bulk_result.html:164
+msgid "Tahmini Maliyet"
+msgstr "Total Cost"
+
+#: templates/ai_bulk_result.html:168 templates/ai_predict_result.html:106
+msgid "Günlük Ortalama"
+msgstr "Daily Average"
+
+#: templates/ai_bulk_result.html:174
+msgid "🤖 Model Performansı"
+msgstr "🤖 Model Performance"
+
+#: templates/ai_bulk_result.html:176
+msgid "Eğitim Skoru:"
+msgstr "Education Score:"
+
+#: templates/ai_bulk_result.html:177
+msgid "Test Skoru:"
+msgstr "Test Score:"
+
+#: templates/ai_bulk_result.html:178
+msgid "Eğitim Veri:"
+msgstr "Training Data:"
+
+#: templates/ai_bulk_result.html:179
+msgid "Test Veri:"
+msgstr "Detect"
+
+#: templates/ai_bulk_result.html:185
+msgid "📈 Plaka Bazlı Tahminler"
+msgstr "License Plate Based Fuel Estimates"
+
+#: templates/ai_bulk_result.html:194
+msgid "Sıra"
+msgstr "Order"
+
+#: templates/ai_bulk_result.html:196
+msgid "Gelecek Ay Tahmini (L)"
+msgstr "Next 30 Days Forecast"
+
+#: templates/ai_bulk_result.html:197
+msgid "Günlük Ortalama (L)"
+msgstr "Daily Average (L)"
+
+#: templates/ai_bulk_result.html:198
+msgid "Tahmini Maliyet (TL)"
+msgstr "Total Cost (TL)"
+
+#: templates/ai_bulk_result.html:217
+msgid "🎯 Özellik Önemleri"
+msgstr "🎯 Feature Importance"
+
+#: templates/ai_bulk_result.html:219
+msgid "Model hangi özelliklere daha çok önem veriyor?"
+msgstr "Which features does the model give more importance to?"
+
+#: templates/ai_bulk_result.html:225
+msgid "Özellik"
+msgstr "Feature"
+
+#: templates/ai_bulk_result.html:226
+msgid "Önem Derecesi"
+msgstr "Severity Level"
+
+#: templates/ai_bulk_result.html:227
+msgid "Grafik"
+msgstr "Back"
+
+#: templates/ai_predict_result.html:6
+msgid "Tahmin Sonuçları - AI Analiz"
+msgstr "Prediction Results - AI Analysis"
+
+#: templates/ai_predict_result.html:89
+msgid "🔮 Yakıt Tüketim Tahmini"
+msgstr "Fuel Consumption Estimation"
+
+#: templates/ai_predict_result.html:95
+msgid "📅 Gelecek 30 Gün Tahmini"
+msgstr "Next 30 Days Forecast"
+
+#: templates/ai_predict_result.html:102
+msgid "Toplam Tahmin (30 Gün)"
+msgstr "Mass Forecast"
+
+#: templates/ai_predict_result.html:110
+msgid "Tahmini Maliyet (35 TL/L)"
+msgstr "Total Cost (TL)"
+
+#: templates/ai_predict_result.html:168
+msgid "📊 Tek Gün Tahmini"
+msgstr "Single Day Forecast"
+
+#: templates/ai_predict_result.html:179
+msgid "Tahmini Tüketim"
+msgstr "Average Consumption"
+
+#: templates/ai_predict_result.html:183
+msgid "Gerçek Ortalama"
+msgstr "True Average"
+
+#: templates/ai_predict_result.html:189
+msgid "📈 Güven Aralığı"
+msgstr "📈 Confidence Interval"
+
+#: templates/ai_predict_result.html:191
+msgid "Minimum:"
+msgstr "Minimum:"
+
+#: templates/ai_predict_result.html:192
+msgid "Maksimum:"
+msgstr "Maximum:"
+
+#: templates/ai_predict_result.html:200
+msgid "Yeni Tahmin Yap"
+msgstr "Forecast Type"
+
+#: templates/anomaly_dashboard.html:6
+msgid "Anomali Dashboard - AI Analiz"
+msgstr "Anomaly Analysis"
+
+#: templates/anomaly_dashboard.html:319 templates/performans_analizi.html:177
+msgid "← AI Analiz"
+msgstr "AI Analysis"
+
+#: templates/anomaly_dashboard.html:322
+msgid "📊 Anomali Dashboard"
+msgstr "Telematics Dashboard"
+
+#: templates/anomaly_dashboard.html:323
+msgid "Kapsamlı anomali analizi ve görselleştirme"
+msgstr "Comprehensive anomaly analysis and visualization"
+
+#: templates/anomaly_dashboard.html:333
+msgid "Aşırı Yüksek Tüketim"
+msgstr "Extremely High Consumption"
+
+#: templates/anomaly_dashboard.html:337
+msgid "Aşırı Düşük Tüketim"
+msgstr "Extremely Low Consumption"
+
+#: templates/anomaly_dashboard.html:341
+msgid "Eksik KM Bilgisi"
+msgstr "Missing KM Information"
+
+#: templates/anomaly_dashboard.html:348
+msgid "🔍 Filtrele"
+msgstr "Analysis Filters"
+
+#: templates/anomaly_dashboard.html:353
+msgid "Tüm Plakalar"
+msgstr "All Vehicles"
+
+#: templates/anomaly_dashboard.html:360
+msgid "Anomali Tipi"
+msgstr "Anomaly Detection"
+
+#: templates/anomaly_dashboard.html:362
+msgid "Tümü"
+msgstr "All"
+
+#: templates/anomaly_dashboard.html:363 templates/anomaly_dashboard.html:456
+#: templates/anomaly_dashboard.html:485
+msgid "Aşırı Yüksek"
+msgstr "Extremely High"
+
+#: templates/anomaly_dashboard.html:364 templates/anomaly_dashboard.html:458
+#: templates/anomaly_dashboard.html:485
+msgid "Aşırı Düşük"
+msgstr "Extremely Low"
+
+#: templates/anomaly_dashboard.html:365 templates/anomaly_dashboard.html:460
+#: templates/anomaly_dashboard.html:485
+msgid "Eksik KM"
+msgstr "Missing KM"
+
+#: templates/anomaly_dashboard.html:366 templates/anomaly_dashboard.html:462
+#: templates/anomaly_dashboard.html:485
+msgid "Anormal Fiyat"
+msgstr "Cost"
+
+#: templates/anomaly_dashboard.html:370 templates/binek_arac_filtre.html:150
+#: templates/is_makinesi_filtre.html:150 templates/kargo_arac_filtre.html:151
+#: templates/muhasebe.html:162
+msgid "Başlangıç Tarihi"
+msgstr "Start Date"
+
+#: templates/anomaly_dashboard.html:374 templates/binek_arac_filtre.html:154
+#: templates/is_makinesi_filtre.html:154 templates/kargo_arac_filtre.html:155
+#: templates/muhasebe.html:166
+msgid "Bitiş Tarihi"
+msgstr "End Date"
+
+#: templates/anomaly_dashboard.html:379 templates/anomaly_dashboard.html:574
+#: templates/performans_karsilastirma.html:269
+msgid "Filtrele"
+msgstr "Analysis Filters"
+
+#: templates/anomaly_dashboard.html:380
+msgid "Sıfırla"
+msgstr "reset"
+
+#: templates/anomaly_dashboard.html:386
+msgid "🚨 Sürekli Anomali Olan Araçlar (Top 10)"
+msgstr "🚨 Vehicles with Constant Anomalies (Top 10)"
+
+#: templates/anomaly_dashboard.html:397
+msgid "Veri yok"
+msgstr "Data Loading"
+
+#: templates/anomaly_dashboard.html:404
+msgid "Anomali Tipleri Dağılımı"
+msgstr "Fault Type Distribution"
+
+#: templates/anomaly_dashboard.html:408
+msgid "Aylık Anomali Trendi"
+msgstr "Monthly Financial Trend"
+
+#: templates/anomaly_dashboard.html:415
+msgid "En Çok Anomalisi Olan Plakalar"
+msgstr "Plates with the Most Anomalies"
+
+#: templates/anomaly_dashboard.html:429
+msgid "Fiyat"
+msgstr "Fuel"
+
+#: templates/anomaly_dashboard.html:430
+msgid "Skor"
+msgstr "Score"
+
+#: templates/anomaly_dashboard.html:431 templates/anomaly_dashboard.html:475
+#: templates/anomaly_dashboard.html:480 templates/anomaly_dashboard.html:488
+#: templates/anomaly_dashboard.html:489 templates/anomaly_dashboard.html:490
+#: templates/anomaly_dashboard.html:491 templates/arac_yonetimi.html:212
+msgid "Tip"
+msgstr "Medicine"
 
 #: templates/arac_yonetimi.html:6
 msgid "Araç Yönetimi - Telematik Dashboard"
 msgstr "Vehicle Management - Telematics Dashboard"
 
-#: templates/arac_yonetimi.html:180
+#: templates/arac_yonetimi.html:154
 msgid "Araç Yönetimi"
 msgstr "Vehicle Management"
 
-#: templates/arac_yonetimi.html:181
+#: templates/arac_yonetimi.html:155
 msgid "Kargo, binek ve iş makinelerinin tüm detaylarını yönetin."
 msgstr "Manage all details of cargo, passenger cars and work machines."
 
-#: templates/arac_yonetimi.html:187
-msgid "Toplam Araç"
-msgstr "Total Vehicle"
-
-#: templates/arac_yonetimi.html:188
+#: templates/arac_yonetimi.html:162
 msgid "Aktif Kargo"
 msgstr "Active Cargo"
 
-#: templates/arac_yonetimi.html:189
+#: templates/arac_yonetimi.html:163
 msgid "İş Makinesi"
 msgstr "Construction Machinery"
 
-#: templates/arac_yonetimi.html:190
+#: templates/arac_yonetimi.html:164
 msgid "Binek Araç"
 msgstr "Passenger Vehicle"
 
-#: templates/arac_yonetimi.html:194
+#: templates/arac_yonetimi.html:168
 msgid "Toplu İşlemler"
 msgstr "Bulk Transactions"
 
-#: templates/arac_yonetimi.html:196
+#: templates/arac_yonetimi.html:170
 msgid "Tümünü BİZİM Yap"
 msgstr "Make it all OUR"
 
-#: templates/arac_yonetimi.html:197
+#: templates/arac_yonetimi.html:171
 msgid "Tümünü TAŞERON Yap"
 msgstr "Subcontract All"
 
-#: templates/arac_yonetimi.html:198
+#: templates/arac_yonetimi.html:172
 msgid "Tümünü AKTİF Yap"
 msgstr "Make All ACTIVE"
 
-#: templates/arac_yonetimi.html:199
+#: templates/arac_yonetimi.html:173
 msgid "Tümünü PASİF Yap"
 msgstr "Make All PASSIVE"
 
-#: templates/arac_yonetimi.html:203
+#: templates/arac_yonetimi.html:177
 msgid "Veritabanındaki yeni plakaları otomatik sisteme dahil et:"
 msgstr "Include new license plates in the database into the automatic system:"
 
-#: templates/arac_yonetimi.html:205
+#: templates/arac_yonetimi.html:179
 msgid "Plakaları Yükle"
 msgstr "Load Plates"
 
-#: templates/arac_yonetimi.html:214
+#: templates/arac_yonetimi.html:188
 msgid "Plaka ara..."
 msgstr "Search for license plate..."
 
-#: templates/arac_yonetimi.html:216 templates/arac_yonetimi.html:272
+#: templates/arac_yonetimi.html:190 templates/arac_yonetimi.html:246
 msgid "Yeni Araç Ekle"
 msgstr "Add New Vehicle"
 
-#: templates/arac_yonetimi.html:222
+#: templates/arac_yonetimi.html:196
 msgid "araç seçildi"
 msgstr "vehicle selected"
 
-#: templates/arac_yonetimi.html:225
+#: templates/arac_yonetimi.html:199
 msgid "BİZİM Yap"
 msgstr "Make it OUR"
 
-#: templates/arac_yonetimi.html:226
+#: templates/arac_yonetimi.html:200
 msgid "AKTİF Yap"
 msgstr "Make ACTIVE"
 
-#: templates/arac_yonetimi.html:227
+#: templates/arac_yonetimi.html:201
 msgid "SİL"
 msgstr "DELETE"
 
-#: templates/arac_yonetimi.html:236 templates/arac_yonetimi.html:274
-#: templates/arac_yonetimi.html:291 templates/bakim.html:172
-#: templates/muhasebe_result.html:182 templates/result.html:253
-#: templates/result.html:280
-msgid "Plaka"
-msgstr "Number plate"
-
-#: templates/arac_yonetimi.html:237 templates/arac_yonetimi.html:276
-#: templates/arac_yonetimi.html:293
+#: templates/arac_yonetimi.html:211 templates/arac_yonetimi.html:250
+#: templates/arac_yonetimi.html:267
 msgid "Sahip"
 msgstr "Owner"
 
-#: templates/arac_yonetimi.html:238
-msgid "Tip"
-msgstr "Medicine"
-
-#: templates/arac_yonetimi.html:239 templates/arac_yonetimi.html:294
-#: templates/bakim.html:238 templates/lastik_yonetimi.html:170
-#: templates/soforler.html:204 templates/soforler.html:244
+#: templates/arac_yonetimi.html:213 templates/arac_yonetimi.html:268
+#: templates/bakim.html:217 templates/hasar_ceza.html:172
+#: templates/lastik_yonetimi.html:151 templates/soforler.html:178
+#: templates/soforler.html:218
 msgid "Durum"
 msgstr "Situation"
 
-#: templates/arac_yonetimi.html:240 templates/muhasebe_result.html:183
+#: templates/arac_yonetimi.html:214 templates/muhasebe_result.html:163
 msgid "Malzeme"
 msgstr "Material"
 
-#: templates/arac_yonetimi.html:241 templates/bakim_analiz.html:115
-#: templates/lastik_yonetimi.html:170 templates/soforler.html:205
+#: templates/arac_yonetimi.html:215 templates/bakim_analiz.html:95
+#: templates/hasar_ceza.html:172 templates/hasar_ceza.html:193
+#: templates/lastik_yonetimi.html:151 templates/soforler.html:179
+#: templates/users.html:127
 msgid "İşlem"
 msgstr "Process"
 
-#: templates/arac_yonetimi.html:277
+#: templates/arac_yonetimi.html:225 templates/arac_yonetimi.html:268
+#: templates/soforler.html:191 templates/soforler.html:218
+msgid "Aktif"
+msgstr "Active"
+
+#: templates/arac_yonetimi.html:225 templates/arac_yonetimi.html:268
+#: templates/lastik_yonetimi.html:157 templates/soforler.html:191
+#: templates/soforler.html:218
+msgid "Pasif"
+msgstr "Passive"
+
+#: templates/arac_yonetimi.html:250 templates/arac_yonetimi.html:267
+msgid "BİZİM"
+msgstr "OUR OWN"
+
+#: templates/arac_yonetimi.html:250 templates/arac_yonetimi.html:267
+msgid "TAŞERON"
+msgstr "SUBCONTRACTOR"
+
+#: templates/arac_yonetimi.html:251
 msgid "Araç Tipi"
 msgstr "Vehicle Type"
 
-#: templates/arac_yonetimi.html:279
+#: templates/arac_yonetimi.html:251
+msgid "KARGO ARACI"
+msgstr "CARGO TRUCK"
+
+#: templates/arac_yonetimi.html:251
+msgid "İŞ MAKİNESİ"
+msgstr "HEAVY MACHINERY"
+
+#: templates/arac_yonetimi.html:251
+msgid "BİNEK ARAÇ"
+msgstr "PASSENGER CAR"
+
+#: templates/arac_yonetimi.html:253
 msgid "Varsayılan Malzeme"
 msgstr "Default Material"
 
-#: templates/arac_yonetimi.html:281 templates/arac_yonetimi.html:298
-#: templates/soforler.html:246
+#: templates/arac_yonetimi.html:253
+msgid "Otomatik (Kantar)"
+msgstr "Automatic (Weighbridge)"
+
+#: templates/arac_yonetimi.html:253
+msgid "BETON"
+msgstr "CONCRETE"
+
+#: templates/arac_yonetimi.html:253
+msgid "KUM"
+msgstr "KM"
+
+#: templates/arac_yonetimi.html:253
+msgid "PARKE"
+msgstr "Number plate"
+
+#: templates/arac_yonetimi.html:255 templates/arac_yonetimi.html:272
+#: templates/soforler.html:220
 msgid "İptal"
 msgstr "Cancel"
 
-#: templates/arac_yonetimi.html:282 templates/soforler.html:247
+#: templates/arac_yonetimi.html:256 templates/sofor_paneli.html:188
+#: templates/sofor_paneli.html:357 templates/soforler.html:221
+#: templates/users.html:112
 msgid "Kaydet"
 msgstr "Save"
 
-#: templates/arac_yonetimi.html:288
+#: templates/arac_yonetimi.html:262
 msgid "Araç Düzenle"
 msgstr "Edit Vehicle"
 
-#: templates/arac_yonetimi.html:296
+#: templates/arac_yonetimi.html:270
 msgid "Notlar"
 msgstr "Notes"
 
-#: templates/arac_yonetimi.html:299
+#: templates/arac_yonetimi.html:273
 msgid "Güncelle"
 msgstr "Update"
 
@@ -358,109 +735,121 @@ msgstr "Update"
 msgid "Araç Bakım Takibi - Telematik Dashboard"
 msgstr "Vehicle Maintenance Tracking - Telematics Dashboard"
 
-#: templates/bakim.html:126 templates/index.html:126
-#: templates/lastik_yonetimi.html:132 templates/lastik_yonetimi.html:143
-msgid "Lastik Yönetimi"
-msgstr "Tire Management"
-
-#: templates/bakim.html:137
+#: templates/bakim.html:116
 msgid "Bakım & Arıza Takibi"
 msgstr "Maintenance and Fault Tracking"
 
-#: templates/bakim.html:138
+#: templates/bakim.html:117
 msgid "Araçlarınızın teknik durumunu ve servis maliyetlerini izleyin."
 msgstr "Monitor the technical condition and service costs of your vehicles."
 
-#: templates/bakim.html:147
+#: templates/bakim.html:126
 msgid "Toplam İşlem"
 msgstr "Total Transaction"
 
-#: templates/bakim.html:151
+#: templates/bakim.html:130 templates/performans_detay.html:200
 msgid "Toplam Maliyet"
 msgstr "Total Cost"
 
-#: templates/bakim.html:155
+#: templates/bakim.html:134
 msgid "Son İşlem"
 msgstr "Finishing"
 
-#: templates/bakim.html:161
+#: templates/bakim.html:140
 msgid "Yeni Kayıt Oluştur"
 msgstr "Create New Record"
 
-#: templates/bakim.html:164
+#: templates/bakim.html:143
 msgid "Araç & Bildirim"
 msgstr "Tool & Notification"
 
-#: templates/bakim.html:165
+#: templates/bakim.html:144
 msgid "Arıza Detayları"
 msgstr "Fault Details"
 
-#: templates/bakim.html:166
+#: templates/bakim.html:145
 msgid "Servis & Maliyet"
 msgstr "Service & Cost"
 
-#: templates/bakim.html:174
+#: templates/bakim.html:153 templates/hasar_ceza.html:89
+#: templates/hasar_ceza.html:96 templates/hasar_ceza.html:131
+#: templates/hasar_ceza.html:138 templates/sofor_paneli.html:252
 msgid "Seçiniz..."
 msgstr "Select..."
 
-#: templates/bakim.html:179
+#: templates/bakim.html:158
 msgid "Olay Tarihi"
 msgstr "Event Date"
 
-#: templates/bakim.html:183
+#: templates/bakim.html:162
 msgid "Kilometre (KM)"
 msgstr "Kilometer (KM)"
 
-#: templates/bakim.html:187 templates/bakim.html:207
+#: templates/bakim.html:166 templates/bakim.html:186
 msgid "İlerle"
 msgstr "move forward"
 
-#: templates/bakim.html:193
+#: templates/bakim.html:172
 msgid "İşlem Türü"
 msgstr "Transaction Type"
 
-#: templates/bakim.html:203
+#: templates/bakim.html:174
+msgid "Periyodik Bakım"
+msgstr ""
+
+#: templates/bakim.html:175
+msgid "Arıza Onarım"
+msgstr "Maintenance & Repair"
+
+#: templates/bakim.html:176
+msgid "Lastik Değişimi"
+msgstr "Tire Management"
+
+#: templates/bakim.html:177
+msgid "Kaza / Hasar"
+msgstr "Accident/Damage"
+
+#: templates/bakim.html:178 templates/sofor_paneli.html:256
+msgid "Diğer"
+msgstr "Other"
+
+#: templates/bakim.html:182
 msgid "Arıza Açıklaması"
 msgstr "Fault Description"
 
-#: templates/bakim.html:212
+#: templates/bakim.html:191
 msgid "Servis / Firma"
 msgstr "Service / Company"
 
-#: templates/bakim.html:213
+#: templates/bakim.html:192
 msgid "Toplam Maliyet (TL)"
 msgstr "Total Cost (TL)"
 
-#: templates/bakim.html:217
+#: templates/bakim.html:196
 msgid "Servis Bekliyor"
 msgstr "Service Waiting"
 
-#: templates/bakim.html:218
+#: templates/bakim.html:197
 msgid "Kaydı Tamamla"
 msgstr "Complete Registration"
 
-#: templates/bakim.html:226
+#: templates/bakim.html:205
 msgid "Son Kayıtlar"
 msgstr "Latest Records"
 
-#: templates/bakim.html:227
+#: templates/bakim.html:206
 msgid "Analiz Paneli"
 msgstr "Analysis Panel"
 
-#: templates/bakim.html:234 templates/bakim_analiz.html:119
+#: templates/bakim.html:213 templates/bakim_analiz.html:99
 msgid "Araç"
 msgstr "Vehicle"
 
-#: templates/bakim.html:235 templates/result.html:255
-#: templates/result.html:282
-msgid "KM"
-msgstr "KM"
-
-#: templates/bakim.html:236
+#: templates/bakim.html:215
 msgid "Tür"
 msgstr "Type"
 
-#: templates/bakim.html:237
+#: templates/bakim.html:216
 msgid "Maliyet"
 msgstr "Cost"
 
@@ -468,55 +857,55 @@ msgstr "Cost"
 msgid "Bakım Analiz Paneli - Telematik Dashboard"
 msgstr "Maintenance Analysis Panel - Telematics Dashboard"
 
-#: templates/bakim_analiz.html:102
+#: templates/bakim_analiz.html:82
 msgid "Bakım Analiz Paneli"
 msgstr "Maintenance Analysis Panel"
 
-#: templates/bakim_analiz.html:103
+#: templates/bakim_analiz.html:83
 msgid "Filo bakım maliyetleri ve arıza türü dağılımı."
 msgstr "Fleet maintenance costs and failure type distribution."
 
-#: templates/bakim_analiz.html:106
+#: templates/bakim_analiz.html:86
 msgid "Bakım Listesi"
 msgstr "Maintenance List"
 
-#: templates/bakim_analiz.html:113
+#: templates/bakim_analiz.html:93
 msgid "Bu Ay Toplam Gider"
 msgstr "Total Expense This Month"
 
-#: templates/bakim_analiz.html:118
+#: templates/bakim_analiz.html:98
 msgid "Servisteki Araçlar"
 msgstr "Vehicles in Service"
 
-#: templates/bakim_analiz.html:121
+#: templates/bakim_analiz.html:101
 msgid "Şu an bakımda"
 msgstr "Currently under maintenance"
 
-#: templates/bakim_analiz.html:121
+#: templates/bakim_analiz.html:101
 msgid "Tüm araçlar sahada"
 msgstr "All vehicles on site"
 
-#: templates/bakim_analiz.html:125
+#: templates/bakim_analiz.html:105
 msgid "Genel Toplam Maliyet"
 msgstr "Grand Total Cost"
 
-#: templates/bakim_analiz.html:127
+#: templates/bakim_analiz.html:107
 msgid "Tüm zamanlar"
 msgstr "all times"
 
-#: templates/bakim_analiz.html:130
+#: templates/bakim_analiz.html:110
 msgid "En Çok Harcayan"
 msgstr "Top Spender"
 
-#: templates/bakim_analiz.html:138
+#: templates/bakim_analiz.html:118
 msgid "Aylık Bakım Trendi"
 msgstr "Monthly Maintenance Trend"
 
-#: templates/bakim_analiz.html:142
+#: templates/bakim_analiz.html:122
 msgid "Arıza Türü Dağılımı"
 msgstr "Fault Type Distribution"
 
-#: templates/bakim_analiz.html:146
+#: templates/bakim_analiz.html:126
 msgid "Araç Bazlı Toplam Harcama (Top 10)"
 msgstr "Total Expenditure by Vehicle (Top 10)"
 
@@ -524,15 +913,15 @@ msgstr "Total Expenditure by Vehicle (Top 10)"
 msgid "Binek Araç Analizi - Telematik Dashboard"
 msgstr "Passenger Vehicle Analysis - Telematics Dashboard"
 
-#: templates/binek_arac_filtre.html:161
+#: templates/binek_arac_filtre.html:135
 msgid "Binek Araç Analizi"
 msgstr "Passenger Vehicle Analysis"
 
-#: templates/binek_arac_filtre.html:162
+#: templates/binek_arac_filtre.html:136
 msgid "Şirket araçlarınızın yakıt ve maliyet verilerini filtreleyin."
 msgstr "Filter fuel and cost data for your company vehicles."
 
-#: templates/binek_arac_filtre.html:170
+#: templates/binek_arac_filtre.html:144
 msgid ""
 "Binek araçlarınızın operasyonel maliyetlerini analiz edin. Sadece özmal "
 "araçlar veya taşeron araçlar için ayrı ayrı filtreleme yapabilirsiniz."
@@ -540,174 +929,373 @@ msgstr ""
 "Analyze the operational costs of your passenger vehicles.You can filter "
 "separately only for self-owned vehicles or subcontracted vehicles."
 
-#: templates/binek_arac_filtre.html:176 templates/is_makinesi_filtre.html:176
-#: templates/kargo_arac_filtre.html:177 templates/muhasebe.html:188
-msgid "Başlangıç Tarihi"
-msgstr "Start Date"
-
-#: templates/binek_arac_filtre.html:180 templates/is_makinesi_filtre.html:180
-#: templates/kargo_arac_filtre.html:181 templates/muhasebe.html:192
-msgid "Bitiş Tarihi"
-msgstr "End Date"
-
-#: templates/binek_arac_filtre.html:184 templates/kargo_arac_filtre.html:185
-#: templates/muhasebe.html:196
+#: templates/binek_arac_filtre.html:158 templates/kargo_arac_filtre.html:159
+#: templates/muhasebe.html:170
 msgid "Plaka Filtresi"
 msgstr "Plate Filter"
 
-#: templates/binek_arac_filtre.html:186
+#: templates/binek_arac_filtre.html:160
 msgid "Tüm Binek Araçlar (Sadece Bizim)"
 msgstr "All Passenger Vehicles (Only Ours)"
 
-#: templates/binek_arac_filtre.html:195 templates/kargo_arac_filtre.html:196
+#: templates/binek_arac_filtre.html:169 templates/kargo_arac_filtre.html:170
 msgid "Taşeron Araçları da Dahil Et"
 msgstr "Include Subcontracted Vehicles"
 
-#: templates/binek_arac_filtre.html:196
+#: templates/binek_arac_filtre.html:170
 msgid "Şirket dışı kayıtlı binek araç verilerini de analize katar."
 msgstr ""
 "It also includes passenger vehicle data registered outside the company into "
 "the analysis."
 
-#: templates/binek_arac_filtre.html:203 templates/is_makinesi_filtre.html:203
-#: templates/kargo_arac_filtre.html:204
+#: templates/binek_arac_filtre.html:177 templates/is_makinesi_filtre.html:177
+#: templates/kargo_arac_filtre.html:178
 msgid "ANALİZİ BAŞLAT"
 msgstr "START ANALYSIS"
+
+#: templates/data_management.html:6
+msgid "Veri Yönetimi - Telematik Dashboard"
+msgstr "Vehicle Management - Telematics Dashboard"
+
+#: templates/data_management.html:57
+msgid "📊 Veri Yönetimi"
+msgstr "Data Management"
+
+#: templates/data_management.html:58
+msgid "Sisteme yüklenen tüm Excel verilerini buradan inceleyebilirsiniz."
+msgstr "You can review all Excel data uploaded to the system here."
+
+#: templates/data_management.html:62
+msgid "⛽ Yakıt Verileri"
+msgstr "Fuel Expense"
+
+#: templates/data_management.html:63
+msgid "⚖️ Kantar Verileri"
+msgstr "⚖️ Weighbridge Data"
+
+#: templates/data_management.html:64
+msgid "📍 Takip Verileri"
+msgstr "Construction Machinery"
+
+#: templates/data_management.html:69
+msgid "YAKIT"
+msgstr "Fuel"
+
+#: templates/data_management.html:69 templates/data_management.html:92
+#: templates/data_management.html:115
+msgid "Son 50 Kayıt"
+msgstr "Latest Records"
+
+#: templates/data_management.html:73
+msgid "Miktar (L)"
+msgstr "Quantity (L)"
+
+#: templates/data_management.html:73
+msgid "İstasyon"
+msgstr "AI ASSISTANT"
+
+#: templates/data_management.html:92
+msgid "KANTAR"
+msgstr "Notes"
+
+#: templates/data_management.html:96
+msgid "Miktar"
+msgstr "Margin"
+
+#: templates/data_management.html:96
+msgid "Birim"
+msgstr "OUR OWN"
+
+#: templates/data_management.html:96
+msgid "Cari"
+msgstr "History"
+
+#: templates/data_management.html:115
+msgid "TAKİP"
+msgstr "Medicine"
+
+#: templates/data_management.html:119
+msgid "Hız"
+msgstr "Speed"
+
+#: templates/data_management.html:119 templates/sofor_paneli.html:210
+#: templates/sofor_paneli.html:329
+msgid "Konum"
+msgstr "Location"
+
+#: templates/hasar_ceza.html:6
+msgid "Kaza, Ceza ve Hasar Yönetimi"
+msgstr "Accident, Penalty and Damage Management"
+
+#: templates/hasar_ceza.html:59
+msgid "🚨 Kaza, Ceza ve Hasar Yönetimi"
+msgstr "🚨 Accident, Penalty and Damage Management"
+
+#: templates/hasar_ceza.html:60
+msgid "Araçlara kesilen cezalar ve kaza/hasar kayıtları"
+msgstr "Fines and accident/damage records imposed on vehicles"
+
+#: templates/hasar_ceza.html:62 templates/users.html:79
+msgid "🏠 Ana Sayfa"
+msgstr "🏠 Home Page"
+
+#: templates/hasar_ceza.html:78
+msgid "👮 Trafik Cezası Ekle"
+msgstr "👮 Add Traffic Ticket"
+
+#: templates/hasar_ceza.html:79
+msgid "💥 Kaza/Hasar Kaydı Ekle"
+msgstr "💥 Add Accident/Damage Record"
+
+#: templates/hasar_ceza.html:94 templates/hasar_ceza.html:136
+#: templates/hasar_ceza.html:172 templates/hasar_ceza.html:193
+msgid "Sorumlu Şoför"
+msgstr "Driver in Charge"
+
+#: templates/hasar_ceza.html:101
+msgid "Ceza Tarihi"
+msgstr "Event Date"
+
+#: templates/hasar_ceza.html:105
+msgid "Ceza Tutarı (TL)"
+msgstr "Penalty Amount (TL)"
+
+#: templates/hasar_ceza.html:110
+msgid "Ceza Açıklaması / Yeri"
+msgstr "Fault Description"
+
+#: templates/hasar_ceza.html:111
+msgid "Aşırı hız, park ihlali vs."
+msgstr "Excessive speed, parking violation, etc."
+
+#: templates/hasar_ceza.html:114
+msgid "Ödeme Durumu"
+msgstr "Working Status"
+
+#: templates/hasar_ceza.html:116
+msgid "Ödenmedi"
+msgstr "not paid"
+
+#: templates/hasar_ceza.html:117
+msgid "Ödendi"
+msgstr "Paid"
+
+#: templates/hasar_ceza.html:120
+msgid "💾 Cezayı Kaydet"
+msgstr "💾 Save Punishment"
+
+#: templates/hasar_ceza.html:143
+msgid "Kaza/Hasar Tarihi"
+msgstr "Registration Date"
+
+#: templates/hasar_ceza.html:147
+msgid "Hasar Maliyeti (TL)"
+msgstr "Total Cost (TL)"
+
+#: templates/hasar_ceza.html:152
+msgid "Açıklama / Hasar Özeti"
+msgstr "Description / Damage Summary"
+
+#: templates/hasar_ceza.html:153
+msgid "Sağ çamurluk vuruldu, lastik yarıldı vs."
+msgstr "The right fender was hit, the tire was split, etc."
+
+#: templates/hasar_ceza.html:156
+msgid "Sigorta Karşıladı mı?"
+msgstr "Is Insurance Covered?"
+
+#: templates/hasar_ceza.html:158
+msgid "Hayır (Cari Maliyet)"
+msgstr "No (Current Cost)"
+
+#: templates/hasar_ceza.html:159
+msgid "Evet (Kasko/Sigorta) - Muhasebeden düş"
+msgstr "Yes (Casco/Insurance) - Deduct from accounting"
+
+#: templates/hasar_ceza.html:162
+msgid "💾 Hasarı Kaydet"
+msgstr "💾 Save Damage"
+
+#: templates/hasar_ceza.html:169
+msgid "📜 Trafik Cezaları"
+msgstr "📜 Traffic Fines"
+
+#: templates/hasar_ceza.html:172 templates/hasar_ceza.html:193
+msgid "Açıklama"
+msgstr "Fault Description"
+
+#: templates/hasar_ceza.html:172 templates/hasar_ceza.html:193
+msgid "Tutar"
+msgstr "History"
+
+#: templates/hasar_ceza.html:180 templates/hasar_ceza.html:207
+#: templates/users.html:144
+msgid "Sil"
+msgstr "DELETE"
+
+#: templates/hasar_ceza.html:182
+msgid "Ceza kaydı bulunamadı."
+msgstr "No Data Found"
+
+#: templates/hasar_ceza.html:190
+msgid "💥 Hasar Kayıtları"
+msgstr "Latest Records"
+
+#: templates/hasar_ceza.html:193
+msgid "Sigorta"
+msgstr "In Stock"
+
+#: templates/hasar_ceza.html:202
+msgid "Karşıladı"
+msgstr "welcomed"
+
+#: templates/hasar_ceza.html:204
+msgid "Şirket Kasasından"
+msgstr "From the Company Safe"
+
+#: templates/hasar_ceza.html:209
+msgid "Hasar kaydı bulunamadı."
+msgstr "No Data Found"
 
 #: templates/index.html:6
 msgid "Kargo Filo Yönetimi - Telematik Dashboard"
 msgstr "Cargo Fleet Management - Telematics Dashboard"
 
-#: templates/index.html:119
-msgid "Otomatik Veri Çekme"
-msgstr "Automatic Data Extraction"
-
-#: templates/index.html:120
-msgid "Veri Yönetimi"
-msgstr "Data Management"
-
-#: templates/index.html:142
+#: templates/index.html:113
 msgid "Telematik Dashboard"
 msgstr "Telematics Dashboard"
 
-#: templates/index.html:142
+#: templates/index.html:113
 msgid "Operasyonlarınızın merkezi kontrol noktası."
 msgstr "The central control point of your operations."
 
-#: templates/index.html:147
+#: templates/index.html:118
 msgid "TOPLAM KAYIT"
 msgstr "TOTAL REGISTRATION"
 
-#: templates/index.html:151
+#: templates/index.html:122
 msgid "AKTİF ARAÇLAR"
 msgstr "ACTIVE VEHICLES"
 
-#: templates/index.html:155
+#: templates/index.html:126
 msgid "TOPLAM MOTORİN"
 msgstr "TOTAL DIESEL"
 
-#: templates/index.html:159
+#: templates/index.html:130
 msgid "TOPLAM ADBLUE"
 msgstr "TOTAL ADBLUE"
 
-#: templates/index.html:166
+#: templates/index.html:137
 msgid "Hızlı İşlemler"
 msgstr "Quick Actions"
 
-#: templates/index.html:170
+#: templates/index.html:141
 msgid "AI ASİSTAN"
 msgstr "AI ASSISTANT"
 
-#: templates/index.html:171
+#: templates/index.html:142
 msgid "Akıllı veri analizi ve raporlama asistanı."
 msgstr "Intelligent data analysis and reporting assistant."
 
-#: templates/index.html:173
+#: templates/index.html:144
+msgid "Kargo Araçları"
+msgstr "Cargo Vehicles"
+
+#: templates/index.html:144
 msgid "Yük ve yakıt analizi."
 msgstr "Load and fuel analysis."
 
-#: templates/index.html:174
+#: templates/index.html:145
 msgid "Binek Araçlar"
 msgstr "Passenger Vehicles"
 
-#: templates/index.html:174
+#: templates/index.html:145
 msgid "Maliyet takibi."
 msgstr "Cost tracking."
 
-#: templates/index.html:175
+#: templates/index.html:146
+msgid "İş Makineleri"
+msgstr "Construction Machinery"
+
+#: templates/index.html:146
 msgid "Saat bazlı analiz."
 msgstr "Hour based analysis."
 
-#: templates/index.html:176
+#: templates/index.html:147 templates/muhasebe.html:139
+#: templates/sidebar.html:183
+msgid "Muhasebe Analizi"
+msgstr "Accounting Analysis"
+
+#: templates/index.html:147
 msgid "Karlılık raporları."
 msgstr "Profitability reports."
 
-#: templates/index.html:183
+#: templates/index.html:154
 msgid "Operasyon Kontrol Merkezi"
 msgstr "Operations Control Center"
 
-#: templates/index.html:184
+#: templates/index.html:155
 msgid "CANLI AKTİF"
 msgstr "LIVE ACTIVE"
 
-#: templates/index.html:190
+#: templates/index.html:161 templates/performans_karsilastirma.html:364
 msgid "Verimlilik"
 msgstr "Efficiency"
 
-#: templates/index.html:194
+#: templates/index.html:165
 msgid "Araç Yolda"
 msgstr "Vehicle on the Road"
 
-#: templates/index.html:198
+#: templates/index.html:169
 msgid "Kritik Uyarı"
 msgstr "Critical Alert"
 
-#: templates/index.html:203
+#: templates/index.html:174
 msgid "Son Aktiviteler"
 msgstr "Latest Activities"
 
-#: templates/index.html:208
+#: templates/index.html:179
 msgid "Veri Senkronizasyonu"
 msgstr "Data Synchronization"
 
-#: templates/index.html:209
+#: templates/index.html:180
 msgid "Az önce • Mail kutusundan 3 dosya işlendi."
 msgstr "Just processed • 3 files from the mailbox."
 
-#: templates/index.html:216
+#: templates/index.html:187
 msgid "15 dk önce • 34 BZM 45 plakalı araçta yüksek tüketim."
 msgstr ""
 "15 min ago • High consumption in the vehicle with plate number 34 BZM 45."
 
-#: templates/index.html:222
+#: templates/index.html:193
 msgid "Bakım Hatırlatma"
 msgstr "Maintenance Reminder"
 
-#: templates/index.html:223
+#: templates/index.html:194
 msgid "1 saat önce • 5 aracın periyodik bakımı yaklaşıyor."
 msgstr "1 hour ago • Periodic maintenance of 5 vehicles is approaching."
 
-#: templates/index.html:230
+#: templates/index.html:201
 msgid "Tüm Analizleri Görüntüle"
 msgstr "View All Analytics"
 
-#: templates/index.html:248
+#: templates/index.html:219
 msgid "Veri Yükleme"
 msgstr "Data Loading"
 
-#: templates/index.html:252
+#: templates/index.html:223
 msgid "YAKIT DOSYASI SEÇ"
 msgstr "SELECT FUEL FILE"
 
-#: templates/index.html:258
+#: templates/index.html:229
 msgid "KANTAR DOSYASI SEÇ"
 msgstr "SELECT SCALE FILE"
 
-#: templates/index.html:264
+#: templates/index.html:235
 msgid "ARAÇ TAKİP DOSYASI SEÇ"
 msgstr "SELECT VEHICLE TRACKING FILE"
 
-#: templates/index.html:268
+#: templates/index.html:239
 msgid "Yükle ve İşle"
 msgstr "Load and Process"
 
@@ -715,15 +1303,15 @@ msgstr "Load and Process"
 msgid "İş Makinesi Analizi - Telematik Dashboard"
 msgstr "Work Machine Analysis - Telematics Dashboard"
 
-#: templates/is_makinesi_filtre.html:161
+#: templates/is_makinesi_filtre.html:135
 msgid "İş Makinesi Analizi"
 msgstr "Heavy Machinery Analysis"
 
-#: templates/is_makinesi_filtre.html:162
+#: templates/is_makinesi_filtre.html:136
 msgid "İş makinelerinizin çalışma saatleri ve maliyetlerini raporlayın."
 msgstr "Report the working hours and costs of your work machines."
 
-#: templates/is_makinesi_filtre.html:170
+#: templates/is_makinesi_filtre.html:144
 msgid ""
 "Ağır hizmet araçlarınızın performansını analiz edin. Varsayılan olarak "
 "sadece özmal (BİZİM) makineler analiz edilir. Kiralık makineleri dahil etmek"
@@ -733,19 +1321,19 @@ msgstr ""
 "owned (OUR) machines are analyzed.To include rental machines, tick the box "
 "below."
 
-#: templates/is_makinesi_filtre.html:184
+#: templates/is_makinesi_filtre.html:158
 msgid "Plaka / Kod Filtresi"
 msgstr "Plate / Code Filter"
 
-#: templates/is_makinesi_filtre.html:186
+#: templates/is_makinesi_filtre.html:160
 msgid "Tüm İş Makineleri (Sadece Bizim)"
 msgstr "All Heavy Machinery (Only Ours)"
 
-#: templates/is_makinesi_filtre.html:195
+#: templates/is_makinesi_filtre.html:169
 msgid "Taşeron Makineleri de Dahil Et"
 msgstr "Include Subcontracted Heavy Machinery"
 
-#: templates/is_makinesi_filtre.html:196
+#: templates/is_makinesi_filtre.html:170
 msgid ""
 "Şantiyede çalışan dış kaynaklı makinelerin verilerini de analize dahil eder."
 msgstr ""
@@ -756,15 +1344,15 @@ msgstr ""
 msgid "Kargo Araçları Analizi - Telematik Dashboard"
 msgstr "Cargo Truck Analysis - Telematics Dashboard"
 
-#: templates/kargo_arac_filtre.html:162
+#: templates/kargo_arac_filtre.html:136
 msgid "Kargo Araçları Analizi"
 msgstr "Cargo Truck Analysis"
 
-#: templates/kargo_arac_filtre.html:163
+#: templates/kargo_arac_filtre.html:137
 msgid "Tarih ve plaka filtresi ile detaylı performans raporu alın."
 msgstr "Get detailed performance report with date and license plate filter."
 
-#: templates/kargo_arac_filtre.html:171
+#: templates/kargo_arac_filtre.html:145
 msgid ""
 "Kargo araçlarınızın yakıt tüketimi ve maliyetlerini analiz edin. Varsayılan "
 "olarak sadece özmal (BİZİM) araçlar listelenir. Taşeron araçları dahil etmek"
@@ -774,11 +1362,11 @@ msgstr ""
 "only self-owned (OUR) vehicles are listed.Select the option below to include"
 " subcontracted vehicles."
 
-#: templates/kargo_arac_filtre.html:187
+#: templates/kargo_arac_filtre.html:161
 msgid "Tüm Kargo Araçları (Sadece Bizim)"
 msgstr "All Cargo Trucks (Only Ours)"
 
-#: templates/kargo_arac_filtre.html:197
+#: templates/kargo_arac_filtre.html:171
 msgid ""
 "Kiralık ve taşeron plakaların verilerini de analiz sonuçlarına yansıtır."
 msgstr ""
@@ -789,144 +1377,216 @@ msgstr ""
 msgid "Lastik Yönetimi - Telematik Dashboard"
 msgstr "Tire Management - Telematics Dashboard"
 
-#: templates/lastik_yonetimi.html:144
+#: templates/lastik_yonetimi.html:124 templates/sidebar.html:213
+msgid "Lastik Yönetimi"
+msgstr "Tire Management"
+
+#: templates/lastik_yonetimi.html:125
 msgid "Lastik envanterini ve araç eşleşmelerini görsel olarak yönetin."
 msgstr "Visually manage tire inventory and vehicle matches."
 
-#: templates/lastik_yonetimi.html:150
+#: templates/lastik_yonetimi.html:131
 msgid "Lastik Envanteri"
 msgstr "Tire Inventory"
 
-#: templates/lastik_yonetimi.html:151
+#: templates/lastik_yonetimi.html:132
 msgid "Araç Lastik Eşleşme"
 msgstr "Vehicle Tire Match"
 
-#: templates/lastik_yonetimi.html:156
+#: templates/lastik_yonetimi.html:137
 msgid "Yeni Lastik Ekle"
 msgstr "Add New Tire"
 
-#: templates/lastik_yonetimi.html:158 templates/lastik_yonetimi.html:170
+#: templates/lastik_yonetimi.html:139 templates/lastik_yonetimi.html:151
 msgid "Marka"
 msgstr "Brand"
 
-#: templates/lastik_yonetimi.html:159 templates/lastik_yonetimi.html:170
+#: templates/lastik_yonetimi.html:140 templates/lastik_yonetimi.html:151
 msgid "Ebat"
 msgstr "Dimensions"
 
-#: templates/lastik_yonetimi.html:160 templates/lastik_yonetimi.html:170
+#: templates/lastik_yonetimi.html:141 templates/lastik_yonetimi.html:151
 msgid "Seri No"
 msgstr "Serial Number"
 
-#: templates/lastik_yonetimi.html:161
+#: templates/lastik_yonetimi.html:142
 msgid "Ekle"
 msgstr "Add"
 
-#: templates/lastik_yonetimi.html:166
+#: templates/lastik_yonetimi.html:147
 msgid "Envanter Listesi"
 msgstr "Inventory List"
 
-#: templates/lastik_yonetimi.html:176
+#: templates/lastik_yonetimi.html:157
 msgid "Stokta"
 msgstr "In Stock"
 
-#: templates/lastik_yonetimi.html:176 templates/soforler.html:217
-msgid "Pasif"
-msgstr "Passive"
-
-#: templates/lastik_yonetimi.html:188
+#: templates/lastik_yonetimi.html:169
 msgid "Araç Seçiniz"
 msgstr "Select Vehicle"
 
-#: templates/lastik_yonetimi.html:190
+#: templates/lastik_yonetimi.html:171
 msgid "Plaka Seçin"
 msgstr "Select Plate"
 
-#: templates/lastik_yonetimi.html:234
+#: templates/lastik_yonetimi.html:180
+msgid "ÖN SOL"
+msgstr "FRONT LEFT"
+
+#: templates/lastik_yonetimi.html:181
+msgid "ÖN SAĞ"
+msgstr "FRONT RIGHT"
+
+#: templates/lastik_yonetimi.html:186
+msgid "S-DIŞ"
+msgstr "S-OUTER"
+
+#: templates/lastik_yonetimi.html:187
+msgid "S-İÇ"
+msgstr "DELETE"
+
+#: templates/lastik_yonetimi.html:190
+msgid "SĞ-İÇ"
+msgstr "DELETE"
+
+#: templates/lastik_yonetimi.html:191
+msgid "SĞ-DIŞ"
+msgstr "RIGHT-OUTER"
+
+#: templates/lastik_yonetimi.html:197
+msgid "A-SOL-D"
+msgstr "A-LEFT-D"
+
+#: templates/lastik_yonetimi.html:198
+msgid "A-SOL-İ"
+msgstr "A-LEFT-I"
+
+#: templates/lastik_yonetimi.html:201
+msgid "A-SAĞ-İ"
+msgstr "DOWN"
+
+#: templates/lastik_yonetimi.html:202
+msgid "A-SAĞ-D"
+msgstr "A-RIGHT-D"
+
+#: templates/lastik_yonetimi.html:215
 msgid "Takılı Lastik:"
 msgstr "Tire Installed:"
 
-#: templates/lastik_yonetimi.html:237
+#: templates/lastik_yonetimi.html:218
 msgid "Lastiği Sök"
 msgstr "Remove Tire"
 
-#: templates/lastik_yonetimi.html:243
+#: templates/lastik_yonetimi.html:224
 msgid "Envanterden Seç"
 msgstr "Select from Inventory"
 
-#: templates/lastik_yonetimi.html:245
+#: templates/lastik_yonetimi.html:226
 msgid "Lastik Seçin"
 msgstr "Choose Tire"
 
-#: templates/lastik_yonetimi.html:248
+#: templates/lastik_yonetimi.html:229
 msgid "Takılma Tarihi"
 msgstr "Installation Date"
 
-#: templates/lastik_yonetimi.html:249
+#: templates/lastik_yonetimi.html:230
 msgid "Takılma KM"
 msgstr "Installation KM"
 
-#: templates/lastik_yonetimi.html:250
+#: templates/lastik_yonetimi.html:231
 msgid "Lastiği Tak"
 msgstr "Install Tire"
 
-#: templates/lastik_yonetimi.html:253
+#: templates/lastik_yonetimi.html:234
 msgid "Kapat"
 msgstr "Close"
+
+#: templates/login.html:6
+msgid "Giriş Yap - Telematik Dashboard"
+msgstr "Telematics Dashboard"
+
+#: templates/login.html:157
+msgid "ANTİ-GRAVİTY"
+msgstr "ANTI-GRAVITY"
+
+#: templates/login.html:158
+msgid "Telematik & Filo Yönetim Paneli"
+msgstr "Tire Management"
+
+#: templates/login.html:173 templates/users.html:96 templates/users.html:124
+msgid "Kullanıcı Adı"
+msgstr "User name"
+
+#: templates/login.html:176
+msgid "admin"
+msgstr "admin"
+
+#: templates/login.html:180 templates/users.html:100
+msgid "Şifre"
+msgstr "Password"
+
+#: templates/login.html:186
+msgid "Giriş Yap"
+msgstr "Make it OUR"
+
+#: templates/login.html:189
+msgid "© 2026 Anti-Gravity Telematics. Tüm hakları saklıdır."
+msgstr "© 2026 Anti-Gravity Telematics.All rights reserved."
 
 #: templates/muhasebe.html:6
 msgid "Muhasebe Analizi - Telematik Dashboard"
 msgstr "Accounting Analysis - Telematics Dashboard"
 
-#: templates/muhasebe.html:166
+#: templates/muhasebe.html:140
 msgid "Gelir, gider ve karlılık operasyonlarını yönetin."
 msgstr "Manage revenue, expense and profitability operations."
 
-#: templates/muhasebe.html:184
+#: templates/muhasebe.html:158
 msgid "Analiz Filtreleri"
 msgstr "Analysis Filters"
 
-#: templates/muhasebe.html:198
+#: templates/muhasebe.html:172
 msgid "Tüm Araçlar"
 msgstr "All Vehicles"
 
-#: templates/muhasebe.html:204
+#: templates/muhasebe.html:178
 msgid "Özel Ayarlar & Fiyatlandırma"
 msgstr "Custom Settings & Pricing"
 
-#: templates/muhasebe.html:207
+#: templates/muhasebe.html:181
 msgid "Hedef Gelir (₺)"
 msgstr "Target Revenue (₺)"
 
-#: templates/muhasebe.html:211
+#: templates/muhasebe.html:185
 msgid "Hedef Gider Limiti (₺)"
 msgstr "Target Expense Limit (₺)"
 
-#: templates/muhasebe.html:215
+#: templates/muhasebe.html:189
 msgid "Motorin Litre Fiyatı (₺)"
 msgstr "Diesel Price per Liter (₺)"
 
-#: templates/muhasebe.html:219
+#: templates/muhasebe.html:193
 msgid "AdBlue Litre Fiyatı (₺)"
 msgstr "AdBlue Liter Price (₺)"
 
-#: templates/muhasebe.html:225
+#: templates/muhasebe.html:199
 msgid "Cari (Müşteri) Bazlı Taşıma Fiyatları (TL)"
 msgstr "Current (Customer) Based Transportation Prices (TL)"
 
-#: templates/muhasebe.html:228
+#: templates/muhasebe.html:202
 msgid "Her satıra bir firma gelecek şekilde FIRMA: FIYAT formatında yazın."
 msgstr "Write it in COMPANY: PRICE format, one company per line."
 
-#: templates/muhasebe.html:236
+#: templates/muhasebe.html:210
 msgid "Dış Araçları Analizden Çıkar"
 msgstr "Exclude External Vehicles from Analysis"
 
-#: templates/muhasebe.html:237
+#: templates/muhasebe.html:211
 msgid ""
 "Sadece kendi özmal araçlarınızın kârını görmek için bu seçeneği aktif tutun."
 msgstr "Keep this option active to see only the profit of your own vehicles."
 
-#: templates/muhasebe.html:246
+#: templates/muhasebe.html:220
 msgid "SEÇİLİ AYARLARLA ANALİZİ BAŞLAT"
 msgstr "START ANALYSIS WITH SELECTED SETTINGS"
 
@@ -934,246 +1594,1069 @@ msgstr "START ANALYSIS WITH SELECTED SETTINGS"
 msgid "Finansal Analiz Raporu - Telematik Dashboard"
 msgstr "Financial Analysis Report - Telematics Dashboard"
 
-#: templates/muhasebe_result.html:120
+#: templates/muhasebe_result.html:100
 msgid "Finansal Analiz Raporu"
 msgstr "Financial Analysis Report"
 
-#: templates/muhasebe_result.html:128
+#: templates/muhasebe_result.html:108
 msgid "Toplam Gelir"
 msgstr "Total Revenue"
 
-#: templates/muhasebe_result.html:132
+#: templates/muhasebe_result.html:112
 msgid "Yakıt Gideri"
 msgstr "Fuel Expense"
 
-#: templates/muhasebe_result.html:136
+#: templates/muhasebe_result.html:116
 msgid "Bakım Gideri"
 msgstr "Maintenance Expense"
 
-#: templates/muhasebe_result.html:140
+#: templates/muhasebe_result.html:120
 msgid "Net Kar/Zarar"
 msgstr "Net Profit/Loss"
 
-#: templates/muhasebe_result.html:149
+#: templates/muhasebe_result.html:129
 msgid "Aylık Finansal Trend"
 msgstr "Monthly Financial Trend"
 
-#: templates/muhasebe_result.html:153
+#: templates/muhasebe_result.html:133
 msgid "Gider Dağılımı"
 msgstr "Expense Distribution"
 
-#: templates/muhasebe_result.html:159
+#: templates/muhasebe_result.html:139
 msgid "Bütçe ve Hedef İzleme"
 msgstr "Budget and Goal Tracking"
 
-#: templates/muhasebe_result.html:162
+#: templates/muhasebe_result.html:142
 msgid "Gelir Hedefi"
 msgstr "Revenue Target"
 
-#: templates/muhasebe_result.html:169
+#: templates/muhasebe_result.html:149
 msgid "Gider Limiti"
 msgstr "Expense Limit"
 
-#: templates/muhasebe_result.html:177
+#: templates/muhasebe_result.html:157
 msgid "Araç Bazlı Kar-Zarar (P&L) Tablosu"
 msgstr "Vehicle Based Profit-Loss (P&L) Statement"
 
-#: templates/muhasebe_result.html:184
+#: templates/muhasebe_result.html:164
 msgid "Gelir"
 msgstr "Income"
 
-#: templates/muhasebe_result.html:185
+#: templates/muhasebe_result.html:165
 msgid "Yakıt"
 msgstr "Fuel"
 
-#: templates/muhasebe_result.html:186
+#: templates/muhasebe_result.html:166
 msgid "Bakım"
 msgstr "Maintenance"
 
-#: templates/muhasebe_result.html:187
+#: templates/muhasebe_result.html:167
 msgid "Net Kar"
 msgstr "Net Profit"
 
-#: templates/muhasebe_result.html:188
+#: templates/muhasebe_result.html:168
 msgid "Marj"
 msgstr "Margin"
+
+#: templates/performans_analizi.html:7
+msgid "Performans Analizi - Kargo Sistemi"
+msgstr "Performance Analysis - Cargo System"
+
+#: templates/performans_analizi.html:180
+msgid "📊 Araç Performans Analizi"
+msgstr "Passenger Vehicle Analysis"
+
+#: templates/performans_analizi.html:181
+msgid "Yakıt/KM oranı ve tonaj bazlı verimlilik analizi"
+msgstr "Fuel/KM ratio and tonnage based efficiency analysis"
+
+#: templates/performans_analizi.html:185
+msgid "🎯 Analiz Özellikleri"
+msgstr "Analysis Filters"
+
+#: templates/performans_analizi.html:188
+msgid "⛽ Yakıt/KM Oranı"
+msgstr "⛽ Fuel/KM Rate"
+
+#: templates/performans_analizi.html:189
+msgid "Araçların kilometre başına yakıt tüketim oranını hesaplayın"
+msgstr "Calculate the fuel consumption rate of vehicles per kilometer"
+
+#: templates/performans_analizi.html:192
+msgid "📦 Tonaj Analizi"
+msgstr "AI Analysis"
+
+#: templates/performans_analizi.html:193
+msgid "Taşınan toplam tonaj ve verimlilik metrikleri"
+msgstr "Total tonnage transported and efficiency metrics"
+
+#: templates/performans_analizi.html:196
+msgid "💰 Maliyet Analizi"
+msgstr "Anomaly Analysis"
+
+#: templates/performans_analizi.html:197
+msgid "KM başına yakıt maliyeti ve bütçe optimizasyonu"
+msgstr "Fuel cost per KM and budget optimization"
+
+#: templates/performans_analizi.html:203
+msgid "🏆 Araç Tipi Bazlı Performans Karşılaştırması"
+msgstr "🏆 Performance Comparison Based on Vehicle Type"
+
+#: templates/performans_analizi.html:205
+msgid ""
+"Her araç tipi için özelleştirilmiş performans metrikleri. Araç tipine göre "
+"detaylı analiz ve"
+msgstr ""
+"Customized performance metrics for each vehicle type.Detailed analysis and "
+"analysis according to vehicle type"
+
+#: templates/performans_analizi.html:206
+msgid "karşılaştırma yapın."
+msgstr "make a comparison."
+
+#: templates/performans_analizi.html:215
+msgid "🚛 Kargo Araçları"
+msgstr "Cargo Vehicles"
+
+#: templates/performans_analizi.html:216
+msgid "Ana malzeme bazlı tonaj ve verimlilik analizi"
+msgstr "Main material based tonnage and efficiency analysis"
+
+#: templates/performans_analizi.html:219 templates/performans_analizi.html:233
+#: templates/performans_analizi.html:247
+msgid "Analiz Et →"
+msgstr "Analysis Panel"
+
+#: templates/performans_analizi.html:229
+msgid "🏗️ İş Makineleri"
+msgstr "Construction Machinery"
+
+#: templates/performans_analizi.html:230
+msgid "Yakıt verimliliği ve operasyonel performans"
+msgstr "Fuel efficiency and operational performance"
+
+#: templates/performans_analizi.html:243
+msgid "🚗 Binek Araçlar"
+msgstr "Passenger Vehicles"
+
+#: templates/performans_analizi.html:244
+msgid "KM/Litre oranı ve yakıt ekonomisi"
+msgstr "KM/Liter ratio and fuel economy"
+
+#: templates/performans_analizi.html:255
+msgid "🔍 Detaylı Araç Analizi"
+msgstr "Detailed Vehicle Analysis Table"
+
+#: templates/performans_analizi.html:257
+msgid ""
+"Belirli bir araç için tarih aralığında detaylı performans analizi yapın. "
+"Yakıt tüketimi, tonaj,"
+msgstr ""
+"Perform detailed performance analysis for a specific vehicle over a date "
+"range.Fuel consumption, tonnage,"
+
+#: templates/performans_analizi.html:258
+msgid "maliyet ve verimlilik skorlarını görün."
+msgstr "See cost and efficiency scores."
+
+#: templates/performans_analizi.html:264
+msgid "Plaka numarası yazın..."
+msgstr "Search for license plate..."
+
+#: templates/performans_analizi.html:274
+msgid "Başlangıç Tarihi (Opsiyonel)"
+msgstr "Start Date"
+
+#: templates/performans_analizi.html:278
+msgid "Bitiş Tarihi (Opsiyonel)"
+msgstr "End Date"
+
+#: templates/performans_analizi.html:284
+msgid "🔬 Detaylı Analiz Yap"
+msgstr "Detailed Vehicle Analysis Table"
+
+#: templates/performans_detay.html:176
+#: templates/performans_karsilastirma.html:231
+msgid "← Performans Analizi"
+msgstr "Heavy Machinery Analysis"
+
+#: templates/performans_detay.html:179
+msgid "🚛 Detaylı Performans Analizi"
+msgstr "🚛 Detailed Performance Analysis"
+
+#: templates/performans_detay.html:188 templates/result.html:161
+#: templates/result.html:167
+msgid "Toplam Yakıt"
+msgstr "Total Fuel"
+
+#: templates/performans_detay.html:189 templates/performans_detay.html:304
+msgid "L"
+msgstr "L."
+
+#: templates/performans_detay.html:192
+#: templates/performans_karsilastirma.html:359 templates/result.html:171
+msgid "Toplam KM"
+msgstr "Total KM"
+
+#: templates/performans_detay.html:196
+msgid "Sefer Sayısı"
+msgstr "Number of Trips"
+
+#: templates/performans_detay.html:201
+msgid "TL"
+msgstr "TL"
+
+#: templates/performans_detay.html:204
+msgid "Toplam Tonaj"
+msgstr "TOTAL DIESEL"
+
+#: templates/performans_detay.html:205
+msgid "Ton"
+msgstr "Phone"
+
+#: templates/performans_detay.html:208
+msgid "Yüklenme Sayısı"
+msgstr "Number of Downloads"
+
+#: templates/performans_detay.html:215
+msgid "⚡ Performans Metrikleri"
+msgstr "⚡ Performance Metrics"
+
+#: templates/performans_detay.html:218
+msgid "KM/Litre Oranı"
+msgstr "KM/Liter Ratio"
+
+#: templates/performans_detay.html:220
+msgid "Kilometre / Litre"
+msgstr "Kilometer (KM)"
+
+#: templates/performans_detay.html:223
+msgid "KM Başına Maliyet"
+msgstr "Cost per KM"
+
+#: templates/performans_detay.html:225
+msgid "TL / Kilometre"
+msgstr "Kilometer (KM)"
+
+#: templates/performans_detay.html:228
+msgid "Ton Başına Yakıt"
+msgstr "Total Fuel"
+
+#: templates/performans_detay.html:230
+msgid "Litre / Ton"
+msgstr "Liter/Ton"
+
+#: templates/performans_detay.html:233
+msgid "Verimlilik Skoru"
+msgstr "Efficiency"
+
+#: templates/performans_detay.html:235
+msgid "Düşük = İyi"
+msgstr "Low = Good"
+
+#: templates/performans_detay.html:242
+msgid "📈 Aylık Yakıt Tüketim Trendi"
+msgstr "Monthly Maintenance Trend"
+
+#: templates/performans_detay.html:247
+msgid "📍 Aylık Kilometre Trendi"
+msgstr "Monthly Maintenance Trend"
+
+#: templates/performans_detay.html:253
+msgid "💡 Değerlendirme"
+msgstr "💡 Evaluation"
+
+#: templates/performans_detay.html:256
+msgid "✅ Mükemmel Performans!"
+msgstr "✅ Perfect Performance!"
+
+#: templates/performans_detay.html:257
+msgid "Bu araç çok verimli çalışıyor. Yakıt tüketimi optimal seviyede."
+msgstr "This tool works very efficiently.Fuel consumption is optimal."
+
+#: templates/performans_detay.html:259
+msgid "✓ İyi Performans"
+msgstr "✓ Good Performance"
+
+#: templates/performans_detay.html:260
+msgid ""
+"Araç genel olarak iyi performans gösteriyor. Küçük iyileştirmeler "
+"yapılabilir."
+msgstr "The vehicle performs well overall.Minor improvements can be made."
+
+#: templates/performans_detay.html:262
+msgid "⚠️ Orta Performans"
+msgstr "⚠️ Medium Performance"
+
+#: templates/performans_detay.html:263
+msgid ""
+"Yakıt tüketimi ortalamanın üzerinde. Sürücü eğitimi ve araç bakımı önerilir."
+msgstr ""
+"Fuel consumption is above average.Driver training and vehicle maintenance "
+"are recommended."
+
+#: templates/performans_detay.html:265
+msgid "❌ Düşük Performans"
+msgstr "❌ Low Performance"
+
+#: templates/performans_detay.html:266
+msgid ""
+"Ciddi verimlilik sorunu var. Acil araç kontrolü ve sürücü değerlendirmesi "
+"gerekli."
+msgstr ""
+"There is a serious efficiency problem.Immediate vehicle check and driver "
+"evaluation required."
+
+#: templates/performans_detay.html:271
+msgid "Öneriler:"
+msgstr "Suggestions:"
+
+#: templates/performans_detay.html:274
+msgid "Yüksek yakıt tüketimi - Araç servisine götürün"
+msgstr "High fuel consumption - Take it to the vehicle service"
+
+#: templates/performans_detay.html:275
+msgid "Sürücü davranışlarını inceleyin"
+msgstr "Examine driver behavior"
+
+#: templates/performans_detay.html:278
+msgid "Tonaj bilgisi eksik - Veri girişi kontrol edilmeli"
+msgstr "Tonnage information missing - Data entry must be checked"
+
+#: templates/performans_detay.html:280
+msgid "Düzenli araç bakımı yapın"
+msgstr "Perform regular vehicle maintenance"
+
+#: templates/performans_detay.html:281
+msgid "Lastik basınçlarını kontrol edin"
+msgstr "Check tire pressures"
+
+#: templates/performans_detay.html:282
+msgid "Gereksiz ağırlık taşımayın"
+msgstr "Do not carry unnecessary weight"
+
+#: templates/performans_karsilastirma.html:7
+msgid "Performans Karşılaştırma - AI Analiz"
+msgstr "Performance Comparison - AI Analysis"
+
+#: templates/performans_karsilastirma.html:235
+msgid "🚛 Kargo Araçları Performans Analizi"
+msgstr "Cargo Truck Analysis"
+
+#: templates/performans_karsilastirma.html:236
+msgid "Ana malzeme bazlı tonaj ve verimlilik karşılaştırması"
+msgstr "Tonnage and productivity comparison based on base material"
+
+#: templates/performans_karsilastirma.html:240
+msgid "🏭 İş Makineleri Performans Analizi"
+msgstr "Heavy Machinery Analysis"
+
+#: templates/performans_karsilastirma.html:241
+msgid "Yakıt verimliliği ve operasyonel performans karşılaştırması"
+msgstr "Fuel efficiency and operational performance comparison"
+
+#: templates/performans_karsilastirma.html:245
+msgid "🚗 Binek Araçlar Performans Analizi"
+msgstr "Passenger Vehicle Analysis"
+
+#: templates/performans_karsilastirma.html:246
+msgid "KM/Litre oranı ve yakıt ekonomisi karşılaştırması"
+msgstr "KM/Liter ratio and fuel economy comparison"
+
+#: templates/performans_karsilastirma.html:250
+msgid "📊 Araç Performans Karşılaştırması"
+msgstr "📊 Vehicle Performance Comparison"
+
+#: templates/performans_karsilastirma.html:251
+msgid "Tüm araçların yakıt verimliliği ve performans metrikleri"
+msgstr "Fuel efficiency and performance metrics of all vehicles"
+
+#: templates/performans_karsilastirma.html:257
+msgid "🔍 Ana Malzeme Filtresi"
+msgstr "Analysis Filters"
+
+#: templates/performans_karsilastirma.html:261
+msgid "Ana Malzeme Türü"
+msgstr "Material"
+
+#: templates/performans_karsilastirma.html:263
+msgid "Tüm Malzemeler"
+msgstr "Material"
+
+#: templates/performans_karsilastirma.html:264
+#: templates/performans_karsilastirma.html:373
+msgid "🟡 KUM"
+msgstr "🟡 SAND"
+
+#: templates/performans_karsilastirma.html:265
+#: templates/performans_karsilastirma.html:375
+msgid "🔴 BETON"
+msgstr "🔴 CONCRETE"
+
+#: templates/performans_karsilastirma.html:266
+#: templates/performans_karsilastirma.html:377
+msgid "🟣 PARKE"
+msgstr "🟣 PARQUET"
+
+#: templates/performans_karsilastirma.html:275
+msgid "📥 Rapor İndirme"
+msgstr "📥 Report Download"
+
+#: templates/performans_karsilastirma.html:282
+msgid "📄 PDF İndir"
+msgstr "📄 Download PDF"
+
+#: templates/performans_karsilastirma.html:290
+msgid "📊 Excel İndir"
+msgstr "📊 Download Excel"
+
+#: templates/performans_karsilastirma.html:298
+msgid "Ortalama KM/Litre"
+msgstr "Average Consumption"
+
+#: templates/performans_karsilastirma.html:303
+msgid "Ortalama KM Başına Maliyet"
+msgstr "Total Cost"
+
+#: templates/performans_karsilastirma.html:315
+msgid "🏆 En Verimli Araçlar (Top 5)"
+msgstr "Most Efficient Vehicles (KG/L)"
+
+#: templates/performans_karsilastirma.html:327
+msgid "⚠️ En Verimsiz Araçlar (Top 5)"
+msgstr "Least Efficient Vehicles (KG/L)"
+
+#: templates/performans_karsilastirma.html:341
+msgid "KM/Litre Oranı (Top 15)"
+msgstr "KM/Liter Ratio (Top 15)"
+
+#: templates/performans_karsilastirma.html:345
+msgid "KM Başına Maliyet (Top 15)"
+msgstr "Cost per KM (Top 15)"
+
+#: templates/performans_karsilastirma.html:351
+msgid "📋 Detaylı Performans Tablosu"
+msgstr "Detailed Vehicle Analysis Table"
+
+#: templates/performans_karsilastirma.html:357
+msgid "Ana Malzeme"
+msgstr "Material"
+
+#: templates/performans_karsilastirma.html:358
+msgid "Toplam Yakıt (L)"
+msgstr "Total Fuel"
+
+#: templates/performans_karsilastirma.html:360
+msgid "Taşıma Miktarı"
+msgstr "Installation Date"
+
+#: templates/performans_karsilastirma.html:361
+#: templates/performans_karsilastirma.html:436
+msgid "KM/Litre"
+msgstr "KM/L"
+
+#: templates/performans_karsilastirma.html:362
+msgid "KM/Maliyet"
+msgstr "Cost"
+
+#: templates/performans_karsilastirma.html:363
+msgid "Verimlilik (Yük/L)"
+msgstr "Efficiency"
+
+#: templates/performans_karsilastirma.html:400
+#: templates/performans_karsilastirma.html:406
+msgid "İyi"
+msgstr "Good"
+
+#: templates/performans_karsilastirma.html:402
+#: templates/performans_karsilastirma.html:408
+msgid "Kötü"
+msgstr "Bad"
 
 #: templates/result.html:6
 msgid "Analiz Sonuçları - Telematik Dashboard"
 msgstr "Analysis Results - Telematics Dashboard"
 
-#: templates/result.html:159
+#: templates/result.html:133
 msgid "Binek Araç Analiz Sonuçları"
 msgstr "Passenger Vehicle Analysis Results"
 
-#: templates/result.html:161
+#: templates/result.html:135
 msgid "İş Makinesi Analiz Sonuçları"
 msgstr "Heavy Machinery Analysis Results"
 
-#: templates/result.html:163
+#: templates/result.html:137
 msgid "Kargo Araçları Analiz Sonuçları"
 msgstr "Cargo Truck Analysis Results"
 
-#: templates/result.html:166
+#: templates/result.html:140
 msgid "Analiz Tarihi:"
 msgstr "Analysis Date:"
 
-#: templates/result.html:178
+#: templates/result.html:143 templates/result.html:302
+msgid "Excel"
+msgstr "Excel"
+
+#: templates/result.html:144 templates/result.html:313
+msgid "PDF"
+msgstr "PDF"
+
+#: templates/result.html:152
 msgid "Veri Bulunamadı"
 msgstr "No Data Found"
 
-#: templates/result.html:179
+#: templates/result.html:153
 msgid "Seçilen kriterlere uygun analiz verisi mevcut değil."
 msgstr "No analysis data suitable for the selected criteria is available."
 
-#: templates/result.html:186
+#: templates/result.html:160
 msgid "Alınan Yakıt Sayısı"
 msgstr "Fuel Purchases Count"
 
-#: templates/result.html:187 templates/result.html:193
-msgid "Toplam Yakıt"
-msgstr "Total Fuel"
-
-#: templates/result.html:188
+#: templates/result.html:162
 msgid "Toplam Sefer"
 msgstr "Total Trips"
 
-#: templates/result.html:197
+#: templates/result.html:171
 msgid "Toplam Saat"
 msgstr "Total Hours"
 
-#: templates/result.html:197
-msgid "Toplam KM"
-msgstr "Total KM"
-
-#: templates/result.html:201
+#: templates/result.html:175
 msgid "Ortalama Tüketim"
 msgstr "Average Consumption"
 
-#: templates/result.html:213
+#: templates/result.html:187
 msgid "Plaka Bazlı Yakıt Tahminleri"
 msgstr "License Plate Based Fuel Estimates"
 
-#: templates/result.html:223
+#: templates/result.html:197
 msgid "En Verimli Araçlar (KG/L)"
 msgstr "Most Efficient Vehicles (KG/L)"
 
-#: templates/result.html:233
+#: templates/result.html:207
 msgid "En Verimsiz Araçlar (KG/L)"
 msgstr "Least Efficient Vehicles (KG/L)"
 
-#: templates/result.html:246
+#: templates/result.html:220
 msgid "Detaylı Araç Analiz Tablosu"
 msgstr "Detailed Vehicle Analysis Table"
 
-#: templates/result.html:254
-msgid "Yakıt (L)"
-msgstr "Fuel (L)"
-
-#: templates/result.html:255
+#: templates/result.html:229
 msgid "Saat"
 msgstr "Hour"
 
-#: templates/result.html:256
+#: templates/result.html:230
 msgid "Alım"
 msgstr "Purchase"
 
-#: templates/result.html:257
+#: templates/result.html:231
 msgid "Ort. L"
 msgstr "Avg.L."
 
-#: templates/result.html:258
+#: templates/result.html:232
 msgid "Tüketim"
 msgstr "Consumption"
 
-#: templates/result.html:281
+#: templates/result.html:255
 msgid "KG"
 msgstr "KG"
 
-#: templates/result.html:283
+#: templates/result.html:257
 msgid "Sefer"
 msgstr "Trip"
 
-#: templates/result.html:284
+#: templates/result.html:258
 msgid "KM/L"
 msgstr "KM/L"
 
-#: templates/result.html:285
+#: templates/result.html:259
 msgid "KG/L (Verim)"
 msgstr "KG/L (Efficiency)"
+
+#: templates/saha_bildirimleri.html:6
+msgid "Saha Bildirim Merkezi"
+msgstr "Tool & Notification"
+
+#: templates/saha_bildirimleri.html:58
+msgid "📲 Saha Bildirim Merkezi"
+msgstr "📲 Field Notification Center"
+
+#: templates/saha_bildirimleri.html:59
+msgid "Şoförlerden gelen son kayıtlar"
+msgstr "Latest records from drivers"
+
+#: templates/saha_bildirimleri.html:64 templates/saha_bildirimleri.html:105
+msgid "Evrak"
+msgstr "Document"
+
+#: templates/saha_bildirimleri.html:65 templates/saha_bildirimleri.html:125
+msgid "Hasar"
+msgstr "Damage"
+
+#: templates/saha_bildirimleri.html:84
+msgid "Not:"
+msgstr "Notes"
+
+#: templates/saha_bildirimleri.html:88
+msgid "Henüz açık bir arıza bildirimi yok."
+msgstr "There are no open fault reports yet."
+
+#: templates/saha_bildirimleri.html:109
+msgid "Henüz gönderilmiş bir evrak yok."
+msgstr "There is no document sent yet."
+
+#: templates/saha_bildirimleri.html:128
+msgid "📍 Haritada Göster"
+msgstr "📍 Show on Map"
+
+#: templates/saha_bildirimleri.html:133
+msgid "Fotoğraflı/Konumlu hasar bildirimi yok."
+msgstr "No photo/location damage report."
+
+#: templates/saha_bildirimleri.html:147
+msgid "Yakıt Fişi"
+msgstr "Fuel Expense"
+
+#: templates/saha_bildirimleri.html:151
+msgid "Fotoğraflı yakıt fişi yok."
+msgstr "There is no fuel receipt with photo."
+
+#: templates/saha_bildirimleri.html:160
+msgid "Büyük Görsel"
+msgstr "Big Visual"
+
+#: templates/saha_bildirimleri.html:161
+msgid "⬇ İndir"
+msgstr "⬇ Download"
+
+#: templates/sidebar.html:159
+msgid "AI ASİSTAN (YENİ)"
+msgstr "AI ASSISTANT (NEW)"
+
+#: templates/sidebar.html:171
+msgid "Otomatik Veri Çekme"
+msgstr "Automatic Data Extraction"
+
+#: templates/sidebar.html:177
+msgid "Veri Yönetimi"
+msgstr "Data Management"
+
+#: templates/sidebar.html:189
+msgid "Filo Yönetimi"
+msgstr "Fleet Management"
+
+#: templates/sidebar.html:195
+msgid "Bakım & Onarım"
+msgstr "Maintenance & Repair"
+
+#: templates/sidebar.html:201
+msgid "AI Analiz"
+msgstr "AI Analysis"
+
+#: templates/sidebar.html:207
+msgid "Şoför Yönetimi"
+msgstr "Driver Management"
+
+#: templates/sidebar.html:219
+msgid "Hasar & Ceza"
+msgstr "Damage and Penalty"
+
+#: templates/sidebar.html:225
+msgid "Kullanıcı Yönetimi"
+msgstr "User Management"
+
+#: templates/sofor_login.html:8
+msgid "Şoför Girişi - Kargo Filo"
+msgstr "Driver Login - Cargo Fleet"
+
+#: templates/sofor_login.html:26
+msgid "Şoför Paneli"
+msgstr "Driver Panel"
+
+#: templates/sofor_login.html:27
+msgid "Lütfen sisteme kayıtlı telefon numaranızla giriş yapın."
+msgstr "Please log in with your phone number registered in the system."
+
+#: templates/sofor_login.html:39
+msgid "Telefon Numarası"
+msgstr "Phone"
+
+#: templates/sofor_login.html:40 templates/sofor_paneli.html:230
+#: templates/soforler.html:148
+msgid "05XX XXX XX XX"
+msgstr "05XX XXX XX XX"
+
+#: templates/sofor_login.html:42
+msgid "GİRİŞ YAP"
+msgstr "Make it OUR"
+
+#: templates/sofor_login.html:44
+msgid "Merkez ofis sistemine dönmek için"
+msgstr "To return to the central office system"
+
+#: templates/sofor_login.html:44
+msgid "tıklayın"
+msgstr "click"
+
+#: templates/sofor_paneli.html:10
+msgid "Şoför Tesis Paneli - Kargo Filo"
+msgstr "Driver Facility Panel - Cargo Fleet"
+
+#: templates/sofor_paneli.html:64
+msgid "Çıkış"
+msgstr "Exit"
+
+#: templates/sofor_paneli.html:66
+msgid "Kargo Filo Operasyon Paneli"
+msgstr "Cargo Fleet Operations Panel"
+
+#: templates/sofor_paneli.html:74
+msgid "Aktif Seferiniz Sürüyor"
+msgstr "Your Active Campaign Continues"
+
+#: templates/sofor_paneli.html:75
+msgid "Plaka:"
+msgstr "Number plate"
+
+#: templates/sofor_paneli.html:76
+msgid "Seferi Bitir & Raporla"
+msgstr "Finish Campaign & Report"
+
+#: templates/sofor_paneli.html:79
+msgid "Yolda Gerçekleşenler"
+msgstr "What Happened on the Road"
+
+#: templates/sofor_paneli.html:83 templates/sofor_paneli.html:111
+msgid "Yakıt Fişi Ekle"
+msgstr "Add Fuel Receipt"
+
+#: templates/sofor_paneli.html:87 templates/sofor_paneli.html:115
+msgid "Hasar/Kaza Bildir"
+msgstr "Tool & Notification"
+
+#: templates/sofor_paneli.html:91
+msgid "Arıza Bildir"
+msgstr "Tool & Notification"
+
+#: templates/sofor_paneli.html:95 templates/sofor_paneli.html:245
+msgid "Evrak Gönder"
+msgstr "Send Documents"
+
+#: templates/sofor_paneli.html:103
+msgid "Şu an seferde değilsiniz"
+msgstr "You are not on a trip right now"
+
+#: templates/sofor_paneli.html:104
+msgid "Yeni bir yola çıkmak için aracınızı seçin ve seferi başlatın."
+msgstr "Choose your vehicle and start the expedition to embark on a new road."
+
+#: templates/sofor_paneli.html:105
+msgid "Yeni Sefer Başlat"
+msgstr "Start New Campaign"
+
+#: templates/sofor_paneli.html:118
+msgid "İşlem menüleri sefere çıktıktan sonra açılır."
+msgstr "Operation menus are opened after you set out on a journey."
+
+#: templates/sofor_paneli.html:128
+msgid "Sefer Başlat"
+msgstr "Start Campaign"
+
+#: templates/sofor_paneli.html:133
+msgid "Araç Seçin (Plaka)"
+msgstr "Select Vehicle"
+
+#: templates/sofor_paneli.html:135
+msgid "-- Araç Seç --"
+msgstr "Select Vehicle"
+
+#: templates/sofor_paneli.html:142
+msgid "Başlangıç Kilometresi"
+msgstr "Start Date"
+
+#: templates/sofor_paneli.html:143
+msgid "Örn: 254000"
+msgstr "Ex: 254000"
+
+#: templates/sofor_paneli.html:145
+msgid "🚀 Yola Çık"
+msgstr "🚀 Hit the Road"
+
+#: templates/sofor_paneli.html:154
+msgid "Seferi Tamamla"
+msgstr "Complete the Campaign"
+
+#: templates/sofor_paneli.html:160
+msgid "Bitiş Kilometresi"
+msgstr "End Date"
+
+#: templates/sofor_paneli.html:161
+msgid "Güncel KM sayacı"
+msgstr "Current KM counter"
+
+#: templates/sofor_paneli.html:164
+msgid "Dikkat:"
+msgstr "Attention:"
+
+#: templates/sofor_paneli.html:164
+msgid ""
+"Seferi tamamladıktan sonra sisteme raporlanır ve aktif işlem yapamazsınız."
+msgstr ""
+"After completing the expedition, it will be reported to the system and you "
+"will not be able to make active transactions."
+
+#: templates/sofor_paneli.html:166
+msgid "🏁 Seferi Kapat"
+msgstr "🏁 Close Expedition"
+
+#: templates/sofor_paneli.html:175
+msgid "Yakıt Fişi Yükle"
+msgstr "Upload Fuel Receipt"
+
+#: templates/sofor_paneli.html:179
+msgid "Fiş fotoğrafını çekin veya galeriden seçin."
+msgstr "Take a photo of the receipt or select it from the gallery."
+
+#: templates/sofor_paneli.html:181
+msgid "Fiş Fotoğrafı"
+msgstr "Receipt Photo"
+
+#: templates/sofor_paneli.html:185
+msgid "Alınan Litre"
+msgstr "Monthly Financial Trend"
+
+#: templates/sofor_paneli.html:186 templates/sofor_paneli.html:343
+msgid "Litre"
+msgstr "Income"
+
+#: templates/sofor_paneli.html:197
+msgid "Kaza/Hasar Bildirimi"
+msgstr "Tool & Notification"
+
+#: templates/sofor_paneli.html:202
+msgid "Durum Özeti"
+msgstr "Situation"
+
+#: templates/sofor_paneli.html:203
+msgid "Ne oldu? Kısa açıklama..."
+msgstr "What happened?Short description..."
+
+#: templates/sofor_paneli.html:206
+msgid "Hasar Fotoğrafı"
+msgstr "Damage Photo"
+
+#: templates/sofor_paneli.html:211
+msgid "📍 Mevcut Konumumu Al"
+msgstr "📍 Get My Current Location"
+
+#: templates/sofor_paneli.html:212 templates/sofor_paneli.html:327
+msgid "✓ Konum alındı"
+msgstr "✓ Location received"
+
+#: templates/sofor_paneli.html:216 templates/sofor_paneli.html:388
+msgid "Merkeze Bildir"
+msgstr "Report to Center"
+
+#: templates/sofor_paneli.html:224
+msgid "Arıza Bildirimi"
+msgstr "Tool & Notification"
+
+#: templates/sofor_paneli.html:229
+msgid "İletişim Numarası"
+msgstr "Communication"
+
+#: templates/sofor_paneli.html:233
+msgid "Sorun Nedir?"
+msgstr "What's the problem?"
+
+#: templates/sofor_paneli.html:234
+msgid "Örn: Motor ısındı, fren balatası ses yapıyor..."
+msgstr ""
+"For example: The engine has warmed up, the brake pad is making noise..."
+
+#: templates/sofor_paneli.html:236 templates/sofor_paneli.html:412
+msgid "Yetkili Servise İlet"
+msgstr "Load and Process"
+
+#: templates/sofor_paneli.html:250
+msgid "Evrak Türü"
+msgstr "Document Type"
+
+#: templates/sofor_paneli.html:253
+msgid "İrsaliye"
+msgstr "Cost"
+
+#: templates/sofor_paneli.html:254
+msgid "Fatura"
+msgstr "Vehicle"
+
+#: templates/sofor_paneli.html:255
+msgid "Kantar Fişi"
+msgstr "Registration Date"
+
+#: templates/sofor_paneli.html:260
+msgid "Evrak Fotoğrafı"
+msgstr "Document Photo"
+
+#: templates/sofor_paneli.html:264
+msgid "Açıklama (Opsiyonel)"
+msgstr "Description (Optional)"
+
+#: templates/sofor_paneli.html:265
+msgid "Evrakla ilgili notunuz..."
+msgstr "Your note about the document..."
 
 #: templates/soforler.html:6
 msgid "Şoför Yönetimi - Telematik Dashboard"
 msgstr "Driver Management - Telematics Dashboard"
 
-#: templates/soforler.html:150
+#: templates/soforler.html:124
 msgid "Şoför & Personel Yönetimi"
 msgstr "Driver and Personnel Management"
 
-#: templates/soforler.html:151
+#: templates/soforler.html:125
 msgid "Ekibinizin bilgilerini ve çalışma durumlarını yönetin."
 msgstr "Manage your team's information and work status."
 
-#: templates/soforler.html:165
+#: templates/soforler.html:139
 msgid "Yeni Şoför Ekle"
 msgstr "Add New Driver"
 
-#: templates/soforler.html:169 templates/soforler.html:200
-#: templates/soforler.html:241
+#: templates/soforler.html:143 templates/soforler.html:174
+#: templates/soforler.html:215
 msgid "Ad Soyad"
 msgstr "Name Surname"
 
-#: templates/soforler.html:170
+#: templates/soforler.html:144
 msgid "Şoför Adı Soyadı"
 msgstr "Driver Name Surname"
 
-#: templates/soforler.html:173 templates/soforler.html:242
+#: templates/soforler.html:147 templates/soforler.html:216
 msgid "Telefon"
 msgstr "Phone"
 
-#: templates/soforler.html:177
+#: templates/soforler.html:151
 msgid "TC Kimlik No"
 msgstr "National ID Number"
 
-#: templates/soforler.html:181
+#: templates/soforler.html:155
 msgid "Çalışma Durumu"
 msgstr "Working Status"
 
-#: templates/soforler.html:183
+#: templates/soforler.html:157
 msgid "Aktif Çalışıyor"
 msgstr "Actively Working"
 
-#: templates/soforler.html:184
+#: templates/soforler.html:158
 msgid "Pasif / Ayrıldı"
 msgstr "Passive/Reserved"
 
-#: templates/soforler.html:189
+#: templates/soforler.html:163
 msgid "Personeli Kaydet"
 msgstr "Save Staff"
 
-#: templates/soforler.html:195
+#: templates/soforler.html:169
 msgid "Şoför Listesi"
 msgstr "Driver List"
 
-#: templates/soforler.html:201
+#: templates/soforler.html:175
 msgid "İletişim"
 msgstr "Communication"
 
-#: templates/soforler.html:202 templates/soforler.html:243
+#: templates/soforler.html:176 templates/soforler.html:217
 msgid "TC No"
 msgstr "National ID"
 
-#: templates/soforler.html:203
+#: templates/soforler.html:177 templates/users.html:126
 msgid "Kayıt Tarihi"
 msgstr "Registration Date"
 
-#: templates/soforler.html:217
-msgid "Aktif"
-msgstr "Active"
-
-#: templates/soforler.html:239
+#: templates/soforler.html:213
 msgid "Şoför Düzenle"
 msgstr "Edit Driver"
+
+#: templates/sync.html:6
+msgid "Otomatik Veri Senkronizasyonu - Telematik Dashboard"
+msgstr "Analysis Results - Telematics Dashboard"
+
+#: templates/sync.html:64
+msgid "Otomatik Veri Senkronizasyonu"
+msgstr "Data Synchronization"
+
+#: templates/sync.html:65
+msgid ""
+"Mail kutunuzdaki güncel yakıt, kantar ve takip dosyalarını otomatik işleyin."
+msgstr ""
+"Automatically process current fuel, scale and tracking files in your "
+"mailbox."
+
+#: templates/sync.html:66
+msgid "Sistem Hazır"
+msgstr "System Ready"
+
+#: templates/sync.html:70
+msgid "Mail Adresi"
+msgstr "Email Address"
+
+#: templates/sync.html:70
+msgid "Örn: rapor@sirket.com"
+msgstr "Ex: report@company.com"
+
+#: templates/sync.html:71
+msgid "Uygulama Şifresi"
+msgstr "Plate Filter"
+
+#: templates/sync.html:72
+msgid "Gönderen Filtresi (Opsiyonel)"
+msgstr "Sender Filter (Optional)"
+
+#: templates/sync.html:72
+msgid "Örn: noreply@arvento.com"
+msgstr "Ex: noreply@arvento.com"
+
+#: templates/sync.html:76
+msgid "Şimdi Senkronize Et"
+msgstr "Sync Now"
+
+#: templates/users.html:6
+msgid "Kullanıcı Yönetimi - Kargo Sistemi"
+msgstr "User Management - Shipping System"
+
+#: templates/users.html:78
+msgid "👥 Kullanıcı Yönetimi"
+msgstr "Tire Management"
+
+#: templates/users.html:93
+msgid "➕ Yeni Kullanıcı Ekle"
+msgstr "Add New Tire"
+
+#: templates/users.html:97
+msgid "Örn: mehmet123"
+msgstr "Ex: mehmet123"
+
+#: templates/users.html:104
+msgid "Yetki Rolü"
+msgstr "Authority Role"
+
+#: templates/users.html:106
+msgid "Standart Kullanıcı"
+msgstr "Standard User"
+
+#: templates/users.html:107
+msgid "Yönetici (Admin)"
+msgstr "Administrator"
+
+#: templates/users.html:119
+msgid "📋 Kayıtlı Kullanıcılar"
+msgstr "📋 Registered Users"
+
+#: templates/users.html:125
+msgid "Yetki"
+msgstr "Authority"
+
+#: templates/users.html:147
+msgid "(Siz)"
+msgstr "(You)"
 
 #~ msgid "Kargo Yakıt Analiz Sistemi"
 #~ msgstr "Cargo Fuel Analysis System"
@@ -1331,3 +2814,6 @@ msgstr "Edit Driver"
 
 #~ msgid "Operasyonlarınızın merkezi kontrol noktası."
 #~ msgstr "Central control point of your operations."
+
+#~ msgid "Binek Araçları"
+#~ msgstr "Passenger Vehicles"

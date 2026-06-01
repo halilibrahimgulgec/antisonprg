@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Veri Yönetimi - Telematik Dashboard</title>
+    <title>{{ _('Veri Yönetimi - Telematik Dashboard') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -50,36 +50,27 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
-        <nav class="nav-menu">
-            <li class="nav-item"><a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI ASİSTAN</a></li>
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
-            <li class="nav-item"><a href="/sync" class="nav-link"><i class="fa-solid fa-rotate"></i> Otomatik Veri Çekme</a></li>
-            <li class="nav-item"><a href="/veriler" class="nav-link active"><i class="fa-solid fa-table"></i> Veri Yönetimi</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> Muhasebe</a></li>
-        </nav>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <header style="margin-bottom: 30px;">
-            <h1>📊 Veri Yönetimi</h1>
-            <p style="color: var(--text-muted);">Sisteme yüklenen tüm Excel verilerini buradan inceleyebilirsiniz.</p>
+            <h1>{{ _('📊 Veri Yönetimi') }}</h1>
+            <p style="color: var(--text-muted);">{{ _('Sisteme yüklenen tüm Excel verilerini buradan inceleyebilirsiniz.') }}</p>
         </header>
 
         <div class="tabs">
-            <button class="tab-btn active" onclick="switchTab('yakitTab', this)">⛽ Yakıt Verileri</button>
-            <button class="tab-btn" onclick="switchTab('kantarTab', this)">⚖️ Kantar Verileri</button>
-            <button class="tab-btn" onclick="switchTab('takipTab', this)">📍 Takip Verileri</button>
+            <button class="tab-btn active" onclick="switchTab('yakitTab', this)">{{ _('⛽ Yakıt Verileri') }}</button>
+            <button class="tab-btn" onclick="switchTab('kantarTab', this)">{{ _('⚖️ Kantar Verileri') }}</button>
+            <button class="tab-btn" onclick="switchTab('takipTab', this)">{{ _('📍 Takip Verileri') }}</button>
         </div>
 
         <!-- Yakıt Verileri -->
         <div id="yakitTab" class="tab-content active">
-            <h3><span class="badge badge-yakit">YAKIT</span> Son 50 Kayıt</h3>
+            <h3><span class="badge badge-yakit">{{ _('YAKIT') }}</span> {{ _('Son 50 Kayıt') }}</h3>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr><th>Tarih</th><th>Plaka</th><th>Miktar (L)</th><th>KM</th><th>İstasyon</th></tr>
+                        <tr><th>{{ _('Tarih') }}</th><th>{{ _('Plaka') }}</th><th>{{ _('Miktar (L)') }}</th><th>{{ _('KM') }}</th><th>{{ _('İstasyon') }}</th></tr>
                     </thead>
                     <tbody>
                         {% for item in yakit %}
@@ -98,11 +89,11 @@
 
         <!-- Kantar Verileri -->
         <div id="kantarTab" class="tab-content">
-            <h3><span class="badge badge-kantar">KANTAR</span> Son 50 Kayıt</h3>
+            <h3><span class="badge badge-kantar">{{ _('KANTAR') }}</span> {{ _('Son 50 Kayıt') }}</h3>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr><th>Tarih</th><th>Plaka</th><th>Miktar</th><th>Birim</th><th>Cari</th></tr>
+                        <tr><th>{{ _('Tarih') }}</th><th>{{ _('Plaka') }}</th><th>{{ _('Miktar') }}</th><th>{{ _('Birim') }}</th><th>{{ _('Cari') }}</th></tr>
                     </thead>
                     <tbody>
                         {% for item in kantar %}
@@ -121,11 +112,11 @@
 
         <!-- Takip Verileri -->
         <div id="takipTab" class="tab-content">
-            <h3><span class="badge badge-takip">TAKİP</span> Son 50 Kayıt</h3>
+            <h3><span class="badge badge-takip">{{ _('TAKİP') }}</span> {{ _('Son 50 Kayıt') }}</h3>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
-                        <tr><th>Tarih</th><th>Plaka</th><th>Hız</th><th>Konum</th></tr>
+                        <tr><th>{{ _('Tarih') }}</th><th>{{ _('Plaka') }}</th><th>{{ _('Hız') }}</th><th>{{ _('Konum') }}</th></tr>
                     </thead>
                     <tbody>
                         {% for item in takip %}

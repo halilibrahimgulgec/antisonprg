@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anomali Tespiti - AI Analiz</title>
+    <title>{{ _('Anomali Tespiti - AI Analiz') }}</title>
     <style>
         * {
             margin: 0;
@@ -141,26 +141,26 @@
 </head>
 <body>
     <div class="container">
-        <a href="/ai-analysis" class="back-link">← AI Analiz Sayfası</a>
+        <a href="/ai-analysis" class="back-link">{{ _('← AI Analiz Sayfası') }}</a>
 
         <div class="header">
-            <h1>🚨 Anomali Tespiti Sonuçları</h1>
-            <p>AI ile tespit edilen anormal yakıt tüketimleri</p>
+            <h1>{{ _('🚨 Anomali Tespiti Sonuçları') }}</h1>
+            <p>{{ _('AI ile tespit edilen anormal yakıt tüketimleri') }}</p>
         </div>
 
         <div class="card">
-            <h2>📊 Genel Durum</h2>
+            <h2>{{ _('📊 Genel Durum') }}</h2>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-label">Toplam Anomali</div>
+                    <div class="stat-label">{{ _('Toplam Anomali') }}</div>
                     <div class="stat-value">{{ result.toplam_anomali }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Gösterilen</div>
+                    <div class="stat-label">{{ _('Gösterilen') }}</div>
                     <div class="stat-value">{{ result.anomaliler|length }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Risk Durumu</div>
+                    <div class="stat-label">{{ _('Risk Durumu') }}</div>
                     <div class="stat-value">
                         {% if result.toplam_anomali > 50 %}
                             Yüksek
@@ -175,19 +175,19 @@
         </div>
 
         <div class="card">
-            <h2>⚠️ Tespit Edilen Anomaliler</h2>
+            <h2>{{ _('⚠️ Tespit Edilen Anomaliler') }}</h2>
             {% if result.anomaliler %}
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Plaka</th>
-                            <th>Tarih</th>
-                            <th>Yakıt (L)</th>
-                            <th>KM</th>
-                            <th>Birim Fiyat</th>
-                            <th>Anomali Skoru</th>
-                            <th>Sebep</th>
+                            <th>{{ _('Plaka') }}</th>
+                            <th>{{ _('Tarih') }}</th>
+                            <th>{{ _('Yakıt (L)') }}</th>
+                            <th>{{ _('KM') }}</th>
+                            <th>{{ _('Birim Fiyat') }}</th>
+                            <th>{{ _('Anomali Skoru') }}</th>
+                            <th>{{ _('Sebep') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -215,22 +215,22 @@
             </div>
             {% else %}
             <p style="color: #718096; text-align: center; padding: 40px;">
-                🎉 Hiç anomali tespit edilmedi! Tüm yakıt tüketimleri normal görünüyor.
+                {{ _('🎉 Hiç anomali tespit edilmedi! Tüm yakıt tüketimleri normal görünüyor.') }}
             </p>
             {% endif %}
         </div>
 
         <div class="card">
-            <h3 style="color: #2d3748; margin-bottom: 16px;">💡 Anomali Skoru Hakkında</h3>
+            <h3 style="color: #2d3748; margin-bottom: 16px;">{{ _('💡 Anomali Skoru Hakkında') }}</h3>
             <p style="color: #718096; line-height: 1.6;">
-                Anomali skoru ne kadar düşükse, kayıt o kadar anormaldir. Negatif değerler, kaydın normal davranıştan saptığını gösterir.
-                Yüksek risk skorlu kayıtları öncelikli olarak inceleyin.
+                {{ _('Anomali skoru ne kadar düşükse, kayıt o kadar anormaldir. Negatif değerler, kaydın normal davranıştan saptığını gösterir.') }}
+                {{ _('Yüksek risk skorlu kayıtları öncelikli olarak inceleyin.') }}
             </p>
         </div>
 
         <div class="card">
             <a href="/ai-analysis" style="display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 8px;">
-                Yeni Analiz Yap
+                {{ _('Yeni Analiz Yap') }}
             </a>
         </div>
     </div>

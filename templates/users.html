@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kullanıcı Yönetimi - Kargo Sistemi</title>
+    <title>{{ _('Kullanıcı Yönetimi - Kargo Sistemi') }}</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -75,8 +75,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>👥 Kullanıcı Yönetimi</h1>
-            <a href="/" class="btn btn-home">🏠 Ana Sayfa</a>
+            <h1>{{ _('👥 Kullanıcı Yönetimi') }}</h1>
+            <a href="/" class="btn btn-home">{{ _('🏠 Ana Sayfa') }}</a>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -90,41 +90,41 @@
         {% endwith %}
 
         <div class="card">
-            <h2>➕ Yeni Kullanıcı Ekle</h2>
+            <h2>{{ _('➕ Yeni Kullanıcı Ekle') }}</h2>
             <form action="/admin/user/add" method="POST" class="form-grid">
                 <div class="form-group">
-                    <label>Kullanıcı Adı</label>
-                    <input type="text" name="username" class="form-control" placeholder="Örn: mehmet123" required>
+                    <label>{{ _('Kullanıcı Adı') }}</label>
+                    <input type="text" name="username" class="form-control" placeholder="{{ _('Örn: mehmet123') }}" required>
                 </div>
                 <div class="form-group">
-                    <label>Şifre</label>
+                    <label>{{ _('Şifre') }}</label>
                     <input type="password" name="password" class="form-control" placeholder="••••••••" required>
                 </div>
                 <div class="form-group">
-                    <label>Yetki Rolü</label>
+                    <label>{{ _('Yetki Rolü') }}</label>
                     <select name="role" class="form-control">
-                        <option value="user">Standart Kullanıcı</option>
-                        <option value="admin">Yönetici (Admin)</option>
+                        <option value="user">{{ _('Standart Kullanıcı') }}</option>
+                        <option value="admin">{{ _('Yönetici (Admin)') }}</option>
                     </select>
                 </div>
                 <div class="form-group" style="display: flex; align-items: flex-end;">
                     <button type="submit" class="btn btn-primary" style="width: 100%; height: 48px; justify-content: center;">
-                        Kaydet
+                        {{ _('Kaydet') }}
                     </button>
                 </div>
             </form>
         </div>
 
         <div class="card">
-            <h2>📋 Kayıtlı Kullanıcılar</h2>
+            <h2>{{ _('📋 Kayıtlı Kullanıcılar') }}</h2>
             <div style="overflow-x: auto;">
                 <table>
                     <thead>
                         <tr>
-                            <th>Kullanıcı Adı</th>
-                            <th>Yetki</th>
-                            <th>Kayıt Tarihi</th>
-                            <th>İşlem</th>
+                            <th>{{ _('Kullanıcı Adı') }}</th>
+                            <th>{{ _('Yetki') }}</th>
+                            <th>{{ _('Kayıt Tarihi') }}</th>
+                            <th>{{ _('İşlem') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -141,10 +141,10 @@
                                 {% if user.id != session['user_id'] %}
                                 <a href="/admin/user/delete/{{ user.id }}" class="btn btn-danger" 
                                    onclick="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?');">
-                                    Sil
+                                    {{ _('Sil') }}
                                 </a>
                                 {% else %}
-                                <span style="color: #a0aec0; font-size: 0.8rem;">(Siz)</span>
+                                <span style="color: #a0aec0; font-size: 0.8rem;">{{ _('(Siz)') }}</span>
                                 {% endif %}
                             </td>
                         </tr>

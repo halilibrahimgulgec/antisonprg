@@ -116,26 +116,7 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
-        <nav class="nav-menu">
-            <li class="nav-item">
-                <a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-bottom: 15px;">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i>
-                    {{ _('AI ASİSTAN (YENİ)') }}
-                </a>
-            </li>
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> {{ _('Dashboard') }}</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> {{ _('Muhasebe Analizi') }}</a></li>
-            <li class="nav-item"><a href="/arac-yonetimi" class="nav-link"><i class="fa-solid fa-truck-moving"></i> {{ _('Filo Yönetimi') }}</a></li>
-            <li class="nav-item"><a href="/bakim" class="nav-link"><i class="fa-solid fa-wrench"></i> {{ _('Bakım & Onarım') }}</a></li>
-            <li class="nav-item"><a href="/lastik-yonetimi" class="nav-link active"><i class="fa-solid fa-circle-dot"></i> {{ _('Lastik Yönetimi') }}</a></li>
-        </nav>
-        <div class="user-profile">
-            <div class="user-avatar">{{ session['username'][0].upper() }}</div>
-            <div class="user-info"><h4>{{ session['username'] }}</h4><p>{{ session['role'] }}</p></div>
-        </div>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <header class="header">
@@ -196,29 +177,29 @@
                 <div class="truck-layout">
                     <!-- Ön Dingil -->
                     <div class="axle">
-                        <div class="tire-spot" data-pos="ÖN-SOL" onclick="openTireModal(this)"><div class="pos-lbl">ÖN SOL</div><div class="tire-info"></div></div>
-                        <div class="tire-spot" data-pos="ÖN-SAĞ" onclick="openTireModal(this)"><div class="pos-lbl">ÖN SAĞ</div><div class="tire-info"></div></div>
+                        <div class="tire-spot" data-pos="ÖN-SOL" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('ÖN SOL') }}</div><div class="tire-info"></div></div>
+                        <div class="tire-spot" data-pos="ÖN-SAĞ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('ÖN SAĞ') }}</div><div class="tire-info"></div></div>
                     </div>
                     <!-- Çeker Dingil -->
                     <div class="axle">
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ÇEKER-SOL-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">S-DIŞ</div><div class="tire-info"></div></div>
-                            <div class="tire-spot" data-pos="ÇEKER-SOL-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">S-İÇ</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ÇEKER-SOL-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('S-DIŞ') }}</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ÇEKER-SOL-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('S-İÇ') }}</div><div class="tire-info"></div></div>
                         </div>
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">SĞ-İÇ</div><div class="tire-info"></div></div>
-                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">SĞ-DIŞ</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('SĞ-İÇ') }}</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ÇEKER-SAĞ-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('SĞ-DIŞ') }}</div><div class="tire-info"></div></div>
                         </div>
                     </div>
                     <!-- Arka Dingil -->
                     <div class="axle">
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ARKA-SOL-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">A-SOL-D</div><div class="tire-info"></div></div>
-                            <div class="tire-spot" data-pos="ARKA-SOL-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">A-SOL-İ</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ARKA-SOL-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('A-SOL-D') }}</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ARKA-SOL-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('A-SOL-İ') }}</div><div class="tire-info"></div></div>
                         </div>
                         <div class="dual-tires">
-                            <div class="tire-spot" data-pos="ARKA-SAĞ-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">A-SAĞ-İ</div><div class="tire-info"></div></div>
-                            <div class="tire-spot" data-pos="ARKA-SAĞ-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">A-SAĞ-D</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ARKA-SAĞ-İÇ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('A-SAĞ-İ') }}</div><div class="tire-info"></div></div>
+                            <div class="tire-spot" data-pos="ARKA-SAĞ-DIŞ" onclick="openTireModal(this)"><div class="pos-lbl">{{ _('A-SAĞ-D') }}</div><div class="tire-info"></div></div>
                         </div>
                     </div>
                 </div>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Otomatik Veri Senkronizasyonu - Telematik Dashboard</title>
+    <title>{{ _('Otomatik Veri Senkronizasyonu - Telematik Dashboard') }}</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -55,34 +55,25 @@
     </style>
 </head>
 <body>
-    <aside class="sidebar">
-        <a href="/" class="logo"><i class="fa-solid fa-truck-fast"></i><h2>ANTİ-GRAVİTY</h2></a>
-        <nav class="nav-menu">
-            <li class="nav-item"><a href="/ai-assistant" class="nav-link" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;"><i class="fa-solid fa-wand-magic-sparkles"></i> AI ASİSTAN</a></li>
-            <li class="nav-item"><a href="/" class="nav-link"><i class="fa-solid fa-chart-line"></i> Dashboard</a></li>
-            <li class="nav-item"><a href="/sync" class="nav-link active"><i class="fa-solid fa-rotate"></i> Otomatik Veri Çekme</a></li>
-            <li class="nav-item"><a href="/veriler" class="nav-link"><i class="fa-solid fa-table"></i> Veri Yönetimi</a></li>
-            <li class="nav-item"><a href="/muhasebe" class="nav-link"><i class="fa-solid fa-coins"></i> Muhasebe</a></li>
-        </nav>
-    </aside>
+    {% include 'sidebar.html' %}
 
     <main class="main-content">
         <div class="card">
             <div class="sync-visual">
                 <div class="sync-icon-wrapper" id="syncIcon"><i class="fa-solid fa-cloud-arrow-down"></i></div>
-                <h2>Otomatik Veri Senkronizasyonu</h2>
-                <p style="color: var(--text-muted); margin-top: 8px;">Mail kutunuzdaki güncel yakıt, kantar ve takip dosyalarını otomatik işleyin.</p>
-                <div class="status-badge status-online"><i class="fa-solid fa-circle"></i> Sistem Hazır</div>
+                <h2>{{ _('Otomatik Veri Senkronizasyonu') }}</h2>
+                <p style="color: var(--text-muted); margin-top: 8px;">{{ _('Mail kutunuzdaki güncel yakıt, kantar ve takip dosyalarını otomatik işleyin.') }}</p>
+                <div class="status-badge status-online"><i class="fa-solid fa-circle"></i> {{ _('Sistem Hazır') }}</div>
             </div>
 
             <div class="settings-grid">
-                <div class="form-group"><label>Mail Adresi</label><input type="email" id="mailUser" class="form-control" placeholder="Örn: rapor@sirket.com"></div>
-                <div class="form-group"><label>Uygulama Şifresi</label><input type="password" id="mailPass" class="form-control" placeholder="••••••••"></div>
-                <div class="form-group" style="grid-column: span 2;"><label>Gönderen Filtresi (Opsiyonel)</label><input type="text" id="mailSender" class="form-control" placeholder="Örn: noreply@arvento.com"></div>
+                <div class="form-group"><label>{{ _('Mail Adresi') }}</label><input type="email" id="mailUser" class="form-control" placeholder="{{ _('Örn: rapor@sirket.com') }}"></div>
+                <div class="form-group"><label>{{ _('Uygulama Şifresi') }}</label><input type="password" id="mailPass" class="form-control" placeholder="••••••••"></div>
+                <div class="form-group" style="grid-column: span 2;"><label>{{ _('Gönderen Filtresi (Opsiyonel)') }}</label><input type="text" id="mailSender" class="form-control" placeholder="{{ _('Örn: noreply@arvento.com') }}"></div>
             </div>
 
             <button class="btn-sync" id="syncBtn" onclick="startSync()">
-                <i class="fa-solid fa-bolt"></i> Şimdi Senkronize Et
+                <i class="fa-solid fa-bolt"></i> {{ _('Şimdi Senkronize Et') }}
             </button>
 
             <div id="logArea"></div>

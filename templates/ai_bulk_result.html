@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toplu Tahmin - AI Analiz</title>
+    <title>{{ _('Toplu Tahmin - AI Analiz') }}</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -142,47 +142,47 @@
 </head>
 <body>
     <div class="container">
-        <a href="/ai-analysis" class="back-link">← AI Analiz Sayfası</a>
+        <a href="/ai-analysis" class="back-link">{{ _('← AI Analiz Sayfası') }}</a>
 
         <div class="header">
-            <h1>📦 Toplu Yakıt Tahmin Raporu</h1>
-            <p>Tüm araçlar için gelecek ay tahminleri</p>
+            <h1>{{ _('📦 Toplu Yakıt Tahmin Raporu') }}</h1>
+            <p>{{ _('Tüm araçlar için gelecek ay tahminleri') }}</p>
         </div>
 
         <div class="card">
-            <h2>📊 Genel Özet</h2>
+            <h2>{{ _('📊 Genel Özet') }}</h2>
             <div class="stats-grid">
                 <div class="stat-item">
-                    <div class="stat-label">Toplam Araç</div>
+                    <div class="stat-label">{{ _('Toplam Araç') }}</div>
                     <div class="stat-value">{{ result.plaka_tahminleri|length }}</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Gelecek Ay Toplam</div>
+                    <div class="stat-label">{{ _('Gelecek Ay Toplam') }}</div>
                     <div class="stat-value">{{ "%.0f"|format(result.toplam_tahmin) }} L</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Tahmini Maliyet</div>
+                    <div class="stat-label">{{ _('Tahmini Maliyet') }}</div>
                     <div class="stat-value">{{ "%.0f"|format(result.toplam_tahmin * 35) }} TL</div>
                 </div>
                 <div class="stat-item">
-                    <div class="stat-label">Günlük Ortalama</div>
+                    <div class="stat-label">{{ _('Günlük Ortalama') }}</div>
                     <div class="stat-value">{{ "%.0f"|format(result.toplam_tahmin / 30) }} L</div>
                 </div>
             </div>
 
             <div class="performance-box">
-                <h3>🤖 Model Performansı</h3>
+                <h3>{{ _('🤖 Model Performansı') }}</h3>
                 <p>
-                    <strong>Eğitim Skoru:</strong> {{ "%.1f"|format(result.model_performansi.train_score * 100) }}%<br>
-                    <strong>Test Skoru:</strong> {{ "%.1f"|format(result.model_performansi.test_score * 100) }}%<br>
-                    <strong>Eğitim Veri:</strong> {{ result.model_performansi.training_samples }} kayıt<br>
-                    <strong>Test Veri:</strong> {{ result.model_performansi.test_samples }} kayıt
+                    <strong>{{ _('Eğitim Skoru:') }}</strong> {{ "%.1f"|format(result.model_performansi.train_score * 100) }}%<br>
+                    <strong>{{ _('Test Skoru:') }}</strong> {{ "%.1f"|format(result.model_performansi.test_score * 100) }}%<br>
+                    <strong>{{ _('Eğitim Veri:') }}</strong> {{ result.model_performansi.training_samples }} kayıt<br>
+                    <strong>{{ _('Test Veri:') }}</strong> {{ result.model_performansi.test_samples }} kayıt
                 </p>
             </div>
         </div>
 
         <div class="card">
-            <h2>📈 Plaka Bazlı Tahminler</h2>
+            <h2>{{ _('📈 Plaka Bazlı Tahminler') }}</h2>
             <div class="chart-container">
                 <canvas id="plakaChart"></canvas>
             </div>
@@ -191,11 +191,11 @@
                 <table>
                     <thead>
                         <tr>
-                            <th>Sıra</th>
-                            <th>Plaka</th>
-                            <th>Gelecek Ay Tahmini (L)</th>
-                            <th>Günlük Ortalama (L)</th>
-                            <th>Tahmini Maliyet (TL)</th>
+                            <th>{{ _('Sıra') }}</th>
+                            <th>{{ _('Plaka') }}</th>
+                            <th>{{ _('Gelecek Ay Tahmini (L)') }}</th>
+                            <th>{{ _('Günlük Ortalama (L)') }}</th>
+                            <th>{{ _('Tahmini Maliyet (TL)') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -214,17 +214,17 @@
         </div>
 
         <div class="card">
-            <h2>🎯 Özellik Önemleri</h2>
+            <h2>{{ _('🎯 Özellik Önemleri') }}</h2>
             <p style="color: #718096; margin-bottom: 16px;">
-                Model hangi özelliklere daha çok önem veriyor?
+                {{ _('Model hangi özelliklere daha çok önem veriyor?') }}
             </p>
             <div class="table-container">
                 <table>
                     <thead>
                         <tr>
-                            <th>Özellik</th>
-                            <th>Önem Derecesi</th>
-                            <th>Grafik</th>
+                            <th>{{ _('Özellik') }}</th>
+                            <th>{{ _('Önem Derecesi') }}</th>
+                            <th>{{ _('Grafik') }}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -246,7 +246,7 @@
 
         <div class="card">
             <a href="/ai-analysis" style="display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 8px;">
-                Yeni Analiz Yap
+                {{ _('Yeni Analiz Yap') }}
             </a>
         </div>
     </div>
@@ -294,7 +294,7 @@
                     x: {
                         title: {
                             display: true,
-                            text: 'Plaka'
+                            text: '{{ _('Plaka') }}'
                         }
                     }
                 }
