@@ -194,7 +194,7 @@ def veriler_sayfasi():
     kantar_verileri = cursor.fetchall()
     
     # Son 50 takip verisi
-    cursor.execute('SELECT * FROM takip ORDER BY tarih DESC LIMIT 50')
+    cursor.execute('SELECT plaka, tarih, maksimum_hiz AS hiz, bitis_adresi AS konum FROM arac_takip ORDER BY tarih DESC LIMIT 50')
     takip_verileri = cursor.fetchall()
     
     conn.close()
