@@ -1106,6 +1106,74 @@ def arac_toplu_sil():
     except Exception as e:
         flash(f'❌ Hata: {str(e)}', 'error')
 
+@app.route('/arac-toplu-islem', methods=['POST'])
+def arac_toplu_islem():
+    """Toplu araç işlemleri (Tümünü BİZİM/TAŞERON/AKTİF/PASİF yap veya seçilenleri güncelle)"""
+    try:
+        from database import get_db_connection
+        import json
+
+        islem = request.form.get('islem')
+        plakalar_raw = request.form.get('plakalar')
+        
+        plakalar = []
+        if plakalar_raw:
+            try:
+                plakalar = json.loads(plakalar_raw)
+            except Exception:
+                pass
+
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        basarili = 0
+
+        # Tümünü güncelleme işlemleri (veritabanındaki tüm araçlar)
+        if islem == 'tumu_bizim':
+            cursor.execute("UPDATE araclar SET sahip = 'BİZİM'")
+            basarili = cursor.rowcount
+            flash(f'✅ Tüm araçların sahibi "BİZİM" olarak güncellendi! ({basarili} araç)', 'success')
+        elif islem == 'tumu_taseron':
+            cursor.execute("UPDATE araclar SET sahip = 'TAŞERON'")
+            basarili = cursor.rowcount
+            flash(f'✅ Tüm araçların sahibi "TAŞERON" olarak güncellendi! ({basarili} araç)', 'success')
+        elif islem == 'tumu_aktif':
+            cursor.execute("UPDATE araclar SET aktif = 1")
+            basarili = cursor.rowcount
+            flash(f'✅ Tüm araçlar "AKTİF" olarak güncellendi! ({basarili} araç)', 'success')
+        elif islem == 'tumu_pasif':
+            cursor.execute("UPDATE araclar SET aktif = 0")
+            basarili = cursor.rowcount
+            flash(f'✅ Tüm araçlar "PASİF" olarak güncellendi! ({basarili} araç)', 'success')
+
+        # Seçilen araçları güncelleme işlemleri
+        elif islem == 'secili_bizim':
+            if not plakalar:
+                flash('❌ Araç seçilmedi!', 'error')
+                conn.close()
+                return redirect(url_for('arac_yonetimi'))
+            for plaka in plakalar:
+                cursor.execute("UPDATE araclar SET sahip = 'BİZİM' WHERE plaka = ?", (plaka,))
+                basarili += 1
+            flash(f'✅ {basarili} seçili araç "BİZİM" olarak güncellendi!', 'success')
+        elif islem == 'secili_aktif':
+            if not plakalar:
+                flash('❌ Araç seçilmedi!', 'error')
+                conn.close()
+                return redirect(url_for('arac_yonetimi'))
+            for plaka in plakalar:
+                cursor.execute("UPDATE araclar SET aktif = 1 WHERE plaka = ?", (plaka,))
+                basarili += 1
+            flash(f'✅ {basarili} seçili araç "AKTİF" olarak güncellendi!', 'success')
+        else:
+            flash('❌ Geçersiz işlem!', 'error')
+
+        conn.commit()
+        conn.close()
+
+    except Exception as e:
+        flash(f'❌ Hata: {str(e)}', 'error')
+
     return redirect(url_for('arac_yonetimi'))
 
 @app.route('/arac-toplu-sahip', methods=['POST'])
