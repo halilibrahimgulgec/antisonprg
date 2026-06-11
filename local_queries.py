@@ -218,7 +218,12 @@ STOPWORDS = {
     "GÖNDERİLDİ", "VERDİK", "VERDİ", "ALDI", "ALDIK", "GİDEN", "GIDEN", "GİDENLER", "GİDENLERİ",
     "TAŞIMIŞ", "TASIMIS", "TAŞIMIŞTIR", "TASIMISTIR", "TAŞIR", "TASIR", "TAŞIYOR", "TASIYOR", "TAŞIDIĞI", "TASIDIGI",
     "SEVKETTI", "SEVKETTIK", "SEVKEDILDI", "NAKLETTI", "NAKLETTIK", "TAŞIMA", "TASIMA", "TAŞIMACILIK", "TASIMACILIK",
-    "GÖNDERDİ", "GONDERDI", "YAPILAN"
+    "GÖNDERDİ", "GONDERDI", "YAPILAN",
+    "SDÇ", "SDCE", "SADECE",
+    "MÜŞTERİSİNE", "MUSTERISINE", "MÜŞTERİ", "MUSTERI", "MÜŞTERİSİ", "MUSTERISI", "MÜŞTERİLER", "MUSTERILER",
+    "MALZEME", "MALZEMELER", "MALZEMESİ", "MALZEMELERİ",
+    "GÖTÜRDÜ", "GOTURDU", "GÖTÜRMÜŞ", "GOTURMUS", "GÖTÜR", "GOTUR",
+    "GÖTÜRDÜK", "GOTURDUK", "TAŞIDILAR", "TASIDILAR"
 }
 
 def tr_upper(text):
@@ -258,7 +263,7 @@ def check_local_queries(question, last_plate=None):
         
     if plate:
         # A. Yük/Tonaj Sorgusu
-        if any(w in q_lower for w in ["yük", "ton", "taş", "çek", "kantar", "nakliye"]):
+        if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
             try:
                 # Soru içindeki müşteri/konum adlarını temizleyelim
                 clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
@@ -440,7 +445,7 @@ def check_local_queries(question, last_plate=None):
 
     # 3. Dinamik Cari Ünvan / Adres / Konum Yük Sorguları (Kota limitini aşmamak için ücretsiz)
     # Eğer yük/ürün/sefer sorgulanıyorsa ve bir müşteri/konum adı geçiyorsa
-    if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş"]):
+    if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
         # Türkçe karakterleri destekleyecek şekilde kelimeleri temizleyip büyük harfe çevirelim
         clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
         words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w)) for w in clean_q.split()]
