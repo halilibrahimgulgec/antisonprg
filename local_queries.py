@@ -207,7 +207,7 @@ RULES = [
     }
 ]
 
-def check_local_queries(question):
+def check_local_queries(question, last_plate=None):
     """
     Kullanıcının sorusunda belirtilen kilit kelimeleri tarar.
     Eğer eşleşme bulursa veritabanını sorgulayıp formatlı HTML döndürür.
@@ -219,9 +219,14 @@ def check_local_queries(question):
     import re
     q_clean = re.sub(r'\s+', '', q_lower).upper()
     plate_match = re.search(r'(\d{2}[A-Z]{1,3}\d{2,4})', q_clean)
+    
+    plate = None
     if plate_match:
         plate = plate_match.group(1)
+    elif last_plate:
+        plate = last_plate
         
+    if plate:
         # A. Yük/Tonaj Sorgusu
         if any(w in q_lower for w in ["yük", "ton", "taş", "çek", "kantar", "nakliye"]):
             try:
@@ -238,7 +243,8 @@ def check_local_queries(question):
                 toplam_yuk = row['toplam_yuk'] if row and row['toplam_yuk'] else 0
                 return {
                     'status': 'success',
-                    'answer': f"🚚 <strong>{plate}</strong> plakalı aracın taşıdığı toplam yük miktarı:<br><br><strong>{toplam_yuk:,.2f} Ton</strong>"
+                    'answer': f"🚚 <strong>{plate}</strong> plakalı aracın taşıdığı toplam yük miktarı:<br><br><strong>{toplam_yuk:,.2f} Ton</strong>",
+                    'plate': plate
                 }
             except Exception as e:
                 print(f"Local Plate Cargo Query Hatası: {str(e)}")
@@ -262,7 +268,8 @@ def check_local_queries(question):
                     'status': 'success',
                     'answer': f"⛽ <strong>{plate}</strong> plakalı aracın yakıt tüketim bilgileri:<br><br>"
                               f"• Toplam Tüketilen Yakıt: <strong>{litre:,.2f} Litre</strong><br>"
-                              f"• Toplam Yakıt Gideri: <strong>{tutar:,.2f} ₺</strong>"
+                              f"• Toplam Yakıt Gideri: <strong>{tutar:,.2f} ₺</strong>",
+                    'plate': plate
                 }
             except Exception as e:
                 print(f"Local Plate Fuel Query Hatası: {str(e)}")
@@ -286,7 +293,8 @@ def check_local_queries(question):
                     'status': 'success',
                     'answer': f"🔧 <strong>{plate}</strong> plakalı aracın bakım bilgileri:<br><br>"
                               f"• Toplam Bakım Sayısı: <strong>{adet} adet</strong><br>"
-                              f"• Toplam Bakım Gideri: <strong>{maliyet:,.2f} ₺</strong>"
+                              f"• Toplam Bakım Gideri: <strong>{maliyet:,.2f} ₺</strong>",
+                    'plate': plate
                 }
             except Exception as e:
                 print(f"Local Plate Maintenance Query Hatası: {str(e)}")
@@ -305,13 +313,15 @@ def check_local_queries(question):
                 conn.close()
                 
                 if results:
+                    matched_plate = results[0]['plaka']
                     ans = f"🔍 <strong>Veritabanında eşleşen araçlar ({len(results)} adet):</strong><br><br>"
                     for r in results:
                         durum = "Aktif" if r['aktif'] == 1 else "Pasif"
                         ans += f"• <strong>{r['plaka']}</strong> - Sahip: {r['sahip'] or 'Bilinmiyor'} - Tip: {r['arac_tipi']} ({durum})<br>"
                     return {
                         'status': 'success',
-                        'answer': ans
+                        'answer': ans,
+                        'plate': matched_plate
                     }
                 else:
                     return {
@@ -342,13 +352,15 @@ def check_local_queries(question):
                 conn.close()
                 
                 if results:
+                    matched_plate = results[0]['plaka']
                     ans = f"🔍 <strong>{search_term} ile eşleşen araçlar ({len(results)} adet):</strong><br><br>"
                     for r in results:
                         durum = "Aktif" if r['aktif'] == 1 else "Pasif"
                         ans += f"• <strong>{r['plaka']}</strong> - Sahip: {r['sahip'] or 'Bilinmiyor'} - Tip: {r['arac_tipi']} ({durum})<br>"
                     return {
                         'status': 'success',
-                        'answer': ans
+                        'answer': ans,
+                        'plate': matched_plate
                     }
                 else:
                     return {

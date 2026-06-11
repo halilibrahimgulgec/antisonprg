@@ -241,7 +241,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
                 'message': f'Hata: {str(e)}'
             }
 
-    def ask_with_db_query(self, question):
+    def ask_with_db_query(self, question, last_plate=None):
         """Veritabanı sorgusu ile desteklenmiş soru"""
         import re
         def format_plaka(match):
@@ -260,7 +260,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             export_type = 'pdf'
 
         # 1. YENİ SÖZLÜK SİSTEMİ (Yerel Ücretsiz Kısayollar)
-        local_result = check_local_queries(question)
+        local_result = check_local_queries(question, last_plate)
         if local_result and not export_type:
             return local_result
 

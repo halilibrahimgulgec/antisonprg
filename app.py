@@ -1437,8 +1437,13 @@ def assistant_ask():
         if not question:
             return jsonify({'status': 'error', 'message': 'Soru boş olamaz'})
 
+        last_plate = session.get('last_searched_plate')
         assistant = GeminiAssistant()
-        result = assistant.ask_with_db_query(question)
+        result = assistant.ask_with_db_query(question, last_plate=last_plate)
+
+        # Eğer sonuçta bir plaka tespit edildiyse session'a kaydet
+        if result and result.get('status') == 'success' and 'plate' in result:
+            session['last_searched_plate'] = result['plate']
 
         # Excel veya PDF export varsa session'a kaydet
         if result.get('export_type') in ['excel', 'pdf']:
