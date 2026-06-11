@@ -223,7 +223,9 @@ STOPWORDS = {
     "MÜŞTERİSİNE", "MUSTERISINE", "MÜŞTERİ", "MUSTERI", "MÜŞTERİSİ", "MUSTERISI", "MÜŞTERİLER", "MUSTERILER",
     "MALZEME", "MALZEMELER", "MALZEMESİ", "MALZEMELERİ",
     "GÖTÜRDÜ", "GOTURDU", "GÖTÜRMÜŞ", "GOTURMUS", "GÖTÜR", "GOTUR",
-    "GÖTÜRDÜK", "GOTURDUK", "TAŞIDILAR", "TASIDILAR"
+    "GÖTÜRDÜK", "GOTURDUK", "TAŞIDILAR", "TASIDILAR",
+    "GİT", "GIT", "GEL", "TAŞ", "TAS", "ÇEK", "CEK", "VER", "AL", "GÖTÜR", "GOTUR", "SEVK", "KANTAR",
+    "GÖNDER", "GONDER"
 }
 
 def tr_upper(text):
@@ -242,6 +244,37 @@ def tr_upper(text):
         text = text.replace(k, v)
     return text.upper()
 
+def clean_tr_suffixes(word):
+    if len(word) < 4:
+        return word
+    word = tr_upper(word)
+    
+    # 1. Ablative / Locative with N / D
+    if word.endswith(("DAN", "DEN", "NAN", "NEN")):
+        word = word[:-3]
+    elif word.endswith(("TAN", "TEN")):
+        word = word[:-2]
+    elif word.endswith(("DA", "DE", "NA", "NE")):
+        word = word[:-2]
+    elif word.endswith(("TA", "TE")):
+        word = word[:-1]
+        
+    # 2. Genitive
+    if word.endswith(("NIN", "NİN", "NUN", "NÜN")):
+        word = word[:-3]
+    elif word.endswith(("IN", "İN", "UN", "ÜN")):
+        word = word[:-2]
+        
+    # 3. Dative / Accusative / Possessive vowels
+    if word.endswith(("A", "E", "I", "İ", "U", "Ü")):
+        word = word[:-1]
+        
+    # 4. Collapse double end consonants (like TT -> T)
+    if len(word) >= 2 and word[-1] == word[-2] and word[-1] in "BCÇDFGĞHJKLMNPRSŞTVYZ":
+        word = word[:-1]
+        
+    return word
+
 def check_local_queries(question, last_plate=None):
     """
     Kullanıcının sorusunda belirtilen kilit kelimeleri tarar.
@@ -249,6 +282,8 @@ def check_local_queries(question, last_plate=None):
     Bulamazsa None döner (Böylece sistem Auto-SQL'e veya Gemini'ye düşer).
     """
     q_lower = question.lower()
+    has_plate_word = any(w in q_lower for w in ["aracımız", "araç", "arac", "plakalı", "plaka", "plakallı", "plakalli"])
+    has_exist_word = any(w in q_lower for w in ["var mı", "var mi", "kayıt", "kayit", "aracımı var"])
     
     # 1. Dinamik Plaka Bazlı Sorgular (Kota Limitini Aşmamak İçin Ücretsiz/Yerel)
     import re
@@ -288,8 +323,16 @@ def check_local_queries(question, last_plate=None):
                 print(f"Kısmi plaka arama hatası: {e}")
         
         # Eğer hala bulunamadıysa ve last_plate varsa, ve soruda başka sayısal/plaka belirtilmediyse fallback yap
-        if not plate and last_plate and not partial_matches and "araç" not in q_lower:
-            plate = last_plate
+        # AMA sadece müşteri/konum ismi geçmiyorsa veya özellikle araçla ilgili özellikler soruluyorsa fallback yap
+        if not plate and last_plate and not partial_matches:
+            # Soru içindeki müşteri/konum adlarını kontrol edelim
+            clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
+            words = [clean_tr_suffixes(re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w))) for w in clean_q.split()]
+            possible_search_terms = [w for w in words if len(w) >= 3 and w not in STOPWORDS and w != last_plate]
+            
+            is_vehicle_focused = any(w in q_lower for w in ["yakıt", "mazot", "benzin", "litre", "bakım", "tamir", "arıza", "km", "kilometre", "hız", "hiz", "nerede", "konum", "aracı", "araba", "plaka"])
+            if not possible_search_terms or is_vehicle_focused:
+                plate = last_plate
         
     if plate:
         # A. Yük/Tonaj Sorgusu
@@ -332,7 +375,7 @@ def check_local_queries(question, last_plate=None):
 
                 # Soru içindeki müşteri/konum adlarını temizleyelim
                 clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
-                words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w)) for w in clean_q.split()]
+                words = [clean_tr_suffixes(re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w))) for w in clean_q.split()]
                 search_terms = [w for w in words if len(w) >= 3 and w not in STOPWORDS and w != plate]
                 
                 conn = get_db_connection()
@@ -515,7 +558,7 @@ def check_local_queries(question, last_plate=None):
     if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
         # Türkçe karakterleri destekleyecek şekilde kelimeleri temizleyip büyük harfe çevirelim
         clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
-        words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w)) for w in clean_q.split()]
+        words = [clean_tr_suffixes(re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w))) for w in clean_q.split()]
         search_terms = [w for w in words if len(w) >= 3 and w not in STOPWORDS]
         
         if search_terms:
