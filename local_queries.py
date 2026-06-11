@@ -291,6 +291,73 @@ def check_local_queries(question):
             except Exception as e:
                 print(f"Local Plate Maintenance Query Hatası: {str(e)}")
 
+        # D. Genel Plaka/Araç Arama Sorgusu (Araç var mı? Kayıtlı mı?)
+        if any(w in q_lower for w in ["aracımız var mı", "araç var mı", "plakalı", "plaka kayıtlı", "plaka var mı", "kayıtlı mı"]):
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT plaka, sahip, arac_tipi, aktif 
+                    FROM araclar 
+                    WHERE plaka = ? OR plaka LIKE ?
+                """, (plate, f"%{plate}%"))
+                results = [dict(r) for r in cursor.fetchall()]
+                conn.close()
+                
+                if results:
+                    ans = f"🔍 <strong>Veritabanında eşleşen araçlar ({len(results)} adet):</strong><br><br>"
+                    for r in results:
+                        durum = "Aktif" if r['aktif'] == 1 else "Pasif"
+                        ans += f"• <strong>{r['plaka']}</strong> - Sahip: {r['sahip'] or 'Bilinmiyor'} - Tip: {r['arac_tipi']} ({durum})<br>"
+                    return {
+                        'status': 'success',
+                        'answer': ans
+                    }
+                else:
+                    return {
+                        'status': 'success',
+                        'answer': f"🔍 Veritabanında <strong>{plate}</strong> plakalı bir araç kaydı bulunamadı."
+                    }
+            except Exception as e:
+                print(f"Local Plate Search Query Hatası: {str(e)}")
+
+    # 2. Dinamik Kelime/Plaka Arama Sorgusu (Eğer tam plaka formatı eşleşmediyse ama 'plakalı' araması yapılıyorsa)
+    if any(w in q_lower for w in ["aracımız var mı", "araç var mı", "plakalı", "plaka kayıtlı", "plaka var mı", "kayıtlı mı"]):
+        # Soru içindeki sayısal/alfanümerik anahtar kelimeleri ayıklayalım (örn: "454")
+        words = [re.sub(r'[^A-Z0-9]', '', w.upper()) for w in question.split()]
+        common_words = {"BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "MIYIZ", "MIYIM", "ARACIMIZ", "ARAC", "ARAÇ", "PLAKALI", "PLAKA"}
+        search_terms = [w for w in words if len(w) >= 2 and w not in common_words]
+        
+        if search_terms:
+            search_term = search_terms[0]
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT plaka, sahip, arac_tipi, aktif 
+                    FROM araclar 
+                    WHERE plaka LIKE ?
+                """, (f"%{search_term}%",))
+                results = [dict(r) for r in cursor.fetchall()]
+                conn.close()
+                
+                if results:
+                    ans = f"🔍 <strong>{search_term} ile eşleşen araçlar ({len(results)} adet):</strong><br><br>"
+                    for r in results:
+                        durum = "Aktif" if r['aktif'] == 1 else "Pasif"
+                        ans += f"• <strong>{r['plaka']}</strong> - Sahip: {r['sahip'] or 'Bilinmiyor'} - Tip: {r['arac_tipi']} ({durum})<br>"
+                    return {
+                        'status': 'success',
+                        'answer': ans
+                    }
+                else:
+                    return {
+                        'status': 'success',
+                        'answer': f"🔍 Veritabanında <strong>{search_term}</strong> ile eşleşen bir araç kaydı bulunamadı."
+                    }
+            except Exception as e:
+                print(f"Local General Search Query Hatası: {str(e)}")
+
     for rule in RULES:
         matched = False
         
