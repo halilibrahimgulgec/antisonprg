@@ -227,7 +227,8 @@ def normalize_and_align_columns(cols):
         'ton_litre': ['ton_litre', 'verimlilik'],
         'birim_fiyat': ['birim_fiyat', 'fiyat', 'price'],
         'satir_tutari': ['satir_tutari', 'tutar', 'amount', 'toplam_tutar', 'maliyet'],
-        'stok_adi': ['stok_adi', 'yakit_tipi', 'yakit_turu', 'yakit_cinsi', 'urun_adi', 'malzeme', 'stok', 'urun']
+        'stok_adi': ['stok_adi', 'yakit_tipi', 'yakit_turu', 'yakit_cinsi', 'urun_adi', 'malzeme', 'stok', 'urun'],
+        'cari_adi': ['cari_adi', 'cari_unvan', 'cari_adi_unvani', 'musteri', 'customer', 'cari', 'cari_unvani']
     }
 
     # Her girdi sütunu için en uygun anahtarı eşleştir
