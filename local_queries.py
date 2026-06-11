@@ -207,6 +207,36 @@ RULES = [
     }
 ]
 
+STOPWORDS = {
+    "BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "NE", "KADAR", "URUN", "ÜRÜN", 
+    "YUK", "YÜK", "TON", "SEFER", "GITTIK", "VERDIK", "GOTURDUK", "GÖTÜRDÜK", "TESLIM", "ETTIK", "YAPILDI", 
+    "BURAYA", "ORAYA", "KAC", "KAÇ", "PLAKALI", "PLAKA", "ARAC", "ARAÇ", "ARACIMIZ", "DURUMU", 
+    "NEDIR", "NELERDIR", "LISTESI", "LISTELE", "GETIR", "GOSTER", "GÖSTER", "LUTFEN", "LÜTFEN", "SAYISI", 
+    "TOPLAM", "MIKTARI", "DE", "DA", "Mı", "MıYıZ", "GİTTİ", "GITTI", "GİTTİK", "GITTIK",
+    "GELDI", "GELDİ", "CEKTI", "ÇEKTİ", "ÇEKTİK", "CEKTİK", "TASIDI", "TAŞIDI", "TAŞIDIK", "TASIDIK",
+    "SEVK", "SEVKETTİK", "NAKLIYE", "NAKLİYE", "GONDERDIK", "GÖNDERDİK", "GONDERILDI",
+    "GÖNDERİLDİ", "VERDİK", "VERDİ", "ALDI", "ALDIK", "GİDEN", "GIDEN", "GİDENLER", "GİDENLERİ",
+    "TAŞIMIŞ", "TASIMIS", "TAŞIMIŞTIR", "TASIMISTIR", "TAŞIR", "TASIR", "TAŞIYOR", "TASIYOR", "TAŞIDIĞI", "TASIDIGI",
+    "SEVKETTI", "SEVKETTIK", "SEVKEDILDI", "NAKLETTI", "NAKLETTIK", "TAŞIMA", "TASIMA", "TAŞIMACILIK", "TASIMACILIK",
+    "GÖNDERDİ", "GONDERDI", "YAPILAN"
+}
+
+def tr_upper(text):
+    if not text:
+        return ""
+    mapping = {
+        'i': 'İ',
+        'ı': 'I',
+        'ş': 'Ş',
+        'ç': 'Ç',
+        'ğ': 'Ğ',
+        'ü': 'Ü',
+        'ö': 'Ö'
+    }
+    for k, v in mapping.items():
+        text = text.replace(k, v)
+    return text.upper()
+
 def check_local_queries(question, last_plate=None):
     """
     Kullanıcının sorusunda belirtilen kilit kelimeleri tarar.
@@ -230,22 +260,60 @@ def check_local_queries(question, last_plate=None):
         # A. Yük/Tonaj Sorgusu
         if any(w in q_lower for w in ["yük", "ton", "taş", "çek", "kantar", "nakliye"]):
             try:
+                # Soru içindeki müşteri/konum adlarını temizleyelim
+                clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
+                words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w)) for w in clean_q.split()]
+                search_terms = [w for w in words if len(w) >= 3 and w not in STOPWORDS and w != plate]
+                
                 conn = get_db_connection()
                 cursor = conn.cursor()
-                cursor.execute("""
-                    SELECT SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_yuk
-                    FROM agirlik
-                    WHERE plaka = ?
-                """, (plate,))
-                row = cursor.fetchone()
-                conn.close()
                 
-                toplam_yuk = row['toplam_yuk'] if row and row['toplam_yuk'] else 0
-                return {
-                    'status': 'success',
-                    'answer': f"🚚 <strong>{plate}</strong> plakalı aracın taşıdığı toplam yük miktarı:<br><br><strong>{toplam_yuk:,.2f} Ton</strong>",
-                    'plate': plate
-                }
+                if search_terms:
+                    where_clauses = ["plaka = ?"]
+                    params = [plate]
+                    for term in search_terms:
+                        where_clauses.append("(adres LIKE ? OR islem_noktasi LIKE ? OR cari_adi LIKE ?)")
+                        params.extend([f"%{term}%", f"%{term}%", f"%{term}%"])
+                    
+                    where_sql = " AND ".join(where_clauses)
+                    cursor.execute(f"""
+                        SELECT SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_yuk,
+                               COUNT(*) as sefer_sayisi
+                        FROM agirlik
+                        WHERE {where_sql}
+                    """, params)
+                    row = cursor.fetchone()
+                    conn.close()
+                    
+                    toplam_yuk = row['toplam_yuk'] if row and row['toplam_yuk'] else 0
+                    sefer_sayisi = row['sefer_sayisi'] if row and row['sefer_sayisi'] else 0
+                    target_name = " ".join(search_terms)
+                    return {
+                        'status': 'success',
+                        'answer': f"🚚 <strong>{plate}</strong> plakalı aracın <strong>{target_name}</strong> araması için teslimat bilgileri:<br><br>"
+                                  f"• Toplam Teslim Edilen Yük: <strong>{toplam_yuk:,.2f} Ton</strong><br>"
+                                  f"• Toplam Sefer Sayısı: <strong>{sefer_sayisi} Sefer</strong>",
+                        'plate': plate
+                    }
+                else:
+                    cursor.execute("""
+                        SELECT SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_yuk,
+                               COUNT(*) as sefer_sayisi
+                        FROM agirlik
+                        WHERE plaka = ?
+                    """, (plate,))
+                    row = cursor.fetchone()
+                    conn.close()
+                    
+                    toplam_yuk = row['toplam_yuk'] if row and row['toplam_yuk'] else 0
+                    sefer_sayisi = row['sefer_sayisi'] if row and row['sefer_sayisi'] else 0
+                    return {
+                        'status': 'success',
+                        'answer': f"🚚 <strong>{plate}</strong> plakalı aracın taşıdığı toplam yük miktarı:<br><br>"
+                                  f"• Toplam Teslim Edilen Yük: <strong>{toplam_yuk:,.2f} Ton</strong><br>"
+                                  f"• Toplam Sefer Sayısı: <strong>{sefer_sayisi} Sefer</strong>",
+                        'plate': plate
+                    }
             except Exception as e:
                 print(f"Local Plate Cargo Query Hatası: {str(e)}")
 
@@ -374,18 +442,9 @@ def check_local_queries(question, last_plate=None):
     # Eğer yük/ürün/sefer sorgulanıyorsa ve bir müşteri/konum adı geçiyorsa
     if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş"]):
         # Türkçe karakterleri destekleyecek şekilde kelimeleri temizleyip büyük harfe çevirelim
-        words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', w.upper()) for w in question.split()]
-        stopwords = {
-            "BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "NE", "KADAR", "URUN", "ÜRÜN", 
-            "YUK", "YÜK", "TON", "SEFER", "GITTIK", "VERDIK", "GOTURDUK", "GÖTÜRDÜK", "TESLIM", "ETTIK", "YAPILDI", 
-            "BURAYA", "ORAYA", "KAC", "KAÇ", "PLAKALI", "PLAKA", "ARAC", "ARAÇ", "ARACIMIZ", "DURUMU", 
-            "NEDIR", "NELERDIR", "LISTESI", "LISTELE", "GETIR", "GOSTER", "GÖSTER", "LUTFEN", "LÜTFEN", "SAYISI", 
-            "TOPLAM", "MIKTARI", "DE", "DA", "Mı", "MıYıZ", "GİTTİ", "GITTI", "GİTTİK", "GITTIK",
-            "GELDI", "GELDİ", "CEKTI", "ÇEKTİ", "ÇEKTİK", "CEKTİK", "TASIDI", "TAŞIDI", "TAŞIDIK", "TASIDIK",
-            "SEVK", "SEVKETTİK", "NAKLIYE", "NAKLİYE", "GONDERDIK", "GÖNDERDİK", "GONDERILDI",
-            "GÖNDERİLDİ", "VERDİK", "VERDİ", "ALDI", "ALDIK", "GİDEN", "GIDEN", "GİDENLER", "GİDENLERİ"
-        }
-        search_terms = [w for w in words if len(w) >= 3 and w not in stopwords]
+        clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
+        words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w)) for w in clean_q.split()]
+        search_terms = [w for w in words if len(w) >= 3 and w not in STOPWORDS]
         
         if search_terms:
             where_clauses = []
