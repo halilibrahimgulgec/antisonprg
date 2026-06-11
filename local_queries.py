@@ -258,13 +258,78 @@ def check_local_queries(question, last_plate=None):
     plate = None
     if plate_match:
         plate = plate_match.group(1)
-    elif last_plate:
-        plate = last_plate
+    else:
+        # Kısmi plaka/sayısal araç kodu arayalım (örn: "444" veya "076")
+        words = [re.sub(r'[^A-Z0-9]', '', w.upper()) for w in q_lower.split()]
+        partial_matches = []
+        for w in words:
+            if w.isdigit() and len(w) >= 3:
+                partial_matches.append(w)
+            elif len(w) >= 5 and any(c.isdigit() for c in w) and any(c.isalpha() for c in w):
+                partial_matches.append(w)
+        
+        if partial_matches:
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                for pm in partial_matches:
+                    cursor.execute("SELECT plaka FROM araclar WHERE plaka LIKE ? AND aktif = 1 LIMIT 1", (f"%{pm}%",))
+                    row = cursor.fetchone()
+                    if row:
+                        plate = row['plaka']
+                        break
+                    cursor.execute("SELECT DISTINCT plaka FROM agirlik WHERE plaka LIKE ? LIMIT 1", (f"%{pm}%",))
+                    row = cursor.fetchone()
+                    if row:
+                        plate = row['plaka']
+                        break
+                conn.close()
+            except Exception as e:
+                print(f"Kısmi plaka arama hatası: {e}")
+        
+        # Eğer hala bulunamadıysa ve last_plate varsa, ve soruda başka sayısal/plaka belirtilmediyse fallback yap
+        if not plate and last_plate and not partial_matches and "araç" not in q_lower:
+            plate = last_plate
         
     if plate:
         # A. Yük/Tonaj Sorgusu
         if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
             try:
+                # Müşteri listesi talebi kontrolü: "hangi müşterilere", "nereye", "nerelere", "kime", "kimlere", "hangi firmalara"
+                is_list_query = any(w in q_lower for w in ["hangi müşteri", "nereye", "nerelere", "kime", "kimlere", "hangi firma", "müşteriler"])
+                
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                
+                if is_list_query:
+                    cursor.execute("""
+                        SELECT COALESCE(cari_adi, 'Bilinmeyen Müşteri') as cari,
+                               SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_yuk,
+                               COUNT(*) as sefer_sayisi
+                        FROM agirlik
+                        WHERE plaka = ?
+                        GROUP BY cari
+                        ORDER BY sefer_sayisi DESC
+                    """, (plate,))
+                    rows = cursor.fetchall()
+                    conn.close()
+                    
+                    if rows:
+                        ans = f"🚚 <strong>{plate}</strong> plakalı aracın teslimat yaptığı müşteriler:<br><br>"
+                        for i, r in enumerate(rows, 1):
+                            ans += f"{i}. <strong>{r['cari']}</strong> - {r['sefer_sayisi']} Sefer ({r['toplam_yuk']:,.2f} Ton)<br>"
+                        return {
+                            'status': 'success',
+                            'answer': ans,
+                            'plate': plate
+                        }
+                    else:
+                        return {
+                            'status': 'success',
+                            'answer': f"🚚 <strong>{plate}</strong> plakalı aracın veritabanında herhangi bir teslimat kaydı bulunamadı.",
+                            'plate': plate
+                        }
+
                 # Soru içindeki müşteri/konum adlarını temizleyelim
                 clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
                 words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w)) for w in clean_q.split()]
@@ -373,7 +438,9 @@ def check_local_queries(question, last_plate=None):
                 print(f"Local Plate Maintenance Query Hatası: {str(e)}")
 
         # D. Genel Plaka/Araç Arama Sorgusu (Araç var mı? Kayıtlı mı?)
-        if any(w in q_lower for w in ["aracımız var mı", "araç var mı", "plakalı", "plaka kayıtlı", "plaka var mı", "kayıtlı mı"]):
+        has_plate_word = any(w in q_lower for w in ["aracımız", "araç", "arac", "plakalı", "plaka", "plakallı", "plakalli"])
+        has_exist_word = any(w in q_lower for w in ["var mı", "var mi", "kayıt", "kayit", "aracımı var"])
+        if has_plate_word and has_exist_word:
             try:
                 conn = get_db_connection()
                 cursor = conn.cursor()
@@ -405,7 +472,7 @@ def check_local_queries(question, last_plate=None):
                 print(f"Local Plate Search Query Hatası: {str(e)}")
 
     # 2. Dinamik Kelime/Plaka Arama Sorgusu (Eğer tam plaka formatı eşleşmediyse ama 'plakalı' araması yapılıyorsa)
-    if any(w in q_lower for w in ["aracımız var mı", "araç var mı", "plakalı", "plaka kayıtlı", "plaka var mı", "kayıtlı mı"]):
+    if has_plate_word and has_exist_word:
         # Soru içindeki sayısal/alfanümerik anahtar kelimeleri ayıklayalım (örn: "454")
         words = [re.sub(r'[^A-Z0-9]', '', w.upper()) for w in question.split()]
         common_words = {"BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "MIYIZ", "MIYIM", "ARACIMIZ", "ARAC", "ARAÇ", "PLAKALI", "PLAKA"}
