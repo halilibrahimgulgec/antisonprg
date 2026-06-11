@@ -370,6 +370,58 @@ def check_local_queries(question, last_plate=None):
             except Exception as e:
                 print(f"Local General Search Query Hatası: {str(e)}")
 
+    # 3. Dinamik Cari Ünvan / Adres / Konum Yük Sorguları (Kota limitini aşmamak için ücretsiz)
+    # Eğer yük/ürün/sefer sorgulanıyorsa ve bir müşteri/konum adı geçiyorsa
+    if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş"]):
+        # Türkçe karakterleri destekleyecek şekilde kelimeleri temizleyip büyük harfe çevirelim
+        words = [re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', w.upper()) for w in question.split()]
+        stopwords = {
+            "BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "NE", "KADAR", "URUN", "ÜRÜN", 
+            "YUK", "YÜK", "TON", "SEFER", "GITTIK", "VERDIK", "GOTURDUK", "GÖTÜRDÜK", "TESLIM", "ETTIK", "YAPILDI", 
+            "BURAYA", "ORAYA", "KAC", "KAÇ", "PLAKALI", "PLAKA", "ARAC", "ARAÇ", "ARACIMIZ", "DURUMU", 
+            "NEDIR", "NELERDIR", "LISTESI", "LISTELE", "GETIR", "GOSTER", "GÖSTER", "LUTFEN", "LÜTFEN", "SAYISI", 
+            "TOPLAM", "MIKTARI", "DE", "DA", "Mı", "MıYıZ", "GİTTİ", "GITTI", "GİTTİK", "GITTIK",
+            "GELDI", "GELDİ", "CEKTI", "ÇEKTİ", "ÇEKTİK", "CEKTİK", "TASIDI", "TAŞIDI", "TAŞIDIK", "TASIDIK",
+            "SEVK", "SEVKETTİK", "NAKLIYE", "NAKLİYE", "GONDERDIK", "GÖNDERDİK", "GONDERILDI",
+            "GÖNDERİLDİ", "VERDİK", "VERDİ", "ALDI", "ALDIK", "GİDEN", "GIDEN", "GİDENLER", "GİDENLERİ"
+        }
+        search_terms = [w for w in words if len(w) >= 3 and w not in stopwords]
+        
+        if search_terms:
+            where_clauses = []
+            params = []
+            for term in search_terms:
+                where_clauses.append("(adres LIKE ? OR islem_noktasi LIKE ? OR cari_adi LIKE ?)")
+                params.extend([f"%{term}%", f"%{term}%", f"%{term}%"])
+                
+            where_sql = " AND ".join(where_clauses)
+            
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute(f"""
+                    SELECT SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_yuk,
+                           COUNT(*) as sefer_sayisi
+                    FROM agirlik
+                    WHERE {where_sql}
+                """, params)
+                row = cursor.fetchone()
+                conn.close()
+                
+                toplam_yuk = row['toplam_yuk'] if row and row['toplam_yuk'] else 0
+                sefer_sayisi = row['sefer_sayisi'] if row and row['sefer_sayisi'] else 0
+                
+                if sefer_sayisi > 0:
+                    target_name = " ".join(search_terms)
+                    return {
+                        'status': 'success',
+                        'answer': f"🏢 <strong>{target_name}</strong> araması için teslimat bilgileri:<br><br>"
+                                  f"• Toplam Teslim Edilen Yük: <strong>{toplam_yuk:,.2f} Ton</strong><br>"
+                                  f"• Toplam Sefer Sayısı: <strong>{sefer_sayisi} Sefer</strong>"
+                    }
+            except Exception as e:
+                print(f"Local Customer/Location Search Query Hatası: {str(e)}")
+
     for rule in RULES:
         matched = False
         
