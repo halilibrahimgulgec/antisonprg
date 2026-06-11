@@ -206,6 +206,93 @@ def clean_column_name(col_name):
     col_name = ''.join(c for c in col_name if c.isalnum() or c.isspace() or c == '_')
     return col_name.lower().replace(' ', '_')
 
+def normalize_and_align_columns(cols):
+    """
+    Sütun isimlerindeki tutarsızlıkları gidermek için akıllı eşleştirme algoritması.
+    Örn: 'mazot', 'benzin', 'litre' -> 'yakit_miktari'
+          'son_km', 'odometre' -> 'km_bilgisi'
+    """
+    aligned = {}
+    
+    # Eşleştirme Sözlüğü (Synonym Maps)
+    synonym_map = {
+        'plaka': ['plaka', 'plate', 'arac', 'vehicle', 'plaka_no'],
+        'islem_tarihi': ['islem_tarihi', 'tarih', 'date', 'islem_tarih', 'tarihi'],
+        'saat': ['saat', 'islem_saat', 'time', 'saati'],
+        'yakit_miktari': ['yakit_miktari', 'yakit', 'mazot', 'benzin', 'motorin', 'diesel', 'fuel', 'litre', 'miktar', 'alinan_yakit', 'yakit_litre'],
+        'km_bilgisi': ['km_bilgisi', 'son_km', 'odometre', 'odometer', 'km', 'kilometre', 'arac_km', 'end_km'],
+        'km_fark': ['km_fark', 'yapilan_yol', 'fark_km', 'yol_km', 'yol', 'km_farki'],
+        'litre_km': ['litre_km', 'litre_basina_km', 'tuketim_orani'],
+        'toplam_yuk': ['toplam_yuk', 'yuk', 'weight', 'tonaj'],
+        'ton_litre': ['ton_litre', 'verimlilik'],
+        'birim_fiyat': ['birim_fiyat', 'fiyat', 'price'],
+        'satir_tutari': ['satir_tutari', 'tutar', 'amount', 'toplam_tutar', 'maliyet'],
+        'stok_adi': ['stok_adi', 'yakit_tipi', 'yakit_turu', 'yakit_cinsi', 'urun_adi', 'malzeme', 'stok', 'urun']
+    }
+
+    # Her girdi sütunu için en uygun anahtarı eşleştir
+    for col in cols:
+        matched = False
+        for target_col, synonyms in synonym_map.items():
+            if col == target_col or col in synonyms:
+                aligned[col] = target_col
+                matched = True
+                break
+        if not matched:
+            # Kısmi eşleşme kontrolü (örn: içinde 'plak' geçiyor mu?)
+            for target_col, synonyms in synonym_map.items():
+                if any(syn in col for syn in synonyms):
+                    aligned[col] = target_col
+                    matched = True
+                    break
+            if not matched:
+                aligned[col] = col # Eşleşmiyorsa orijinal ismi koru
+                
+    return aligned
+
+def normalize_fuel_type(val):
+    """
+    Veritabanına eklenen yakıt türlerini anlamlandırıp normalize eder.
+    Örn: 'motorin', 'mazot', 'diesel' -> 'MOTORİN'
+          'benzin', 'gasoline', '95_oktan' -> 'BENZİN'
+    """
+    if pd.isna(val) or not val:
+        return 'YAKIT'
+    
+    val_clean = str(val).strip().lower()
+    
+    motorin_synonyms = ['motorin', 'mazot', 'diesel', 'dizel', 'euro_diesel', 'eurodizel', 'fuel_oil', 'lpg']
+    benzin_synonyms = ['benzin', 'gasoline', 'petrol', '95_oktan', '97_oktan']
+    
+    if any(syn in val_clean for syn in motorin_synonyms):
+        return 'MOTORİN'
+    elif any(syn in val_clean for syn in benzin_synonyms):
+        return 'BENZİN'
+        
+    return 'YAKIT'
+
+def auto_alter_table_if_needed(conn, table_name, df):
+    """
+    Eğer DataFrame'de veritabanında olmayan yeni sütunlar varsa,
+    SQLite tablosunu dinamik olarak alter ederek yeni sütunları ekler.
+    """
+    try:
+        cursor = conn.cursor()
+        # Mevcut sütunları al
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        existing_cols = [row[1] for row in cursor.fetchall()]
+        
+        for col in df.columns:
+            if col not in existing_cols and col != 'unknown':
+                # Sütun türünü belirle (basitçe sayısal mı metinsel mi)
+                col_type = "REAL" if pd.api.types.is_numeric_dtype(df[col]) else "TEXT"
+                alter_query = f"ALTER TABLE {table_name} ADD COLUMN {col} {col_type}"
+                cursor.execute(alter_query)
+                print(f"[SCHEMA] '{table_name}' tablosuna yeni sütun eklendi: {col} ({col_type})")
+        conn.commit()
+    except Exception as e:
+        print(f"[SCHEMA ERROR] Tablo alter edilirken hata: {e}")
+
 
 def insert_to_sqlite(conn, table_name, data_list):
     """SQLite'a toplu veri ekle"""
@@ -311,9 +398,14 @@ def process_excel_files(custom_directory=None):
                 hatali_say += 1
                 continue
 
-            # Sütun temizleme
+            # Sütun temizleme ve akıllı hizalama/eşleştirme
             cols_clean = [clean_column_name(col) for col in df.columns]
-            df.columns = cols_clean
+            
+            # Akıllı eşleme sözlüğünü uygula
+            alignment_mapping = normalize_and_align_columns(cols_clean)
+            
+            # DataFrame sütunlarını normalize edilmiş isimlerle güncelle
+            df.rename(columns=alignment_mapping, inplace=True)
             cols = df.columns.tolist()
 
             # Toplam satırı temizleme
@@ -327,45 +419,42 @@ def process_excel_files(custom_directory=None):
             inserted = 0
             table_type = ""
 
-            # --- YAKIT (Motorin) ---
-            if 'plaka' in cols and ('yakit' in cols or 'son_km' in cols or 'km_fark' in cols):
+            # --- YAKIT ---
+            if 'plaka' in cols and ('yakit_miktari' in cols or 'km_bilgisi' in cols or 'km_fark' in cols):
                 table_type = 'yakit'
-                mapping = {'plaka': 'plaka', 'islem_tarihi': 'islem_tarihi', 'islem_saat': 'saat', 'yakit': 'yakit_miktari', 'son_km': 'km_bilgisi', 'km_fark': 'km_fark', 'litre_km': 'litre_km', 'toplam_yuk': 'toplam_yuk', 'ton_litre': 'ton_litre'}
-                selected = [k for k in mapping.keys() if k in cols]
-                if selected:
-                    df_sel = df[selected].copy()
-                    df_sel.rename(columns=mapping, inplace=True)
-                    # Tipler ve formatlar...
-                    for col in ['yakit_miktari', 'km_bilgisi', 'km_fark', 'litre_km', 'toplam_yuk', 'ton_litre']:
-                        if col in df_sel.columns: df_sel[col] = pd.to_numeric(df_sel[col], errors='coerce')
-                    if 'islem_tarihi' in df_sel.columns:
-                        df_sel['islem_tarihi'] = pd.to_datetime(df_sel['islem_tarihi'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
-                    # Eksikler
-                    for col in ['plaka', 'islem_tarihi', 'saat', 'yakit_miktari', 'km_bilgisi', 'km_fark', 'litre_km', 'toplam_yuk', 'ton_litre']:
-                        if col not in df_sel.columns: df_sel[col] = None
-                    
-                    records = df_sel.replace([float('nan'), float('inf'), float('-inf')], None).to_dict('records')
-                    if records:
-                        inserted = insert_to_sqlite(local_conn, 'yakit', records)
-                        mark_file_as_processed(local_cursor, local_conn, dosya_adi, dosya_boyutu, dosya_hash, inserted, 'yakit')
-                        print(f"[FUEL] '{dosya_adi}' -> {inserted} kayit 'yakit' tablosuna eklendi.")
-                        islenen_say += 1
-
-            # --- YAKIT (Eski) ---
-            elif 'plaka' in cols and ('yakit_miktari' in cols or 'km_bilgisi' in cols):
-                table_type = 'yakit'
-                mapping = {'plaka': 'plaka', 'islem_tarihi': 'islem_tarihi', 'saat': 'saat', 'yakit_miktari': 'yakit_miktari', 'birim_fiyat': 'birim_fiyat', 'satir_tutari': 'satir_tutari', 'stok_adi': 'stok_adi', 'km_bilgisi': 'km_bilgisi'}
-                selected = [k for k in mapping.keys() if k in cols]
-                df_sel = df[selected].copy()
-                df_sel.rename(columns=mapping, inplace=True)
-                # ... same numeric/date logic ...
-                for col in ['yakit_miktari', 'birim_fiyat', 'satir_tutari', 'km_bilgisi']:
-                    if col in df_sel.columns: df_sel[col] = pd.to_numeric(df_sel[col], errors='coerce')
-                if 'islem_tarihi' in df_sel.columns:
-                    df_sel['islem_tarihi'] = pd.to_datetime(df_sel['islem_tarihi'], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
-                for col in ['plaka', 'islem_tarihi', 'saat', 'yakit_miktari', 'birim_fiyat', 'satir_tutari', 'stok_adi', 'km_bilgisi']:
-                    if col not in df_sel.columns: df_sel[col] = None
+                db_fields = ['plaka', 'islem_tarihi', 'saat', 'yakit_miktari', 'km_bilgisi', 'km_fark', 'litre_km', 'toplam_yuk', 'ton_litre', 'birim_fiyat', 'satir_tutari', 'stok_adi']
                 
+                # Eşleşenleri seç
+                selected = [c for c in db_fields if c in cols]
+                df_sel = df[selected].copy()
+                
+                # Yakıt türü normalizasyonu
+                if 'stok_adi' in df_sel.columns:
+                    df_sel['stok_adi'] = df_sel['stok_adi'].apply(normalize_fuel_type)
+                else:
+                    df_sel['stok_adi'] = 'MOTORİN' # Varsayılan yakıt türü
+                    
+                # Sayısal alanları dönüştür
+                for col in ['yakit_miktari', 'km_bilgisi', 'km_fark', 'litre_km', 'toplam_yuk', 'ton_litre', 'birim_fiyat', 'satir_tutari']:
+                    if col in df_sel.columns:
+                        df_sel[col] = pd.to_numeric(df_sel[col], errors='coerce')
+                
+                # Tarih alanını dönüştür
+                if 'islem_tarihi' in df_sel.columns:
+                    df_sel['islem_tarihi'] = pd.to_datetime(df_sel['islem_tarihi'], dayfirst=True, errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
+                
+                # Olmayan alanları None olarak ekle
+                for col in db_fields:
+                    if col not in df_sel.columns:
+                        df_sel[col] = None
+
+                # Veritabanında olmayan dinamik sütunlar varsa (Şema Genişletme)
+                extra_cols = [c for c in cols if c not in db_fields and c != 'unknown' and c not in ['islem_tarihi', 'saat', 'yakit_miktari', 'km_bilgisi', 'km_fark', 'litre_km', 'toplam_yuk', 'ton_litre', 'birim_fiyat', 'satir_tutari', 'stok_adi', 'plaka']]
+                if extra_cols:
+                    for col in extra_cols:
+                        df_sel[col] = df[col]
+                    auto_alter_table_if_needed(local_conn, 'yakit', df_sel)
+
                 records = df_sel.replace([float('nan'), float('inf'), float('-inf')], None).to_dict('records')
                 if records:
                     inserted = insert_to_sqlite(local_conn, 'yakit', records)
@@ -374,24 +463,35 @@ def process_excel_files(custom_directory=None):
                     islenen_say += 1
 
             # --- AGIRLIK ---
-            elif any(k in cols for k in ['net_agirlik', 'plaka']) and ('miktar' in cols or 'birim' in cols):
+            elif ('net_agirlik' in cols or 'plaka' in cols) and ('miktar' in cols or 'birim' in cols):
                 table_type = 'agirlik'
-                mapping = {'tarih': 'tarih', 'miktar': 'miktar', 'birim': 'birim', 'net_agirlik': 'net_agirlik', 'plaka': 'plaka', 'adres': 'adres', 'islem_noktasi': 'islem_noktasi', 'cari_adi': 'cari_adi'}
-                selected = [k for k in mapping.keys() if k in cols]
+                db_fields = ['tarih', 'miktar', 'birim', 'net_agirlik', 'plaka', 'adres', 'islem_noktasi', 'cari_adi']
+                selected = [c for c in db_fields if c in cols]
                 df_sel = df[selected].copy()
-                df_sel.rename(columns=mapping, inplace=True)
+                
                 for col in ['miktar', 'net_agirlik']:
-                    if col in df_sel.columns: df_sel[col] = pd.to_numeric(df_sel[col], errors='coerce')
+                    if col in df_sel.columns:
+                        df_sel[col] = pd.to_numeric(df_sel[col], errors='coerce')
+                
                 if 'tarih' in df_sel.columns:
-                    df_sel['tarih'] = pd.to_datetime(df_sel['tarih'], format='%d.%m.%Y %H:%M', errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
+                    df_sel['tarih'] = pd.to_datetime(df_sel['tarih'], errors='coerce').dt.strftime('%Y-%m-%d %H:%M:%S')
                 
                 if 'birim' in df_sel.columns:
                     df_sel['ana_malzeme'] = df_sel['birim'].apply(lambda x: 'KUM' if str(x).upper()=='KG' else 'BETON' if str(x).upper()=='M3' else 'PARKE' if str(x).upper()=='M2' else 'BORDRO' if str(x).upper()=='MT' else 'PALET' if str(x).upper()=='ADET' else str(x) if pd.notna(x) else None)
                 else:
                     df_sel['ana_malzeme'] = None
                 
-                for col in ['tarih', 'miktar', 'birim', 'net_agirlik', 'plaka', 'adres', 'islem_noktasi', 'cari_adi', 'ana_malzeme']:
-                    if col not in df_sel.columns: df_sel[col] = None
+                db_fields.append('ana_malzeme')
+                for col in db_fields:
+                    if col not in df_sel.columns:
+                        df_sel[col] = None
+
+                # Veritabanında olmayan dinamik sütunlar varsa (Şema Genişletme)
+                extra_cols = [c for c in cols if c not in db_fields and c != 'unknown' and c not in ['tarih', 'miktar', 'birim', 'net_agirlik', 'plaka', 'adres', 'islem_noktasi', 'cari_adi', 'ana_malzeme']]
+                if extra_cols:
+                    for col in extra_cols:
+                        df_sel[col] = df[col]
+                    auto_alter_table_if_needed(local_conn, 'agirlik', df_sel)
                 
                 records = df_sel.replace([float('nan'), float('inf'), float('-inf')], None).to_dict('records')
                 if records:

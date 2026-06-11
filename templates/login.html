@@ -147,9 +147,51 @@
             font-size: 0.8rem;
             color: #64748B;
         }
+
+        /* Floating Language Selector */
+        .lang-selector-floating {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            display: flex;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 4px;
+            border-radius: 12px;
+            z-index: 100;
+        }
+
+        .lang-btn {
+            text-decoration: none;
+            color: #94A3B8;
+            font-size: 0.85rem;
+            font-weight: 700;
+            padding: 8px 14px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .lang-btn:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .lang-btn.active {
+            color: white;
+            background: var(--primary);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+        }
     </style>
 </head>
 <body>
+    <!-- Dil Seçici (Language Selector) -->
+    <div class="lang-selector-floating">
+        <a href="/set_language/tr" class="lang-btn {% if session.get('lang', 'tr') == 'tr' %}active{% endif %}">TR</a>
+        <a href="/set_language/en" class="lang-btn {% if session.get('lang') == 'en' %}active{% endif %}">EN</a>
+    </div>
+
     <div class="login-container">
         <div class="login-card">
             <div class="logo-section">

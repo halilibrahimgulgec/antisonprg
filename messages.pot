@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-01 22:15+0300\n"
+"POT-Creation-Date: 2026-06-02 00:22+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1480,31 +1480,31 @@ msgstr ""
 msgid "Giriş Yap - Telematik Dashboard"
 msgstr ""
 
-#: templates/login.html:157
+#: templates/login.html:199
 msgid "ANTİ-GRAVİTY"
 msgstr ""
 
-#: templates/login.html:158
+#: templates/login.html:200
 msgid "Telematik & Filo Yönetim Paneli"
 msgstr ""
 
-#: templates/login.html:173 templates/users.html:96 templates/users.html:124
+#: templates/login.html:215 templates/users.html:96 templates/users.html:124
 msgid "Kullanıcı Adı"
 msgstr ""
 
-#: templates/login.html:176
+#: templates/login.html:218
 msgid "admin"
 msgstr ""
 
-#: templates/login.html:180 templates/users.html:100
+#: templates/login.html:222 templates/users.html:100
 msgid "Şifre"
 msgstr ""
 
-#: templates/login.html:186
+#: templates/login.html:228
 msgid "Giriş Yap"
 msgstr ""
 
-#: templates/login.html:189
+#: templates/login.html:231
 msgid "© 2026 Anti-Gravity Telematics. Tüm hakları saklıdır."
 msgstr ""
 
@@ -2231,6 +2231,10 @@ msgid "Hasar & Ceza"
 msgstr ""
 
 #: templates/sidebar.html:225
+msgid "Teknik Destek"
+msgstr ""
+
+#: templates/sidebar.html:231
 msgid "Kullanıcı Yönetimi"
 msgstr ""
 
@@ -2538,6 +2542,52 @@ msgstr ""
 
 #: templates/soforler.html:213
 msgid "Şoför Düzenle"
+msgstr ""
+
+#: templates/support.html:6
+msgid "Teknik Destek AI - Anti-Gravity"
+msgstr ""
+
+#: templates/support.html:258
+msgid "Yapay Zeka Teknik Destek"
+msgstr ""
+
+#: templates/support.html:259
+msgid ""
+"Sistem kullanımı, veri aktarımı ve olası sorunların giderilmesinde anında"
+" yardım alın."
+msgstr ""
+
+#: templates/support.html:267
+msgid "Merhaba!"
+msgstr ""
+
+#: templates/support.html:268
+msgid ""
+"Anti-Gravity Teknik Destek merkezine hoş geldiniz. Ben sizin akıllı "
+"destek asistanınızım."
+msgstr ""
+
+#: templates/support.html:269
+msgid ""
+"Sistemdeki sayfalar, Excel veri yüklemeleri veya karşılaştığınız hatalar "
+"hakkında bana soru sorabilirsiniz."
+msgstr ""
+
+#: templates/support.html:282
+msgid "Yakıt Excel verisini nasıl yüklerim?"
+msgstr ""
+
+#: templates/support.html:283
+msgid "Yeni sütun eklediğimde ne yapmalıyım?"
+msgstr ""
+
+#: templates/support.html:284
+msgid "Sistemde hata aldığımda ne yapmalıyım?"
+msgstr ""
+
+#: templates/support.html:289
+msgid "Sorunuzu buraya yazın..."
 msgstr ""
 
 #: templates/sync.html:6

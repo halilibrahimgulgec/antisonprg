@@ -823,7 +823,7 @@ def get_muhasebe_data(baslangic_tarihi, bitis_tarihi, plaka=None, settings=None)
                 GROUP BY b.plaka, b.tarih
             '''
             agirlik_query = f'''
-                SELECT ag.plaka, ag.tarih, SUM(ag.net_agirlik) as toplam_agirlik, MAX(ag.ana_malzeme) as ana_malzeme, ag.cari_adi
+                SELECT ag.plaka, ag.tarih, SUM(CASE WHEN ag.birim IN ('Kg', 'kg', 'KG') THEN ag.miktar / 1000.0 ELSE ag.miktar END) as toplam_agirlik, MAX(ag.ana_malzeme) as ana_malzeme, ag.cari_adi
                 FROM agirlik ag
                 INNER JOIN araclar a ON ag.plaka = a.plaka
                 {tarih_filtre_agirlik.replace('tarih', 'ag.tarih')}
@@ -879,7 +879,7 @@ def get_muhasebe_data(baslangic_tarihi, bitis_tarihi, plaka=None, settings=None)
                 GROUP BY b.plaka, b.tarih
             '''
             agirlik_query = f'''
-                SELECT ag.plaka, ag.tarih, SUM(ag.net_agirlik) as toplam_agirlik, MAX(ag.ana_malzeme) as ana_malzeme, ag.cari_adi
+                SELECT ag.plaka, ag.tarih, SUM(CASE WHEN ag.birim IN ('Kg', 'kg', 'KG') THEN ag.miktar / 1000.0 ELSE ag.miktar END) as toplam_agirlik, MAX(ag.ana_malzeme) as ana_malzeme, ag.cari_adi
                 FROM agirlik ag
                 INNER JOIN araclar a ON ag.plaka = a.plaka
                 {tarih_filtre_agirlik.replace('tarih', 'ag.tarih')}
@@ -1130,12 +1130,12 @@ def get_arac_performans_analizi(plaka, baslangic_tarihi=None, bitis_tarihi=None)
         # Tonaj bilgisi (ağırlık tablosundan) - SADECE ÜRÜN (Adet HARİÇ)
         agirlik_query = f'''
             SELECT
-                SUM(net_agirlik) as toplam_tonaj,
+                SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar ELSE miktar * 1000.0 END) as toplam_tonaj,
                 COUNT(*) as yuklenme_sayisi,
-                AVG(net_agirlik) as ort_tonaj_yuklenme
+                AVG(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar ELSE miktar * 1000.0 END) as ort_tonaj_yuklenme
             FROM agirlik
             WHERE plaka = ? {tarih_filtre_agirlik}
-            AND net_agirlik IS NOT NULL AND net_agirlik > 0
+            AND miktar IS NOT NULL AND miktar > 0
             AND birim NOT IN ('Adet', 'adet', 'ADET')
         '''
         cursor.execute(agirlik_query, (plaka,) + tarih_params)

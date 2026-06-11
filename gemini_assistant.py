@@ -195,6 +195,8 @@ Cevaplarında her zaman çok ciddi ve resmi ol. SADECE TÜRKÇE konuş!
 Şoförlerin hız sınırı 80 km/s'dir. Eğer yakıt, performans veya takip sorulursa, hız sınırını aşıp aşmadıklarını da kontrol edip uyar.
 Ayrıca verileri yaptığı işe göre değerlendirerek yöneticilere maliyet analizi sun.
 
+ÖNEMLİ: Bu veritabanı sütunları, satırları ve matematiksel hesaplamalar işletmenin kârlılık kararları için hayati önem taşır. Hesaplamalarda hataya kesinlikle yer yoktur. Sonuçları vermeden önce adımları ve değerleri (miktar, net_agirlik vb.) dikkatle doğrula.
+
 Sana verilen sistem bilgilerini kullanarak kullanıcının sorularına kısa, net, profesyonel ve analitik cevaplar ver.
 
 Sistem Bilgileri:
@@ -355,6 +357,8 @@ TÜRKÇE ve RESMİ cevap ver:"""
         - hasarlar (id, plaka, sofor_id, tarih, tutar, aciklama, sigorta_karsiladi_mi)
         - seferler (id, sofor_id, plaka, baslangic_zaman, bitis_zaman, baslangic_km, bitis_km, durum)
         - agirlik (id, tarih, miktar, birim, net_agirlik, plaka, adres, islem_noktasi, cari_adi)
+          * NOT 1: agirlik tablosunda 'miktar' sütunu taşınan yük/malzeme miktarını gösterir (birim 'Kg' ise miktar/1000.0 tonajı verir).
+          * NOT 2: agirlik tablosunda 'net_agirlik' sütunu aslında yükü değil aracın boş ağırlığını (dara) gösterir. Yük/tonaj hesaplarken net_agirlik'i SUM(net_agirlik) olarak KULLANMA, miktar'ı kullan.
         """
 
     def auto_sql_agent(self, question):
@@ -368,6 +372,8 @@ TÜRKÇE ve RESMİ cevap ver:"""
             Aşağıdaki SQLite veritabanı şemasına dayanarak, kullanıcının sorusunu cevaplayacak SADECE BİR adet 'SELECT' sorgusu yaz.
             ÖNEMLİ KURAL 1: Plaka bilgileri veritabanında HER ZAMAN BÜYÜK HARFLE ve BİTİŞİK tutulur (Örn: 34ABC123). Plaka ararken tam eşleşme (plaka = '46AHR076') kullan.
             ÖNEMLİ KURAL 2: Soru "mazot", "benzin", "yakıt" içeriyorsa 'stok_adi' sütununa göre FİLTRELEME YAPMA. Yakıt tablosundaki tüm kayıtlar zaten yakıt alımıdır.
+            ÖNEMLİ KURAL 3: agirlik tablosunda taşınan yük miktarı 'miktar' sütunundadır (eğer birim 'Kg' ise miktar/1000.0 ton değerini verir). 'net_agirlik' sütunu ise aracın boş ağırlığını (dara) tutar. Bu yüzden taşınan yük/tonaj sorulduğunda veya hesaplandığında net_agirlik yerine HER ZAMAN miktar sütununu kullan.
+            ÖNEMLİ KURAL 4: Bu veritabanı sütunları ve satırları işletmenin kârlılık ve maliyet hesapları için hayati derecede önemlidir. Matematiksel hesaplamalarda ve sütun eşleştirmelerinde HATA YAPMAYA KESİNLİKLE YER YOKTUR. Dara (net_agirlik) ve net yük (miktar) arasındaki ayrımı kusursuz uygula.
             Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
             Kullanıcının sorusu: {question}
             Şema: {schema}'''
@@ -540,3 +546,52 @@ def get_quick_insights():
         ]
     except Exception as e:
         return ["Sistem durumu şu an alınamıyor."]
+
+def ask_support_gemini(question):
+    """
+    Teknik Destek Asistanı - Sistem kullanımı, hata giderme ve kılavuzluk sağlar.
+    """
+    try:
+        support_prompt = f"""Sen Anti-Gravity Telematik ve Filo Yönetim Sisteminin Teknik Destek Asistanısın.
+Kullanıcılara sistemin kullanımı, karşılaştıkları hataların çözümleri ve sayfaların işlevleri hakkında yardım ediyorsun.
+Cevaplarında her zaman çok profesyonel, kibar ve çözüm odaklı ol. SADECE TÜRKÇE konuş!
+
+Sistem Kullanım Kılavuzu:
+1. Dashboard (Ana Sayfa): Yakıt tahminleri, sistem genel istatistikleri ve grafikler yer alır.
+2. Otomatik Veri Çekme (Sync): Excel/CSV formatındaki yakıt, kantar veya takip dosyalarını sisteme yüklemek için kullanılır. Sürükle-bırak veya dosya seçerek "Yükle" (Upload) butonu kullanılır.
+3. Veri Yönetimi (Data Management): Yakıt fişleri, kantar verileri ve araç konum takip kayıtlarının listelendiği alandır.
+4. Muhasebe Analizi: Yakıt giderleri, taşeron maliyetleri ve kârlılık analizlerini içerir.
+5. Filo Yönetimi: Araç ekleme, güncelleme, silme ve sahiplik durumunu (BİZİM/TAŞERON) yönetme ekranıdır. "Make it all OUR" butonu ile tek tıkla tüm araçlar şirket aracı yapılabilir.
+6. Bakım & Onarım: Araç bakım kayıtları, km ve maliyet girişleri yapılır.
+7. AI Analiz: Yakıt anomalileri ve yapay zeka analiz raporlarını sunar.
+8. Şoför Yönetimi: Şoförlerin telefon, lisans ve aktiflik bilgilerini yönetir.
+9. Lastik Yönetimi: Lastik ömürleri, takılan pozisyonlar ve km takibini yönetir.
+10. Hasar & Ceza: Araç hasarları, trafik cezaları ve sorumlu şoför takibini yönetir.
+11. Kullanıcı Yönetimi: Yönetici (admin) hesabı ile yeni sistem kullanıcıları tanımlanır.
+
+Sık Karşılaşılan Sorular ve Çözümler:
+- "Yakıt verisini veya Excel'i nasıl yüklerim?": Otomatik Veri Çekme (Sync) sayfasına gidin. Yakıt Excel dosyasını seçip yükleyin. Sistem, 'mazot', 'benzin', 'litre', 'miktar' gibi farklı yazılmış sütunları akıllı algoritmasıyla otomatik eşleştirecektir.
+- "Veri yüklerken yeni bir sütun ekledik, ne yapmalıyım?": Hiçbir şey yapmanıza gerek yok. Sistemimiz, veritabanında olmayan yeni Excel sütunlarını otomatik algılayıp veritabanını dinamik olarak genişletir (Auto-Alter Table).
+- "Hata aldığımda ne yapmalıyım?": Hatanın hangi sayfada olduğunu ve hata kodunu (örn. 500, 404) destek paneline yazarsanız size adım adım çözüm önerisinde bulunabilirim.
+
+Kullanıcı Sorusu: {question}
+
+Lütfen bu bilgilere göre kullanıcıya HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) açıklayıcı ve profesyonel bir cevap hazırla:"""
+
+        # Gemini modelini kullanarak yanıt üret
+        response = assistant.model.generate_content(support_prompt)
+        if response.text:
+            return {
+                'status': 'success',
+                'answer': "🛠️ <strong>Teknik Destek AI Asistanı:</strong><br><br>" + response.text
+            }
+        else:
+            return {
+                'status': 'error',
+                'message': 'API yanıt döndürmedi.'
+            }
+    except Exception as e:
+        return {
+            'status': 'error',
+            'message': f'Hata: {str(e)}'
+        }

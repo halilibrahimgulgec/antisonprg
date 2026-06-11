@@ -1505,6 +1505,26 @@ def assistant_clear():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
 
+@app.route('/support')
+def support_page():
+    """Teknik Destek Asistanı Sayfası"""
+    return render_template('support.html')
+
+@app.route('/api/support/ask', methods=['POST'])
+def support_ask():
+    """Teknik Destek Asistanına Soru Sor"""
+    try:
+        from gemini_assistant import ask_support_gemini
+        data = request.get_json()
+        question = data.get('question', '')
+        if not question:
+            return jsonify({'status': 'error', 'message': 'Soru boş olamaz'})
+        
+        result = ask_support_gemini(question)
+        return jsonify(result)
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
+
 @app.route('/binek-arac-analizi', methods=['GET', 'POST'])
 def binek_arac_analizi():
     """Binek araç analizi sayfası"""

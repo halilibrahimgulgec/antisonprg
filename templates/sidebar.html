@@ -72,6 +72,14 @@
         opacity: 0.9;
         transform: translateY(-1px);
     }
+    .nav-link.logout-link {
+        color: #F87171 !important;
+        margin-top: 15px;
+    }
+    .nav-link.logout-link:hover {
+        background: rgba(239, 68, 68, 0.1) !important;
+        color: #EF4444 !important;
+    }
     .user-profile { 
         margin-top: auto; 
         padding: 15px; 
@@ -220,9 +228,21 @@
             </a>
         </li>
         <li class="nav-item">
+            <a href="/support" class="nav-link {% if request.path == '/support' %}active{% endif %}">
+                <i class="fa-solid fa-headset"></i>
+                <span>{{ _('Teknik Destek') }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="/admin/users" class="nav-link {% if request.path == '/admin/users' %}active{% endif %}">
                 <i class="fa-solid fa-users-gear"></i>
                 <span>{{ _('Kullanıcı Yönetimi') }}</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/logout" class="nav-link logout-link">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span>{{ _('Çıkış') }}</span>
             </a>
         </li>
     </nav>

@@ -173,12 +173,12 @@ RULES = [
     # 4. Kantar ve Yük
     {
         "keywords": ["toplam net yük", "kantardan geçen toplam", "toplam ne kadar taşıdık"],
-        "sql": "SELECT SUM(net_agirlik) as sonuc FROM agirlik",
+        "sql": "SELECT SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as sonuc FROM agirlik",
         "formatter": format_kantar_toplam
     },
     {
         "keywords": ["en çok yük taşıyan", "tonajı en yüksek", "kantardan en çok geçen araç"],
-        "sql": "SELECT plaka, SUM(net_agirlik) as sonuc FROM agirlik GROUP BY plaka ORDER BY sonuc DESC LIMIT 5",
+        "sql": "SELECT plaka, SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as sonuc FROM agirlik GROUP BY plaka ORDER BY sonuc DESC LIMIT 5",
         "formatter": format_en_cok_yuk_tasiyan
     },
     {

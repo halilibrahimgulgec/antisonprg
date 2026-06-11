@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-01 22:15+0300\n"
+"POT-Creation-Date: 2026-06-02 00:22+0300\n"
 "PO-Revision-Date: 2026-04-30 23:43+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: en <LL@li.org>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "Generated-By: Babel 2.18.0\n"
 
 #: templates/ai_analysis.html:6
@@ -45,8 +45,7 @@ msgstr "Fuel Consumption Estimation"
 msgid ""
 "Random Forest algoritması ile araçların gelecekteki yakıt tüketimini "
 "öngörün."
-msgstr ""
-"Predict future fuel consumption of vehicles with Random Forest algorithm."
+msgstr "Predict future fuel consumption of vehicles with Random Forest algorithm."
 
 #: templates/ai_analysis.html:142 templates/index.html:186
 msgid "Anomali Tespiti"
@@ -54,8 +53,8 @@ msgstr "Anomaly Detection"
 
 #: templates/ai_analysis.html:143
 msgid ""
-"Isolation Forest ile alışılmadık yakıt tüketimlerini ve kaçakları otomatik "
-"bulun."
+"Isolation Forest ile alışılmadık yakıt tüketimlerini ve kaçakları "
+"otomatik bulun."
 msgstr ""
 "Automatically detect unusual fuel consumption and leaks with Isolation "
 "Forest."
@@ -102,8 +101,7 @@ msgstr "Anomaly Analysis"
 
 #: templates/ai_analysis.html:175
 msgid "Tüm veritabanı taranarak normal dışı yakıt tüketimleri raporlanır."
-msgstr ""
-"The entire database is scanned and abnormal fuel consumption is reported."
+msgstr "The entire database is scanned and abnormal fuel consumption is reported."
 
 #: templates/ai_analysis.html:177
 msgid "Tespit Et"
@@ -213,11 +211,11 @@ msgstr "💡 About Anomaly Score"
 
 #: templates/ai_anomaly_result.html:226
 msgid ""
-"Anomali skoru ne kadar düşükse, kayıt o kadar anormaldir. Negatif değerler, "
-"kaydın normal davranıştan saptığını gösterir."
+"Anomali skoru ne kadar düşükse, kayıt o kadar anormaldir. Negatif "
+"değerler, kaydın normal davranıştan saptığını gösterir."
 msgstr ""
-"The lower the anomaly score, the more normal the recording.Negative values "
-"​​indicate that the recording deviates from normal behavior."
+"The lower the anomaly score, the more normal the recording.Negative "
+"values ​​indicate that the recording deviates from normal behavior."
 
 #: templates/ai_anomaly_result.html:227
 msgid "Yüksek risk skorlu kayıtları öncelikli olarak inceleyin."
@@ -249,8 +247,8 @@ msgstr "Hello!I am your AI Assistant"
 
 #: templates/ai_assistant.html:348 templates/ai_assistant.html:523
 msgid ""
-"Size yakıt tüketimi, araç performansı, lojistik ve sistem hakkında yardımcı "
-"olabilirim."
+"Size yakıt tüketimi, araç performansı, lojistik ve sistem hakkında "
+"yardımcı olabilirim."
 msgstr ""
 "I can help you with fuel consumption, vehicle performance, logistics and "
 "systems."
@@ -260,7 +258,8 @@ msgid ""
 "Aşağıdaki hızlı sorulardan birini seçebilir veya kendi sorunuzu "
 "yazabilirsiniz."
 msgstr ""
-"You can choose one of the quick questions below or write your own question."
+"You can choose one of the quick questions below or write your own "
+"question."
 
 #: templates/ai_assistant.html:356
 msgid "En fazla yakıt tüketenler"
@@ -945,8 +944,8 @@ msgstr "Include Subcontracted Vehicles"
 #: templates/binek_arac_filtre.html:170
 msgid "Şirket dışı kayıtlı binek araç verilerini de analize katar."
 msgstr ""
-"It also includes passenger vehicle data registered outside the company into "
-"the analysis."
+"It also includes passenger vehicle data registered outside the company "
+"into the analysis."
 
 #: templates/binek_arac_filtre.html:177 templates/is_makinesi_filtre.html:177
 #: templates/kargo_arac_filtre.html:178
@@ -1264,8 +1263,7 @@ msgstr "Just processed • 3 files from the mailbox."
 
 #: templates/index.html:187
 msgid "15 dk önce • 34 BZM 45 plakalı araçta yüksek tüketim."
-msgstr ""
-"15 min ago • High consumption in the vehicle with plate number 34 BZM 45."
+msgstr "15 min ago • High consumption in the vehicle with plate number 34 BZM 45."
 
 #: templates/index.html:193
 msgid "Bakım Hatırlatma"
@@ -1314,12 +1312,12 @@ msgstr "Report the working hours and costs of your work machines."
 #: templates/is_makinesi_filtre.html:144
 msgid ""
 "Ağır hizmet araçlarınızın performansını analiz edin. Varsayılan olarak "
-"sadece özmal (BİZİM) makineler analiz edilir. Kiralık makineleri dahil etmek"
-" için aşağıdaki kutucuğu işaretleyin."
+"sadece özmal (BİZİM) makineler analiz edilir. Kiralık makineleri dahil "
+"etmek için aşağıdaki kutucuğu işaretleyin."
 msgstr ""
 "Analyze the performance of your heavy-duty vehicles.By default only self-"
-"owned (OUR) machines are analyzed.To include rental machines, tick the box "
-"below."
+"owned (OUR) machines are analyzed.To include rental machines, tick the "
+"box below."
 
 #: templates/is_makinesi_filtre.html:158
 msgid "Plaka / Kod Filtresi"
@@ -1335,10 +1333,11 @@ msgstr "Include Subcontracted Heavy Machinery"
 
 #: templates/is_makinesi_filtre.html:170
 msgid ""
-"Şantiyede çalışan dış kaynaklı makinelerin verilerini de analize dahil eder."
+"Şantiyede çalışan dış kaynaklı makinelerin verilerini de analize dahil "
+"eder."
 msgstr ""
-"It also includes data from outsourced machines operating on the construction"
-" site into the analysis."
+"It also includes data from outsourced machines operating on the "
+"construction site into the analysis."
 
 #: templates/kargo_arac_filtre.html:6
 msgid "Kargo Araçları Analizi - Telematik Dashboard"
@@ -1354,24 +1353,23 @@ msgstr "Get detailed performance report with date and license plate filter."
 
 #: templates/kargo_arac_filtre.html:145
 msgid ""
-"Kargo araçlarınızın yakıt tüketimi ve maliyetlerini analiz edin. Varsayılan "
-"olarak sadece özmal (BİZİM) araçlar listelenir. Taşeron araçları dahil etmek"
-" için aşağıdaki seçeneği işaretleyin."
+"Kargo araçlarınızın yakıt tüketimi ve maliyetlerini analiz edin. "
+"Varsayılan olarak sadece özmal (BİZİM) araçlar listelenir. Taşeron "
+"araçları dahil etmek için aşağıdaki seçeneği işaretleyin."
 msgstr ""
 "Analyze the fuel consumption and costs of your cargo vehicles.By default "
-"only self-owned (OUR) vehicles are listed.Select the option below to include"
-" subcontracted vehicles."
+"only self-owned (OUR) vehicles are listed.Select the option below to "
+"include subcontracted vehicles."
 
 #: templates/kargo_arac_filtre.html:161
 msgid "Tüm Kargo Araçları (Sadece Bizim)"
 msgstr "All Cargo Trucks (Only Ours)"
 
 #: templates/kargo_arac_filtre.html:171
-msgid ""
-"Kiralık ve taşeron plakaların verilerini de analiz sonuçlarına yansıtır."
+msgid "Kiralık ve taşeron plakaların verilerini de analiz sonuçlarına yansıtır."
 msgstr ""
-"It also reflects the data of rental and subcontractor license plates into "
-"the analysis results."
+"It also reflects the data of rental and subcontractor license plates into"
+" the analysis results."
 
 #: templates/lastik_yonetimi.html:6
 msgid "Lastik Yönetimi - Telematik Dashboard"
@@ -1505,31 +1503,31 @@ msgstr "Close"
 msgid "Giriş Yap - Telematik Dashboard"
 msgstr "Telematics Dashboard"
 
-#: templates/login.html:157
+#: templates/login.html:199
 msgid "ANTİ-GRAVİTY"
 msgstr "ANTI-GRAVITY"
 
-#: templates/login.html:158
+#: templates/login.html:200
 msgid "Telematik & Filo Yönetim Paneli"
 msgstr "Tire Management"
 
-#: templates/login.html:173 templates/users.html:96 templates/users.html:124
+#: templates/login.html:215 templates/users.html:96 templates/users.html:124
 msgid "Kullanıcı Adı"
 msgstr "User name"
 
-#: templates/login.html:176
+#: templates/login.html:218
 msgid "admin"
 msgstr "admin"
 
-#: templates/login.html:180 templates/users.html:100
+#: templates/login.html:222 templates/users.html:100
 msgid "Şifre"
 msgstr "Password"
 
-#: templates/login.html:186
+#: templates/login.html:228
 msgid "Giriş Yap"
 msgstr "Make it OUR"
 
-#: templates/login.html:189
+#: templates/login.html:231
 msgid "© 2026 Anti-Gravity Telematics. Tüm hakları saklıdır."
 msgstr "© 2026 Anti-Gravity Telematics.All rights reserved."
 
@@ -1583,7 +1581,8 @@ msgstr "Exclude External Vehicles from Analysis"
 
 #: templates/muhasebe.html:211
 msgid ""
-"Sadece kendi özmal araçlarınızın kârını görmek için bu seçeneği aktif tutun."
+"Sadece kendi özmal araçlarınızın kârını görmek için bu seçeneği aktif "
+"tutun."
 msgstr "Keep this option active to see only the profit of your own vehicles."
 
 #: templates/muhasebe.html:220
@@ -1704,11 +1703,11 @@ msgstr "🏆 Performance Comparison Based on Vehicle Type"
 
 #: templates/performans_analizi.html:205
 msgid ""
-"Her araç tipi için özelleştirilmiş performans metrikleri. Araç tipine göre "
-"detaylı analiz ve"
+"Her araç tipi için özelleştirilmiş performans metrikleri. Araç tipine "
+"göre detaylı analiz ve"
 msgstr ""
-"Customized performance metrics for each vehicle type.Detailed analysis and "
-"analysis according to vehicle type"
+"Customized performance metrics for each vehicle type.Detailed analysis "
+"and analysis according to vehicle type"
 
 #: templates/performans_analizi.html:206
 msgid "karşılaştırma yapın."
@@ -1890,10 +1889,11 @@ msgstr "⚠️ Medium Performance"
 
 #: templates/performans_detay.html:263
 msgid ""
-"Yakıt tüketimi ortalamanın üzerinde. Sürücü eğitimi ve araç bakımı önerilir."
+"Yakıt tüketimi ortalamanın üzerinde. Sürücü eğitimi ve araç bakımı "
+"önerilir."
 msgstr ""
-"Fuel consumption is above average.Driver training and vehicle maintenance "
-"are recommended."
+"Fuel consumption is above average.Driver training and vehicle maintenance"
+" are recommended."
 
 #: templates/performans_detay.html:265
 msgid "❌ Düşük Performans"
@@ -1901,8 +1901,8 @@ msgstr "❌ Low Performance"
 
 #: templates/performans_detay.html:266
 msgid ""
-"Ciddi verimlilik sorunu var. Acil araç kontrolü ve sürücü değerlendirmesi "
-"gerekli."
+"Ciddi verimlilik sorunu var. Acil araç kontrolü ve sürücü değerlendirmesi"
+" gerekli."
 msgstr ""
 "There is a serious efficiency problem.Immediate vehicle check and driver "
 "evaluation required."
@@ -2262,6 +2262,10 @@ msgid "Hasar & Ceza"
 msgstr "Damage and Penalty"
 
 #: templates/sidebar.html:225
+msgid "Teknik Destek"
+msgstr "Technical Support"
+
+#: templates/sidebar.html:231
 msgid "Kullanıcı Yönetimi"
 msgstr "User Management"
 
@@ -2304,7 +2308,7 @@ msgstr "Driver Facility Panel - Cargo Fleet"
 
 #: templates/sofor_paneli.html:64
 msgid "Çıkış"
-msgstr "Exit"
+msgstr "Logout"
 
 #: templates/sofor_paneli.html:66
 msgid "Kargo Filo Operasyon Paneli"
@@ -2399,11 +2403,10 @@ msgid "Dikkat:"
 msgstr "Attention:"
 
 #: templates/sofor_paneli.html:164
-msgid ""
-"Seferi tamamladıktan sonra sisteme raporlanır ve aktif işlem yapamazsınız."
+msgid "Seferi tamamladıktan sonra sisteme raporlanır ve aktif işlem yapamazsınız."
 msgstr ""
-"After completing the expedition, it will be reported to the system and you "
-"will not be able to make active transactions."
+"After completing the expedition, it will be reported to the system and "
+"you will not be able to make active transactions."
 
 #: templates/sofor_paneli.html:166
 msgid "🏁 Seferi Kapat"
@@ -2471,8 +2474,7 @@ msgstr "What's the problem?"
 
 #: templates/sofor_paneli.html:234
 msgid "Örn: Motor ısındı, fren balatası ses yapıyor..."
-msgstr ""
-"For example: The engine has warmed up, the brake pad is making noise..."
+msgstr "For example: The engine has warmed up, the brake pad is making noise..."
 
 #: templates/sofor_paneli.html:236 templates/sofor_paneli.html:412
 msgid "Yetkili Servise İlet"
@@ -2575,6 +2577,58 @@ msgstr "Registration Date"
 msgid "Şoför Düzenle"
 msgstr "Edit Driver"
 
+#: templates/support.html:6
+msgid "Teknik Destek AI - Anti-Gravity"
+msgstr "AI Technical Support - Anti-Gravity"
+
+#: templates/support.html:258
+msgid "Yapay Zeka Teknik Destek"
+msgstr "AI Technical Support"
+
+#: templates/support.html:259
+msgid ""
+"Sistem kullanımı, veri aktarımı ve olası sorunların giderilmesinde anında"
+" yardım alın."
+msgstr ""
+"Get instant assistance on system usage, data transmission, and "
+"troubleshooting."
+
+#: templates/support.html:267
+msgid "Merhaba!"
+msgstr "Hello!"
+
+#: templates/support.html:268
+msgid ""
+"Anti-Gravity Teknik Destek merkezine hoş geldiniz. Ben sizin akıllı "
+"destek asistanınızım."
+msgstr ""
+"Welcome to the Anti-Gravity Technical Support center. I am your smart "
+"support assistant."
+
+#: templates/support.html:269
+msgid ""
+"Sistemdeki sayfalar, Excel veri yüklemeleri veya karşılaştığınız hatalar "
+"hakkında bana soru sorabilirsiniz."
+msgstr ""
+"You can ask me questions about the pages in the system, Excel data "
+"uploads, or any errors you encounter."
+
+#: templates/support.html:282
+msgid "Yakıt Excel verisini nasıl yüklerim?"
+msgstr "How do I upload fuel Excel data?"
+
+#: templates/support.html:283
+msgid "Yeni sütun eklediğimde ne yapmalıyım?"
+msgstr "What should I do when I add a new column?"
+
+#: templates/support.html:284
+msgid "Sistemde hata aldığımda ne yapmalıyım?"
+msgstr "What should I do when I get a system error?"
+
+#: templates/support.html:289
+msgid "Sorunuzu buraya yazın..."
+msgstr "Type your question here..."
+
 #: templates/sync.html:6
 msgid "Otomatik Veri Senkronizasyonu - Telematik Dashboard"
 msgstr "Analysis Results - Telematics Dashboard"
@@ -2585,7 +2639,8 @@ msgstr "Data Synchronization"
 
 #: templates/sync.html:65
 msgid ""
-"Mail kutunuzdaki güncel yakıt, kantar ve takip dosyalarını otomatik işleyin."
+"Mail kutunuzdaki güncel yakıt, kantar ve takip dosyalarını otomatik "
+"işleyin."
 msgstr ""
 "Automatically process current fuel, scale and tracking files in your "
 "mailbox."
@@ -2746,11 +2801,12 @@ msgstr "(You)"
 #~ msgstr "Settings"
 
 #~ msgid ""
-#~ "Tanımlı mail adresinden gelen Excel dosyalarını otomatik olarak indirip "
-#~ "işler."
+#~ "Tanımlı mail adresinden gelen Excel "
+#~ "dosyalarını otomatik olarak indirip işler."
 #~ msgstr ""
-#~ "It automatically downloads and processes Excel files coming from the defined"
-#~ " e-mail address."
+#~ "It automatically downloads and processes "
+#~ "Excel files coming from the defined "
+#~ "e-mail address."
 
 #~ msgid "Mailden Verileri Çek"
 #~ msgstr "Fetch Data from Mail"
@@ -2817,3 +2873,4 @@ msgstr "(You)"
 
 #~ msgid "Binek Araçları"
 #~ msgstr "Passenger Vehicles"
+
