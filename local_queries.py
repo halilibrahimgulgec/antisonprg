@@ -215,6 +215,82 @@ def check_local_queries(question):
     """
     q_lower = question.lower()
     
+    # 1. Dinamik Plaka Bazlı Sorgular (Kota Limitini Aşmamak İçin Ücretsiz/Yerel)
+    import re
+    q_clean = re.sub(r'\s+', '', q_lower).upper()
+    plate_match = re.search(r'(\d{2}[A-Z]{1,3}\d{2,4})', q_clean)
+    if plate_match:
+        plate = plate_match.group(1)
+        
+        # A. Yük/Tonaj Sorgusu
+        if any(w in q_lower for w in ["yük", "ton", "taş", "çek", "kantar", "nakliye"]):
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_yuk
+                    FROM agirlik
+                    WHERE plaka = ?
+                """, (plate,))
+                row = cursor.fetchone()
+                conn.close()
+                
+                toplam_yuk = row['toplam_yuk'] if row and row['toplam_yuk'] else 0
+                return {
+                    'status': 'success',
+                    'answer': f"🚚 <strong>{plate}</strong> plakalı aracın taşıdığı toplam yük miktarı:<br><br><strong>{toplam_yuk:,.2f} Ton</strong>"
+                }
+            except Exception as e:
+                print(f"Local Plate Cargo Query Hatası: {str(e)}")
+
+        # B. Yakıt/Mazot Sorgusu
+        if any(w in q_lower for w in ["yakıt", "mazot", "benzin", "litre", "gider", "depo"]):
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT SUM(yakit_miktari) as toplam_litre, SUM(satir_tutari) as toplam_tutar
+                    FROM yakit
+                    WHERE plaka = ?
+                """, (plate,))
+                row = cursor.fetchone()
+                conn.close()
+                
+                litre = row['toplam_litre'] if row and row['toplam_litre'] else 0
+                tutar = row['toplam_tutar'] if row and row['toplam_tutar'] else 0
+                return {
+                    'status': 'success',
+                    'answer': f"⛽ <strong>{plate}</strong> plakalı aracın yakıt tüketim bilgileri:<br><br>"
+                              f"• Toplam Tüketilen Yakıt: <strong>{litre:,.2f} Litre</strong><br>"
+                              f"• Toplam Yakıt Gideri: <strong>{tutar:,.2f} ₺</strong>"
+                }
+            except Exception as e:
+                print(f"Local Plate Fuel Query Hatası: {str(e)}")
+
+        # C. Bakım/Arıza Sorgusu
+        if any(w in q_lower for w in ["bakım", "tamir", "servis", "arıza"]):
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    SELECT COUNT(*) as adet, SUM(maliyet) as toplam_maliyet
+                    FROM bakim
+                    WHERE plaka = ?
+                """, (plate,))
+                row = cursor.fetchone()
+                conn.close()
+                
+                adet = row['adet'] if row and row['adet'] else 0
+                maliyet = row['toplam_maliyet'] if row and row['toplam_maliyet'] else 0
+                return {
+                    'status': 'success',
+                    'answer': f"🔧 <strong>{plate}</strong> plakalı aracın bakım bilgileri:<br><br>"
+                              f"• Toplam Bakım Sayısı: <strong>{adet} adet</strong><br>"
+                              f"• Toplam Bakım Gideri: <strong>{maliyet:,.2f} ₺</strong>"
+                }
+            except Exception as e:
+                print(f"Local Plate Maintenance Query Hatası: {str(e)}")
+
     for rule in RULES:
         matched = False
         
