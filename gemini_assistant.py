@@ -356,9 +356,10 @@ TÜRKÇE ve RESMİ cevap ver:"""
         - cezalar (id, plaka, sofor_id, tarih, tutar, aciklama, odeme_durumu)
         - hasarlar (id, plaka, sofor_id, tarih, tutar, aciklama, sigorta_karsiladi_mi)
         - seferler (id, sofor_id, plaka, baslangic_zaman, bitis_zaman, baslangic_km, bitis_km, durum)
-        - agirlik (id, tarih, miktar, birim, net_agirlik, plaka, adres, islem_noktasi, cari_adi)
+        - agirlik (id, tarih, miktar, birim, net_agirlik, plaka, adres, islem_noktasi, cari_adi, ana_malzeme)
           * NOT 1: agirlik tablosunda 'miktar' sütunu taşınan yük/malzeme miktarını gösterir (birim 'Kg' ise miktar/1000.0 tonajı verir).
           * NOT 2: agirlik tablosunda 'net_agirlik' sütunu aslında yükü değil aracın boş ağırlığını (dara) gösterir. Yük/tonaj hesaplarken net_agirlik'i SUM(net_agirlik) olarak KULLANMA, miktar'ı kullan.
+          * NOT 3: agirlik tablosunda 'ana_malzeme' sütunu malzeme türünü gösterir (Örn: 'BETON', 'KUM', 'PARKE', 'BORDRO', 'PALET').
         """
 
     def auto_sql_agent(self, question):
@@ -374,6 +375,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             ÖNEMLİ KURAL 2: Soru "mazot", "benzin", "yakıt" içeriyorsa 'stok_adi' sütununa göre FİLTRELEME YAPMA. Yakıt tablosundaki tüm kayıtlar zaten yakıt alımıdır.
             ÖNEMLİ KURAL 3: agirlik tablosunda taşınan yük miktarı 'miktar' sütunundadır (eğer birim 'Kg' ise miktar/1000.0 ton değerini verir). 'net_agirlik' sütunu ise aracın boş ağırlığını (dara) tutar. Bu yüzden taşınan yük/tonaj sorulduğunda veya hesaplandığında net_agirlik yerine HER ZAMAN miktar sütununu kullan.
             ÖNEMLİ KURAL 4: Bu veritabanı sütunları ve satırları işletmenin kârlılık ve maliyet hesapları için hayati derecede önemlidir. Matematiksel hesaplamalarda ve sütun eşleştirmelerinde HATA YAPMAYA KESİNLİKLE YER YOKTUR. Dara (net_agirlik) ve net yük (miktar) arasındaki ayrımı kusursuz uygula.
+            ÖNEMLİ KURAL 5: Soruda geçen "malzeme", "yük" veya "ürün" genel ifadeleri için 'ana_malzeme' sütununa filtre uygulama (Örn: ana_malzeme = 'malzeme' yapma). Çünkü bu genel ifadeler tablodaki tüm kayıtları kapsar. Sadece kullanıcı "beton", "kum", "parke", "bordro", "palet" gibi veritabanında var olan spesifik bir malzemeyi sorarsa ana_malzeme sütununa filtre koy.
             Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
             Kullanıcının sorusu: {question}
             Şema: {schema}'''
