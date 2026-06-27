@@ -187,12 +187,14 @@
             </a>
         </li>
         {% endif %}
+        {% if session.get('role') == 'admin' %}
         <li class="nav-item">
             <a href="/muhasebe" class="nav-link {% if request.path == '/muhasebe' or request.path.startswith('/muhasebe') %}active{% endif %}">
                 <i class="fa-solid fa-coins"></i>
                 <span>{{ _('Muhasebe Analizi') }}</span>
             </a>
         </li>
+        {% endif %}
         <li class="nav-item">
             <a href="/arac-yonetimi" class="nav-link {% if request.path == '/arac-yonetimi' %}active{% endif %}">
                 <i class="fa-solid fa-truck-moving"></i>
