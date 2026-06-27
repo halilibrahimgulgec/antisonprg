@@ -4,7 +4,7 @@ import sqlite3
 import pandas as pd
 import io
 from datetime import datetime
-from database import get_db_connection
+from database import get_db_connection, log_ai_query
 from reportlab.lib.pagesizes import A4
 from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
@@ -241,8 +241,117 @@ TÜRKÇE ve RESMİ cevap ver:"""
                 'message': f'Hata: {str(e)}'
             }
 
+    def check_ml_queries(self, question):
+        """Kullanıcı sorusuna göre Python ML modellerini (ai_model.py) tetikler ve Gemini ile yorumlatır"""
+        question_lower = question.lower()
+        
+        # 1. ANOMALİ TESPİTİ
+        if any(w in question_lower for w in ['anomali', 'şüpheli', 'anormal', 'suistimal', 'usulsüz']):
+            try:
+                from ai_model import AnomalTespitModeli
+                model = AnomalTespitModeli()
+                res = model.anomali_tespit()
+                if res['status'] == 'success':
+                    anomaliler = res['anomaliler']
+                    prompt = f'''Aşağıda şirketimizin yakıt veritabanı işlemlerine ait Isolation Forest (Yapay Zeka) anomali tespit modelinin sonuçları yer almaktadır:
+                    {anomaliler[:10]}
+                    
+                    Lütfen bu veriyi kullanarak şüpheli işlemleri (aşırı yakıt alanlar, kilometresi girilmeyenler vb.) analiz et.
+                    Yöneticiler için resmi, dostça, HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) ve aksiyon öneren Türkçe bir rapor yaz. Asla koddan veya model yapısından bahsetme.'''
+                    
+                    response = self.model.generate_content(prompt)
+                    return {
+                        'status': 'success',
+                        'answer': "🤖 🧠 <em>(AI Anomali Analiz Raporu)</em><br><br>" + response.text
+                    }
+            except Exception as e:
+                print(f"ML Anomali Hatası: {e}")
+                
+        # 2. VERİMLİLİK VE PERFORMANS KARŞILAŞTIRMASI
+        if any(w in question_lower for w in ['verimlilik', 'verimsiz', 'performans', 'karşılaştır']):
+            try:
+                from ai_model import PerformansAnalizi
+                model = PerformansAnalizi()
+                res = model.plaka_performans_karsilastirma()
+                if res['status'] == 'success':
+                    en_verimli = res['en_verimli']
+                    en_verimsiz = res['en_verimsiz']
+                    prompt = f'''Aşağıda araçlarımızın yakıt/km oranlarına göre performans analizi sonuçları yer almaktadır:
+                    En Verimli Araçlar: {en_verimli}
+                    En Verimsiz Araçlar: {en_verimsiz}
+                    
+                    Lütfen bu verileri kullanarak en iyi ve en kötü performans gösteren araçları kıyasla.
+                    Hangi araçların bakıma girmesi gerektiği veya şoför performansları hakkında yorumlar ekle.
+                    Yöneticiler için resmi, HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) Türkçe bir rapor yaz.'''
+                    
+                    response = self.model.generate_content(prompt)
+                    return {
+                        'status': 'success',
+                        'answer': "🤖 📊 <em>(AI Performans Karşılaştırma Raporu)</em><br><br>" + response.text
+                    }
+            except Exception as e:
+                print(f"ML Performans Hatası: {e}")
+                
+        # 3. YAKIT TÜKETİM TAHMİNİ
+        if any(w in question_lower for w in ['tahmin', 'gelecek ay', 'gelecekte', 'önümüzdeki ay']):
+            try:
+                # Plakayı bulmaya çalışalım (Örn: 34ABC123)
+                import re
+                plaka_match = re.search(r'\b\d{2}[a-zA-Z]{1,3}\d{2,4}\b', question.upper().replace(" ", ""))
+                if plaka_match:
+                    plaka = plaka_match.group(0)
+                    from ai_model import YakitTahminModeli
+                    model = YakitTahminModeli()
+                    res = model.gelecek_ay_tahmini(plaka)
+                    if res['status'] == 'success':
+                        tahmin_toplam = res['toplam_tahmin']
+                        tahminler = res['tahminler']
+                        prompt = f'''Aşağıda {plaka} plakalı aracımızın gelecek 30 günlük yakıt tüketimi tahmin (Random Forest Regressor) sonuçları yer almaktadır:
+                        Gelecek 30 Günlük Toplam Yakıt Tahmini: {tahmin_toplam} Litre.
+                        Günlük Tahminlerden Bazıları: {tahminler[:5]}
+                        
+                        Lütfen bu tahmin sonuçlarını kullanarak aracın gelecek dönem yakıt maliyeti ve bütçesi hakkında yorum yap.
+                        Yöneticiler için resmi, HTML destekli Türkçe bir rapor yaz.'''
+                        
+                        response = self.model.generate_content(prompt)
+                        return {
+                            'status': 'success',
+                            'answer': f"🤖 🔮 <em>(AI Tüketim Tahmin Raporu: {plaka})</em><br><br>" + response.text
+                        }
+            except Exception as e:
+                print(f"ML Tahmin Hatası: {e}")
+                
+        return None
+
     def ask_with_db_query(self, question, last_plate=None):
-        """Veritabanı sorgusu ile desteklenmiş soru"""
+        """Sorguyu çalıştıran ve ardından log tablosuna kaydeden sarmal metot"""
+        res = self._ask_with_db_query_impl(question, last_plate)
+        
+        # SQL loglama altyapısı
+        try:
+            from flask import session
+            username = session.get('username', 'system')
+        except:
+            username = 'system'
+            
+        try:
+            status = res.get('status', 'success')
+            answer = res.get('answer', '')
+            sql_query = res.get('sql_query', None)
+            error_message = res.get('error_message', None)
+            
+            # Eğer genel sohbete düştüyse status 'fallback' yapılır
+            if status == 'success' and sql_query is None and "🤖" not in answer and "🏆" not in answer and "📋" not in answer and "🏎️" not in answer and "🚗" not in answer:
+                status = 'fallback'
+                
+            log_ai_query(username, question, answer, status, sql_query, error_message)
+        except Exception as e:
+            print(f"Loglama hatası: {e}")
+            
+        return res
+
+    def _ask_with_db_query_impl(self, question, last_plate=None):
+        """Veritabanı sorgusu ile desteklenmiş soru - İç Mantık"""
         import re
         def format_plaka(match):
             return (match.group(1) + match.group(2) + match.group(3)).upper()
@@ -263,6 +372,11 @@ TÜRKÇE ve RESMİ cevap ver:"""
         local_result = check_local_queries(question, last_plate)
         if local_result and not export_type:
             return local_result
+
+        # 2. PYTHON ML MODELLERİ (AI Tahmin, Anomali, Verimlilik)
+        ml_result = self.check_ml_queries(question)
+        if ml_result:
+            return ml_result
 
         # Sorgu türünü belirle ve DIREKT YANITLA (Eski kurallar)
         if 'en fazla yakıt' in question_lower or 'en çok yakıt' in question_lower:
@@ -376,6 +490,17 @@ TÜRKÇE ve RESMİ cevap ver:"""
             ÖNEMLİ KURAL 3: agirlik tablosunda taşınan yük miktarı 'miktar' sütunundadır (eğer birim 'Kg' ise miktar/1000.0 ton değerini verir). 'net_agirlik' sütunu ise aracın boş ağırlığını (dara) tutar. Bu yüzden taşınan yük/tonaj sorulduğunda veya hesaplandığında net_agirlik yerine HER ZAMAN miktar sütununu kullan.
             ÖNEMLİ KURAL 4: Bu veritabanı sütunları ve satırları işletmenin kârlılık ve maliyet hesapları için hayati derecede önemlidir. Matematiksel hesaplamalarda ve sütun eşleştirmelerinde HATA YAPMAYA KESİNLİKLE YER YOKTUR. Dara (net_agirlik) ve net yük (miktar) arasındaki ayrımı kusursuz uygula.
             ÖNEMLİ KURAL 5: Soruda geçen "malzeme", "yük" veya "ürün" genel ifadeleri için 'ana_malzeme' sütununa filtre uygulama (Örn: ana_malzeme = 'malzeme' yapma). Çünkü bu genel ifadeler tablodaki tüm kayıtları kapsar. Sadece kullanıcı "beton", "kum", "parke", "bordro", "palet" gibi veritabanında var olan spesifik bir malzemeyi sorarsa ana_malzeme sütununa filtre koy.
+            
+            ÖNEMLİ İŞ KURALLARI:
+            - KURAL 6 (Özmal Araçlar): "Bizim araçlar" veya "özmal araçlar" sorgulandığında, `araclar` tablosundaki `sahip = 'BİZİM'` filtresini ekle.
+            - KURAL 7 (Taşeron/Dış/Kiralık): "Taşeron", "dış araç", "kiralık" veya "yabancı" araçlar sorulduğunda, `araclar` tablosundaki `sahip = 'TAŞERON'` (veya `sahip != 'BİZİM'`) filtresini ekle.
+            - KURAL 8 (Araç Tipleri): "Kamyon" veya "kargo" denirse `arac_tipi = 'KARGO ARACI'`, "kepçe", "dozer", "silindir" veya "iş makinesi" denirse `arac_tipi = 'İŞ MAKİNESİ'`, "binek" veya "otomobil" denirse `arac_tipi = 'BİNEK ARAÇ'` filtrelemesini yap.
+            - KURAL 9 (Hız Sınırı ve Hız Aşımı): Hız sınırı aşımı yapan veya aşırı hızlı giden araçlar sorulursa, `arac_takip` tablosunda `maksimum_hiz > 80` kriterini kullan (Şirket hız limiti 80 km/s'dir).
+            - KURAL 10 (Yakıt Verimliliği): En verimli veya en az yakan araçlar sorulursa, `yakit` tablosunda `litre_km` sütununun ortalaması en düşük olanları getir.
+            - KURAL 11 (Ödenmemiş Trafik Cezaları): "Ödenmemiş cezalar", "ceza borcu" veya "bekleyen cezalar" sorulduğunda, `cezalar` tablosunda `odeme_durumu != 'Ödendi'` (veya `odeme_durumu = 'Ödenmedi'`) filtresini kullan.
+            - KURAL 12 (Şirketin Ödediği Hasarlar): "Cebimizden çıkan", "şirketin ödediği" veya "sigortanın karşılamadığı" hasarlar sorulursa, `hasarlar` tablosunda `sigorta_karsiladi_mi = 0` (veya `False`) filtresini ekle.
+            - KURAL 13 (Bekleyen Araç Bakımları): "Bekleyen bakımlar", "yapılacak bakımlar" veya "zamanı gelen bakımlar" sorulduğunda, `bakim` tablosunda `durum != 'Tamamlandı'` filtresini uygula.
+            
             Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
             Kullanıcının sorusu: {question}
             Şema: {schema}'''
@@ -390,7 +515,9 @@ TÜRKÇE ve RESMİ cevap ver:"""
             
             # Sadece SELECT sorgularına izin ver, güvenlik için UPDATE/DELETE engeli
             if not sql_code.upper().startswith("SELECT"):
-                return self.ask(question)
+                fallback_res = self.ask(question)
+                fallback_res['status'] = 'fallback'
+                return fallback_res
 
             # Aşama 2: Veritabanında Çalıştırma
             conn = get_db_connection()
@@ -412,12 +539,16 @@ TÜRKÇE ve RESMİ cevap ver:"""
             
             return {
                 'status': 'success',
-                'answer': "🤖 <em>(Auto-SQL Analizi)</em><br><br>" + final_response.text
+                'answer': "🤖 <em>(Auto-SQL Analizi)</em><br><br>" + final_response.text,
+                'sql_query': sql_code
             }
         except Exception as e:
             # SQL hataları veya yetki sorunları olursa standart sohbet moduna geri dön
             print(f"Auto-SQL Hatası: {str(e)}")
-            return self.ask(question)
+            fallback_res = self.ask(question)
+            fallback_res['status'] = 'error'
+            fallback_res['error_message'] = str(e)
+            return fallback_res
 
     def get_chat_history(self):
         """Sohbet geçmişini getir"""

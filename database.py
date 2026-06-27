@@ -1948,3 +1948,37 @@ def get_saha_bildirimleri():
     except Exception as e:
         print(f"Saha bildirimleri getirilirken hata: {e}")
         return {'evraklar': [], 'arizalar': [], 'hasarlar': [], 'yakit_fisleri': []}
+
+
+def log_ai_query(username, question, response, status, sql_query=None, error_message=None):
+    """Sorguları ai_query_logs tablosuna kaydeder (Yoksa tabloyu oluşturur)"""
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Tabloyu otomatik oluştur
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS ai_query_logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT,
+                question TEXT NOT NULL,
+                response TEXT,
+                status TEXT, -- 'success', 'error', 'fallback'
+                sql_query TEXT,
+                error_message TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ''')
+        
+        cursor.execute('''
+            INSERT INTO ai_query_logs (username, question, response, status, sql_query, error_message)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ''', (username, question, response, status, sql_query, error_message))
+        
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Sorgu loglama hatası: {e}")
+        return False
+
