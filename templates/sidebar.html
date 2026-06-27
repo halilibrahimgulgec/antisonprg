@@ -233,12 +233,14 @@
                 <span>{{ _('Teknik Destek') }}</span>
             </a>
         </li>
+        {% if session.get('role') == 'admin' %}
         <li class="nav-item">
             <a href="/admin/users" class="nav-link {% if request.path == '/admin/users' %}active{% endif %}">
                 <i class="fa-solid fa-users-gear"></i>
                 <span>{{ _('Kullanıcı Yönetimi') }}</span>
             </a>
         </li>
+        {% endif %}
         <li class="nav-item">
             <a href="/logout" class="nav-link logout-link">
                 <i class="fa-solid fa-right-from-bracket"></i>

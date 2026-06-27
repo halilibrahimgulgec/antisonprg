@@ -37,14 +37,53 @@ babel = Babel(app, locale_selector=get_locale)
 @app.before_request
 def check_auth():
     # Public routes that don't require login
-    public_routes = ['login', 'static', 'set_language']
+    public_routes = ['login', 'sofor_login', 'static', 'set_language']
     
     # If request doesn't match a route or is a public route, let it pass
     if request.endpoint is None or request.endpoint in public_routes:
         return None
         
-    # If user is in session, allow access
+    # Driver panel routes
+    driver_routes = [
+        'sofor_paneli', 
+        'sofor_logout', 
+        'api_sefer_baslat', 
+        'api_sefer_bitir', 
+        'api_yakit_bildir', 
+        'api_hasar_bildir', 
+        'api_ariza_bildir', 
+        'api_evrak_gonder'
+    ]
+    
+    # If request is for a driver route
+    if request.endpoint in driver_routes:
+        if 'sofor_id' in session:
+            return None
+        return redirect(url_for('sofor_login'))
+        
+    # All other general admin/user routes
     if 'user_id' in session:
+        # Endpoints that are strictly reserved for users with 'admin' role
+        admin_only_endpoints = [
+            'add_user', 'remove_user', 'list_users',
+            'view_sofor_ekle', 'view_sofor_guncelle', 'view_sofor_sil',
+            'arac_ekle', 'arac_guncelle', 'arac_sil', 
+            'arac_toplu_sil', 'arac_toplu_islem', 'arac_toplu_sahip', 
+            'arac_toplu_durum', 'arac_toplu_import',
+            'bakim_ekle', 'bakim_guncelle', 'bakim_sil',
+            'view_ceza_ekle', 'view_ceza_sil', 'view_hasar_ekle', 'view_hasar_sil',
+            'view_lastik_ekle', 'view_lastik_sil', 'api_lastik_tak', 'api_lastik_sok',
+            'sync', 'api_fetch_mail', 'api_save_mail_settings'
+        ]
+        
+        if request.endpoint in admin_only_endpoints and session.get('role') != 'admin':
+            # Check if it is an API route
+            if request.path.startswith('/api/'):
+                return jsonify({'status': 'error', 'message': 'Bu işlem için yönetici (admin) yetkisi gerekiyor.'}), 403
+            
+            flash('Bu işlemi gerçekleştirmek için yönetici (admin) yetkiniz olması gerekir.', 'error')
+            return redirect(request.referrer or url_for('index'))
+            
         return None
         
     # If not logged in, redirect to login page

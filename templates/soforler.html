@@ -135,6 +135,7 @@
         {% endif %}
         {% endwith %}
 
+        {% if session.get('role') == 'admin' %}
         <div class="card">
             <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-user-plus"></i> {{ _('Yeni Şoför Ekle') }}</h3>
             <form action="/sofor-ekle" method="POST">
@@ -164,6 +165,7 @@
                 </div>
             </form>
         </div>
+        {% endif %}
 
         <div class="card">
             <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-users"></i> {{ _('Şoför Listesi') }}</h3>
@@ -176,7 +178,9 @@
                             <th>{{ _('TC No') }}</th>
                             <th>{{ _('Kayıt Tarihi') }}</th>
                             <th>{{ _('Durum') }}</th>
+                            {% if session.get('role') == 'admin' %}
                             <th>{{ _('İşlem') }}</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
@@ -191,6 +195,7 @@
                                     {% if sofor.aktif == 1 %}{{ _('Aktif') }}{% else %}{{ _('Pasif') }}{% endif %}
                                 </span>
                             </td>
+                            {% if session.get('role') == 'admin' %}
                             <td>
                                 <div style="display: flex; gap: 8px;">
                                     <button onclick="openUpdateModal({{ sofor.id }}, '{{ sofor.ad_soyad }}', '{{ sofor.telefon }}', '{{ sofor.tc_no }}', {{ sofor.aktif }})" class="btn-action" style="padding: 6px 12px; font-size: 0.75rem;"><i class="fa-solid fa-edit"></i></button>
@@ -199,6 +204,7 @@
                                     </form>
                                 </div>
                             </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
