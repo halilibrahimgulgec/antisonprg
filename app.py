@@ -73,7 +73,7 @@ def check_auth():
             'bakim_ekle', 'bakim_guncelle', 'bakim_sil',
             'view_ceza_ekle', 'view_ceza_sil', 'view_hasar_ekle', 'view_hasar_sil',
             'view_lastik_ekle', 'view_lastik_sil', 'api_lastik_tak', 'api_lastik_sok',
-            'sync', 'api_fetch_mail', 'api_save_mail_settings'
+            'sync_page', 'veriler_sayfasi', 'api_fetch_mail', 'api_save_mail_settings'
         ]
         
         if request.endpoint in admin_only_endpoints and session.get('role') != 'admin':

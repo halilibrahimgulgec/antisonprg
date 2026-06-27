@@ -173,6 +173,7 @@
                 <span>{{ _('Dashboard') }}</span>
             </a>
         </li>
+        {% if session.get('role') == 'admin' %}
         <li class="nav-item">
             <a href="/sync" class="nav-link {% if request.path == '/sync' %}active{% endif %}">
                 <i class="fa-solid fa-rotate"></i>
@@ -185,6 +186,7 @@
                 <span>{{ _('Veri Yönetimi') }}</span>
             </a>
         </li>
+        {% endif %}
         <li class="nav-item">
             <a href="/muhasebe" class="nav-link {% if request.path == '/muhasebe' or request.path.startswith('/muhasebe') %}active{% endif %}">
                 <i class="fa-solid fa-coins"></i>

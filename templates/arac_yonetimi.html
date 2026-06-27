@@ -164,6 +164,7 @@
             <div class="stat-card red"><div class="stat-lbl">{{ _('Binek Araç') }}</div><div class="stat-val">{{ binek_sayisi }}</div></div>
         </div>
 
+        {% if session.get('role') == 'admin' %}
         <div class="card">
             <h3 style="margin-bottom: 20px;"><i class="fa-solid fa-bolt" style="color: var(--warning);"></i> {{ _('Toplu İşlemler') }}</h3>
             <div class="action-grid">
@@ -180,6 +181,7 @@
                 </form>
             </div>
         </div>
+        {% endif %}
 
         <div class="card">
             <div class="search-bar">
@@ -187,7 +189,9 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="searchInput" class="search-input" placeholder="{{ _('Plaka ara...') }}" onkeyup="searchTable()">
                 </div>
+                {% if session.get('role') == 'admin' %}
                 <button onclick="openAddModal()" class="btn-action btn-blue" style="white-space: nowrap; padding: 12px 25px;"><i class="fa-solid fa-plus"></i> {{ _('Yeni Araç Ekle') }}</button>
+                {% endif %}
             </div>
 
             <div id="bulkInfoBar" class="bulk-info-bar">
@@ -206,24 +210,31 @@
                 <table id="aracTable">
                     <thead>
                         <tr>
+                            {% if session.get('role') == 'admin' %}
                             <th style="width: 40px;"><input type="checkbox" id="headerCheckbox" onchange="toggleSelectAll()"></th>
+                            {% endif %}
                             <th>{{ _('Plaka') }}</th>
                             <th>{{ _('Sahip') }}</th>
                             <th>{{ _('Tip') }}</th>
                             <th>{{ _('Durum') }}</th>
                             <th>{{ _('Malzeme') }}</th>
+                            {% if session.get('role') == 'admin' %}
                             <th>{{ _('İşlem') }}</th>
+                            {% endif %}
                         </tr>
                     </thead>
                     <tbody>
                         {% for arac in araclar %}
                         <tr>
+                            {% if session.get('role') == 'admin' %}
                             <td><input type="checkbox" class="row-checkbox" value="{{ arac.plaka }}" onchange="updateBulkActions()"></td>
+                            {% endif %}
                             <td><strong>{{ arac.plaka }}</strong></td>
                             <td><span class="badge {% if arac.sahip == 'BİZİM' %}badge-bizim{% else %}badge-taseron{% endif %}">{{ arac.sahip }}</span></td>
                             <td><span class="badge badge-aktif" style="background: #F3E8FF; color: #7E22CE;">{{ arac.arac_tipi }}</span></td>
                             <td><span class="badge {% if arac.aktif %}badge-aktif{% else %}badge-pasif{% endif %}">{% if arac.aktif %}{{ _('Aktif') }}{% else %}{{ _('Pasif') }}{% endif %}</span></td>
                             <td><small>{{ arac.varsayilan_malzeme or '-' }}</small></td>
+                            {% if session.get('role') == 'admin' %}
                             <td>
                                 <div style="display: flex; gap: 5px;">
                                     <button onclick='openEditModal({{ arac.plaka|tojson }}, {{ arac.sahip|tojson }}, {{ arac.arac_tipi|tojson }}, {{ "true" if arac.aktif else "false" }}, {{ (arac.notlar or "")|tojson }}, {{ (arac.varsayilan_malzeme or "")|tojson }})' class="btn-action btn-blue" style="padding: 6px 10px; font-size: 0.7rem;"><i class="fa-solid fa-edit"></i></button>
@@ -233,6 +244,7 @@
                                     </form>
                                 </div>
                             </td>
+                            {% endif %}
                         </tr>
                         {% endfor %}
                     </tbody>
