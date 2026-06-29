@@ -208,12 +208,28 @@ TÜRKÇE ve RESMİ cevap ver:"""
 
         return system_prompt
 
+    def safe_generate_content(self, prompt, retries=3, delay=2):
+        """Gemini API çağrılarını kota aşımına (429) karşı otomatik yeniden deneme mantığıyla çalıştırır"""
+        import time
+        for i in range(retries):
+            try:
+                return self.model.generate_content(prompt)
+            except Exception as e:
+                err_msg = str(e).lower()
+                if "429" in err_msg or "quota" in err_msg or "rate limit" in err_msg:
+                    if i < retries - 1:
+                        wait_time = delay * (i + 1)
+                        print(f"Gemini API Kota Aşımı (429) algılandı. {wait_time} saniye bekleniyor... (Deneme {i+1}/{retries})")
+                        time.sleep(wait_time)
+                        continue
+                raise e
+
     def ask(self, question, stream=False):
         """Gemini'ye soru sor"""
         try:
             prompt = self.create_prompt(question)
             
-            response = self.model.generate_content(prompt)
+            response = self.safe_generate_content(prompt)
 
             if response.text:
                 response_text = response.text
@@ -259,7 +275,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
                     Lütfen bu veriyi kullanarak şüpheli işlemleri (aşırı yakıt alanlar, kilometresi girilmeyenler vb.) analiz et.
                     Yöneticiler için resmi, dostça, HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) ve aksiyon öneren Türkçe bir rapor yaz. Asla koddan veya model yapısından bahsetme.'''
                     
-                    response = self.model.generate_content(prompt)
+                    response = self.safe_generate_content(prompt)
                     return {
                         'status': 'success',
                         'answer': "🤖 🧠 <em>(AI Anomali Analiz Raporu)</em><br><br>" + response.text
@@ -284,7 +300,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
                     Hangi araçların bakıma girmesi gerektiği veya şoför performansları hakkında yorumlar ekle.
                     Yöneticiler için resmi, HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) Türkçe bir rapor yaz.'''
                     
-                    response = self.model.generate_content(prompt)
+                    response = self.safe_generate_content(prompt)
                     return {
                         'status': 'success',
                         'answer': "🤖 📊 <em>(AI Performans Karşılaştırma Raporu)</em><br><br>" + response.text
@@ -313,7 +329,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
                         Lütfen bu tahmin sonuçlarını kullanarak aracın gelecek dönem yakıt maliyeti ve bütçesi hakkında yorum yap.
                         Yöneticiler için resmi, HTML destekli Türkçe bir rapor yaz.'''
                         
-                        response = self.model.generate_content(prompt)
+                        response = self.safe_generate_content(prompt)
                         return {
                             'status': 'success',
                             'answer': f"🤖 🔮 <em>(AI Tüketim Tahmin Raporu: {plaka})</em><br><br>" + response.text
@@ -507,7 +523,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             Kullanıcının sorusu: {question}
             Şema: {schema}'''
             
-            response = self.model.generate_content(sql_prompt)
+            response = self.safe_generate_content(sql_prompt)
             sql_code = response.text.strip()
             
             # Markdown kalıntılarını temizle (```sql ... ```)
@@ -537,7 +553,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             Lütfen bu veriyi kullanarak kullanıcıya resmi, açık, HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) güzel bir Türkçe cevap hazırla. Asla SQL kodundan veya veritabanı yapısından bahsetme. Doğrudan sonuçları sun.
             Eğer veri boş liste ([]) ise "İstediğiniz kriterlere uygun veri bulunamadı." gibi kibar bir mesaj ver.'''
             
-            final_response = self.model.generate_content(answer_prompt)
+            final_response = self.safe_generate_content(answer_prompt)
             
             return {
                 'status': 'success',
@@ -714,7 +730,7 @@ Kullanıcı Sorusu: {question}
 Lütfen bu bilgilere göre kullanıcıya HTML destekli (örn: <strong>kalın</strong>, <br> satır atlama) açıklayıcı ve profesyonel bir cevap hazırla:"""
 
         # Gemini modelini kullanarak yanıt üret
-        response = assistant.model.generate_content(support_prompt)
+        response = assistant.safe_generate_content(support_prompt)
         if response.text:
             return {
                 'status': 'success',
