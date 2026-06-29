@@ -639,7 +639,8 @@ class PerformansAnalizi:
         # Araç bilgilerini ve varsayılan malzemeleri al
         import sqlite3
         conn = sqlite3.connect('kargo_data.db')
-        araclar_df = pd.read_sql_query('SELECT plaka, arac_tipi, varsayilan_malzeme FROM araclar', conn)
+        # Sadece BİZİM (özmal) araçları getir
+        araclar_df = pd.read_sql_query("SELECT plaka, arac_tipi, varsayilan_malzeme, sahip FROM araclar WHERE sahip = 'BİZİM'", conn)
         
         # Araç gruplarını al (Fallback için)
         takip_gruplari = pd.read_sql_query('SELECT plaka, arac_gruplari FROM arac_takip GROUP BY plaka', conn)
@@ -647,7 +648,7 @@ class PerformansAnalizi:
 
         # Birleştir
         performans = yakit_stats.merge(tonaj_stats, on='plaka', how='left')
-        performans = performans.merge(araclar_df, on='plaka', how='left')
+        performans = performans.merge(araclar_df, on='plaka', how='inner')
         performans = performans.merge(takip_gruplari, on='plaka', how='left')
         
         performans['toplam_tonaj'] = performans['toplam_tonaj'].fillna(0)
