@@ -471,9 +471,11 @@ TÜRKÇE ve RESMİ cevap ver:"""
         - hasarlar (id, plaka, sofor_id, tarih, tutar, aciklama, sigorta_karsiladi_mi)
         - seferler (id, sofor_id, plaka, baslangic_zaman, bitis_zaman, baslangic_km, bitis_km, durum)
         - agirlik (id, tarih, miktar, birim, net_agirlik, plaka, adres, islem_noktasi, cari_adi, ana_malzeme)
+        - ai_query_logs (id, username, question, response, status, sql_query, error_message, created_at)
           * NOT 1: agirlik tablosunda 'miktar' sütunu taşınan yük/malzeme miktarını gösterir (birim 'Kg' ise miktar/1000.0 tonajı verir).
           * NOT 2: agirlik tablosunda 'net_agirlik' sütunu aslında yükü değil aracın boş ağırlığını (dara) gösterir. Yük/tonaj hesaplarken net_agirlik'i SUM(net_agirlik) olarak KULLANMA, miktar'ı kullan.
           * NOT 3: agirlik tablosunda 'ana_malzeme' sütunu malzeme türünü gösterir (Örn: 'BETON', 'KUM', 'PARKE', 'BORDRO', 'PALET').
+          * NOT 4: ai_query_logs tablosunda asistana sorulan sorular (question), asistanın verdiği yanıtlar (response), durumu (status: 'success' [başarılı], 'fallback' [sohbete düşen] veya 'error' [hata alan]) ve log zamanı (created_at) tutulur. Asistan sorgu geçmişi veya loglar sorulduğunda bu tabloyu kullan.
         """
 
     def auto_sql_agent(self, question):
