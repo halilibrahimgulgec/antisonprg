@@ -31,6 +31,27 @@ class GeminiAssistant:
         self.model_name = model
         self.model = genai.GenerativeModel(self.model_name)
         self.chat_history = []
+        
+        # Tabloyu başlangıçta otomatik oluştur (Chicken-egg problem çözümü)
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS ai_query_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT,
+                    question TEXT NOT NULL,
+                    response TEXT,
+                    status TEXT, -- 'success', 'error', 'fallback'
+                    sql_query TEXT,
+                    error_message TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            conn.commit()
+            conn.close()
+        except Exception as e:
+            print(f"ai_query_logs tablosu oluşturulurken hata: {e}")
 
     def check_gemini_status(self):
         """Gemini API servisinin çalışıp çalışmadığını kontrol et (Kota tüketmemesi için mocklandı)"""
@@ -564,7 +585,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             # SQL hataları veya yetki sorunları olursa standart sohbet moduna geri dön
             print(f"Auto-SQL Hatası: {str(e)}")
             fallback_res = self.ask(question)
-            fallback_res['status'] = 'error'
+            # Loglama ve hata takibi için hata mesajını ekle
             fallback_res['error_message'] = str(e)
             return fallback_res
 
