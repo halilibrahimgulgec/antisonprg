@@ -498,7 +498,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
         return self.auto_sql_agent(question)
 
     def get_database_schema(self):
-        return """
+        schema = """
         Veritabanı Şeması (SQLite):
         - yakit (id, plaka, islem_tarihi, saat, yakit_miktari, birim_fiyat, satir_tutari, stok_adi, km_bilgisi, km_fark, litre_km, toplam_yuk, ton_litre, fis_fotograf_yolu, sofor_id)
         - araclar (id, plaka, sahip, arac_tipi, aktif, notlar)
@@ -508,17 +508,44 @@ TÜRKÇE ve RESMİ cevap ver:"""
         - hasarlar (id, plaka, sofor_id, tarih, tutar, aciklama, sigorta_karsiladi_mi)
         - seferler (id, sofor_id, plaka, baslangic_zaman, bitis_zaman, baslangic_km, bitis_km, durum)
         - agirlik (id, tarih, miktar, birim, net_agirlik, plaka, adres, islem_noktasi, cari_adi, ana_malzeme)
-        - ai_query_logs (id, username, question, response, status, sql_query, error_message, created_at)
           * NOT 1: agirlik tablosunda 'miktar' sütunu taşınan yük/malzeme miktarını gösterir (birim 'Kg' ise miktar/1000.0 tonajı verir).
           * NOT 2: agirlik tablosunda 'net_agirlik' sütunu aslında yükü değil aracın boş ağırlığını (dara) gösterir. Yük/tonaj hesaplarken net_agirlik'i SUM(net_agirlik) olarak KULLANMA, miktar'ı kullan.
           * NOT 3: agirlik tablosunda 'ana_malzeme' sütunu malzeme türünü gösterir (Örn: 'BETON', 'KUM', 'PARKE', 'BORDRO', 'PALET').
-          * NOT 4: ai_query_logs tablosunda asistana sorulan sorular (question), asistanın verdiği yanıtlar (response), durumu (status: 'success' [başarılı], 'fallback' [sohbete düşen] veya 'error' [hata alan]) ve log zamanı (created_at) tutulur. Bu tablodan sorgu yaparken loglama/sistem/geçmiş ile ilgili meta-soruları (örn: 'log', 'sorgu', 'sorulan', 'geçmiş', 'neler soruldu', 'cevaplarını yaz' vb. kelimeler içeren kendi log sorgularını) WHERE filtresiyle kesinlikle hariç tut (Örn: `WHERE question NOT LIKE '%log%' AND question NOT LIKE '%sorulan%' AND question NOT LIKE '%sorgu%' AND question NOT LIKE '%cevap%'`). Böylece sadece sisteme sorulan gerçek iş/araç/yakıt soruları listelenir. Büyük veri yükünü önlemek için 'response' sütununu sadece kullanıcı açıkça asistanın verdiği cevapları/yanıtları istediğinde çek ve her zaman 'LIMIT 10' gibi makul bir limit koy.
         """
+        try:
+            from flask import session
+            user_role = session.get('role', 'user')
+        except:
+            user_role = 'admin'
+
+        if user_role == 'admin':
+            schema += """
+        - ai_query_logs (id, username, question, response, status, sql_query, error_message, created_at)
+          * NOT 4: ai_query_logs tablosunda asistana sorulan sorular (question), asistanın verdiği yanıtlar (response), durumu (status: 'success' [başarılı], 'fallback' [sohbete düşen] veya 'error' [hata alan]) ve log zamanı (created_at) tutulur. Asistan sorgu geçmişi, loglar veya belirli bir soruya verilen cevaplar sorulduğunda bu tabloyu kullan. Büyük veri yükünü önlemek için 'response' sütununu sadece kullanıcı açıkça asistanın verdiği cevapları/yanıtları görmek istediğinde çek ve her zaman 'LIMIT 10' gibi makul bir limit koy.
+        """
+        return schema
 
     def auto_sql_agent(self, question):
         """Kullanıcının sorusundan dinamik olarak SQL üretip veritabanında çalıştırır"""
         try:
             import re
+            
+            # Yetkilendirme Kontrolü (1. Aşama - Soru Bazlı)
+            try:
+                from flask import session
+                user_role = session.get('role', 'user')
+            except:
+                user_role = 'admin'
+
+            question_lower = question.lower()
+            is_meta_query = any(w in question_lower for w in ['log', 'geçmiş', 'sorgu', 'neler soruldu', 'cevap verdin', 'ne cevap verdin'])
+
+            if is_meta_query and user_role != 'admin':
+                return {
+                    'status': 'error',
+                    'message': 'Sorgu geçmişi ve log kayıtlarına erişim yetkiniz bulunmamaktadır. Bu işlem için yönetici (admin) olmalısınız.'
+                }
+
             schema = self.get_database_schema()
             
             # Aşama 1: SQL Üretimi
@@ -552,6 +579,13 @@ TÜRKÇE ve RESMİ cevap ver:"""
             if match:
                 sql_code = match.group(1).strip()
             
+            # Yetkilendirme Kontrolü (2. Aşama - SQL Bazlı)
+            if 'ai_query_logs' in sql_code.lower() and user_role != 'admin':
+                return {
+                    'status': 'error',
+                    'message': 'Sorgu geçmişi ve log kayıtlarına erişim yetkiniz bulunmamaktadır. Bu işlem için yönetici (admin) olmalısınız.'
+                }
+
             # Sadece SELECT sorgularına izin ver, güvenlik için UPDATE/DELETE engeli
             if not sql_code.upper().startswith("SELECT"):
                 fallback_res = self.ask(question)
@@ -564,14 +598,25 @@ TÜRKÇE ve RESMİ cevap ver:"""
             cursor.execute(sql_code)
             rows = cursor.fetchall()
             
-            # Çok büyük veri kümesi ve uzun metin içeren sütunlar (örn: ai_query_logs.response) için koruma
+            # Dinamik Kırpma Algoritması: Toplam veri boyutu çok büyükse veya listeleme yapılıyorsa kırpma yapılır
+            total_len = 0
+            for row in rows:
+                r_dict = dict(row)
+                for val in r_dict.values():
+                    if isinstance(val, str):
+                        total_len += len(val)
+            
+            # Satır sayısı 1'den fazla ise veya toplam metin boyutu 5000 karakteri aşıyorsa kırpma uygula
+            apply_truncation = len(rows) > 1 or total_len > 5000
+            
             db_result = []
             for row in rows:
                 r_dict = dict(row)
-                for key, val in r_dict.items():
-                    # Eğer sütun değeri çok uzun bir metinse kırpalım (özellikle response alanı)
-                    if isinstance(val, str) and len(val) > 200:
-                        r_dict[key] = val[:200] + "... (kırpıldı)"
+                if apply_truncation:
+                    for key, val in r_dict.items():
+                        # Çok uzun HTML veya rapor metinlerini kırpalım
+                        if isinstance(val, str) and len(val) > 300:
+                            r_dict[key] = val[:300] + "... (kırpıldı)"
                 db_result.append(r_dict)
             
             # Satır sayısını da güvenlik için 50 ile sınırlayalım
