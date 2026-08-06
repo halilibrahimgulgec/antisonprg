@@ -512,7 +512,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
           * NOT 1: agirlik tablosunda 'miktar' sütunu taşınan yük/malzeme miktarını gösterir (birim 'Kg' ise miktar/1000.0 tonajı verir).
           * NOT 2: agirlik tablosunda 'net_agirlik' sütunu aslında yükü değil aracın boş ağırlığını (dara) gösterir. Yük/tonaj hesaplarken net_agirlik'i SUM(net_agirlik) olarak KULLANMA, miktar'ı kullan.
           * NOT 3: agirlik tablosunda 'ana_malzeme' sütunu malzeme türünü gösterir (Örn: 'BETON', 'KUM', 'PARKE', 'BORDRO', 'PALET').
-          * NOT 4: ai_query_logs tablosunda asistana sorulan sorular (question), asistanın verdiği yanıtlar (response), durumu (status: 'success' [başarılı], 'fallback' [sohbete düşen] veya 'error' [hata alan]) ve log zamanı (created_at) tutulur. Asistan sorgu geçmişi veya loglar sorulduğunda bu tabloyu kullan.
+          * NOT 4: ai_query_logs tablosunda asistana sorulan sorular (question), asistanın verdiği yanıtlar (response), durumu (status: 'success' [başarılı], 'fallback' [sohbete düşen] veya 'error' [hata alan]) ve log zamanı (created_at) tutulur. Bu tablodan sorgu yaparken loglama/sistem/geçmiş ile ilgili meta-soruları (örn: 'log', 'sorgu', 'sorulan', 'geçmiş', 'neler soruldu', 'cevaplarını yaz' vb. kelimeler içeren kendi log sorgularını) WHERE filtresiyle kesinlikle hariç tut (Örn: `WHERE question NOT LIKE '%log%' AND question NOT LIKE '%sorulan%' AND question NOT LIKE '%sorgu%' AND question NOT LIKE '%cevap%'`). Böylece sadece sisteme sorulan gerçek iş/araç/yakıt soruları listelenir. Büyük veri yükünü önlemek için 'response' sütununu sadece kullanıcı açıkça asistanın verdiği cevapları/yanıtları istediğinde çek ve her zaman 'LIMIT 10' gibi makul bir limit koy.
         """
 
     def auto_sql_agent(self, question):
@@ -563,7 +563,19 @@ TÜRKÇE ve RESMİ cevap ver:"""
             cursor = conn.cursor()
             cursor.execute(sql_code)
             rows = cursor.fetchall()
-            db_result = [dict(row) for row in rows]
+            
+            # Çok büyük veri kümesi ve uzun metin içeren sütunlar (örn: ai_query_logs.response) için koruma
+            db_result = []
+            for row in rows:
+                r_dict = dict(row)
+                for key, val in r_dict.items():
+                    # Eğer sütun değeri çok uzun bir metinse kırpalım (özellikle response alanı)
+                    if isinstance(val, str) and len(val) > 200:
+                        r_dict[key] = val[:200] + "... (kırpıldı)"
+                db_result.append(r_dict)
+            
+            # Satır sayısını da güvenlik için 50 ile sınırlayalım
+            db_result = db_result[:50]
             conn.close()
 
             # Aşama 3: İnsancıl Cevap Üretimi
