@@ -516,13 +516,23 @@ def check_local_queries(question, last_plate=None):
 
     # 2. Dinamik Kelime/Plaka Arama Sorgusu (Eğer tam plaka formatı eşleşmediyse ama 'plakalı' araması yapılıyorsa)
     if has_plate_word and has_exist_word:
-        # Soru içindeki sayısal/alfanümerik anahtar kelimeleri ayıklayalım (örn: "454")
-        words = [re.sub(r'[^A-Z0-9]', '', w.upper()) for w in question.split()]
-        common_words = {"BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "MIYIZ", "MIYIM", "ARACIMIZ", "ARAC", "ARAÇ", "PLAKALI", "PLAKA"}
-        search_terms = [w for w in words if len(w) >= 2 and w not in common_words]
+        # Soru içinde kısmi plaka var mı kontrol edelim (Örn: "46 aia" -> "46AIA")
+        # Türkçe karakterleri eşleştirebilmek için büyük harfe çevirelim
+        tr_map = str.maketrans("ıİıı", "IIII")
+        q_upper = question.translate(tr_map).upper()
         
-        if search_terms:
-            search_term = search_terms[0]
+        # 2 basamaklı sayı + isteğe bağlı boşluk + 1-3 harf
+        partial_match = re.search(r'\b(\d{2})\s*([A-Z]{1,3})\b', q_upper)
+        if partial_match:
+            search_term = partial_match.group(1) + partial_match.group(2)
+        else:
+            # Soru içindeki sayısal/alfanümerik anahtar kelimeleri ayıklayalım (örn: "454")
+            words = [re.sub(r'[^A-Z0-9]', '', w.upper()) for w in question.split()]
+            common_words = {"BIR", "VAR", "MI", "MU", "Mİ", "MÜ", "VE", "ILE", "İLE", "İÇİN", "ICIN", "MIYIZ", "MIYIM", "ARACIMIZ", "ARAC", "ARAÇ", "PLAKALI", "PLAKA"}
+            search_terms = [w for w in words if len(w) >= 2 and w not in common_words]
+            search_term = search_terms[0] if search_terms else None
+        
+        if search_term:
             try:
                 conn = get_db_connection()
                 cursor = conn.cursor()
