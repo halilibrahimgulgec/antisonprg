@@ -480,7 +480,7 @@
                 const data = await response.json();
                 hideLoading();
 
-                if (data.status === 'success') {
+                if (data.status === 'success' || data.status === 'fallback') {
                     let message = data.answer;
 
                     // Excel veya PDF download linki varsa ekle
@@ -492,7 +492,7 @@
 
                     addMessage(message, false);
                 } else {
-                    addMessage(`❌ Hata: ${data.message}`, false);
+                    addMessage(`❌ Hata: ${data.message || 'Bilinmeyen bir hata oluştu'}`, false);
                 }
             } catch (error) {
                 hideLoading();

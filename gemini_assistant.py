@@ -555,7 +555,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             # Sadece SELECT sorgularına izin ver, güvenlik için UPDATE/DELETE engeli
             if not sql_code.upper().startswith("SELECT"):
                 fallback_res = self.ask(question)
-                fallback_res['status'] = 'fallback'
+                fallback_res['status'] = 'success'
                 return fallback_res
 
             # Aşama 2: Veritabanında Çalıştırma
