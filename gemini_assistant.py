@@ -405,15 +405,20 @@ TÜRKÇE ve RESMİ cevap ver:"""
         elif 'pdf' in question_lower and ('ver' in question_lower or 'yap' in question_lower or 'oluştur' in question_lower or 'indir' in question_lower or 'çıkart' in question_lower or 'formatında' in question_lower):
             export_type = 'pdf'
 
-        # 1. YENİ SÖZLÜK SİSTEMİ (Yerel Ücretsiz Kısayollar)
-        local_result = check_local_queries(question, last_plate)
-        if local_result and not export_type:
-            return local_result
+        # Meta log sorgusu olup olmadığını kontrol et
+        is_meta_query = any(w in question_lower for w in ['log', 'geçmiş', 'sorgu', 'neler soruldu', 'cevap verdin', 'ne cevap verdin', 'ne yanıt verdin', 'ne dedin'])
 
-        # 2. PYTHON ML MODELLERİ (AI Tahmin, Anomali, Verimlilik)
-        ml_result = self.check_ml_queries(question)
-        if ml_result:
-            return ml_result
+        # 1. YENİ SÖZLÜK SİSTEMİ (Yerel Ücretsiz Kısayollar) - Meta sorgu değilse çalıştır
+        if not is_meta_query:
+            local_result = check_local_queries(question, last_plate)
+            if local_result and not export_type:
+                return local_result
+
+        # 2. PYTHON ML MODELLERİ (AI Tahmin, Anomali, Verimlilik) - Meta sorgu değilse çalıştır
+        if not is_meta_query:
+            ml_result = self.check_ml_queries(question)
+            if ml_result:
+                return ml_result
 
         # Sorgu türünü belirle ve DIREKT YANITLA (Eski kurallar)
         if 'en fazla yakıt' in question_lower or 'en çok yakıt' in question_lower:
