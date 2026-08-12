@@ -32,7 +32,7 @@ class GeminiAssistant:
         self.model = genai.GenerativeModel(self.model_name)
         self.chat_history = []
         
-        # Tabloyu başlangıçta otomatik oluştur (Chicken-egg problem çözümü)
+        # Tabloları başlangıçta otomatik oluştur (Chicken-egg problem çözümü)
         try:
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -48,10 +48,18 @@ class GeminiAssistant:
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS ai_learned_rules (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    pattern TEXT,
+                    correction TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
             conn.commit()
             conn.close()
         except Exception as e:
-            print(f"ai_query_logs tablosu oluşturulurken hata: {e}")
+            print(f"Tablolar oluşturulurken hata: {e}")
 
     def check_gemini_status(self):
         """Gemini API servisinin çalışıp çalışmadığını kontrol et (Kota tüketmemesi için mocklandı)"""
@@ -396,6 +404,29 @@ TÜRKÇE ve RESMİ cevap ver:"""
         question = re.sub(r'\b([0-9]{2})\s*([a-zA-ZçÇğĞıİöÖşŞüÜ]{1,3})\s*([0-9]{2,4})\b', format_plaka, question)
         question_lower = question.lower()
         
+        # Kendi Kendine Öğrenme Tetikleyicisi
+        if any(w in question_lower for w in ['kendini eğit', 'hataları denetle', 'öğrenme modelini çalıştır']):
+            try:
+                from flask import session
+                user_role = session.get('role', 'user')
+            except:
+                user_role = 'admin'
+            
+            if user_role != 'admin':
+                return {
+                    'status': 'error',
+                    'message': 'Kendi kendini eğitme ve denetleme modunu çalıştırmak için yönetici (admin) olmalısınız.'
+                }
+            return self.audit_and_learn()
+
+        # Sanal Ajan Rapor/Analiz Tetikleyicisi (Eğer plaka içermiyorsa genel analiz ekibi çalışır)
+        if any(w in question_lower for w in ['analiz et', 'filo raporu', 'genel durum', 'akıllı özet', 'detaylı analiz', 'haftalık rapor']):
+            import re
+            q_clean = re.sub(r'\s+', '', question_lower).upper()
+            has_specific_plate = re.search(r'(\d{2}[A-Z]{1,3}\d{2,4})', q_clean)
+            if not has_specific_plate:
+                return self.run_virtual_agent_analysis(question)
+
         db_result = None
         export_type = None
 
@@ -553,10 +584,31 @@ TÜRKÇE ve RESMİ cevap ver:"""
                 }
 
             schema = self.get_database_schema()
+
+            # Öğrenilmiş kuralları veritabanından çek
+            learned_rules_str = ""
+            try:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("SELECT correction FROM ai_learned_rules ORDER BY id DESC LIMIT 15")
+                rules = cursor.fetchall()
+                conn.close()
+                if rules:
+                    # sqlite3.Row Nesnelerinden correction alanını çekelim
+                    learned_rules_str = "\n".join([f"- {dict(r)['correction']}" for r in rules])
+            except Exception as e:
+                print(f"Öğrenilmiş kuralları çekme hatası: {e}")
+
+            if not learned_rules_str:
+                learned_rules_str = "- Henüz ek öğrenilmiş kural bulunmamaktadır."
             
             # Aşama 1: SQL Üretimi
             sql_prompt = f'''Sen uzman bir veritabanı mühendisisin.
             Aşağıdaki SQLite veritabanı şemasına dayanarak, kullanıcının sorusunu cevaplayacak SADECE BİR adet 'SELECT' sorgusu yaz.
+            
+            ÖĞRENİLMİŞ GEÇMİŞ HATALAR VE DÜZELTME KURALLARI (Bunları kesinlikle uygula):
+            {learned_rules_str}
+            
             ÖNEMLİ KURAL 1: Plaka bilgileri veritabanında HER ZAMAN BÜYÜK HARFLE ve BİTİŞİK tutulur (Örn: 34ABC123). Plaka ararken tam eşleşme (plaka = '46AHR076') kullan.
             ÖNEMLİ KURAL 2: Soru "mazot", "benzin", "yakıt" içeriyorsa 'stok_adi' sütununa göre FİLTRELEME YAPMA. Yakıt tablosundaki tüm kayıtlar zaten yakıt alımıdır.
             ÖNEMLİ KURAL 3: agirlik tablosunda taşınan yük miktarı 'miktar' sütunundadır (eğer birim 'Kg' ise miktar/1000.0 ton değerini verir). 'net_agirlik' sütunu ise aracın boş ağırlığını (dara) tutar. Bu yüzden taşınan yük/tonaj sorulduğunda veya hesaplandığında net_agirlik yerine HER ZAMAN miktar sütununu kullan.
@@ -738,6 +790,210 @@ TÜRKÇE ve RESMİ cevap ver:"""
         doc.build(elements)
         output.seek(0)
         return output.getvalue()
+
+    def run_virtual_agent_analysis(self, question):
+        """4 Sanal Ajanlı filo analiz ekibini çalıştırır ve ortak rapor döndürür"""
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            
+            # 1. Araç Sayıları
+            cursor.execute("SELECT COUNT(*) as toplam, SUM(CASE WHEN aktif=1 THEN 1 ELSE 0 END) as aktif FROM araclar WHERE sahip='BİZİM'")
+            row_araclar = dict(cursor.fetchone())
+            
+            # 2. Yakıt Toplamları (Son 30 gün)
+            cursor.execute("""
+                SELECT SUM(yakit_miktari) as toplam_litre, SUM(satir_tutari) as toplam_tutar 
+                FROM yakit y
+                JOIN araclar a ON y.plaka = a.plaka
+                WHERE a.sahip='BİZİM' AND y.islem_tarihi >= date('now', '-30 days')
+            """)
+            row_yakit = dict(cursor.fetchone())
+            
+            # 3. Yakıt Tüketim Ortalaması (Kendi aktif araçlarımızda)
+            cursor.execute("""
+                SELECT AVG(litre_km) as ortalama_tuketim 
+                FROM yakit y
+                JOIN araclar a ON y.plaka = a.plaka
+                WHERE a.sahip='BİZİM' AND y.litre_km > 0 AND y.litre_km < 100
+            """)
+            row_tuketim = dict(cursor.fetchone())
+            
+            # 4. Bekleyen Bakımlar
+            cursor.execute("SELECT COUNT(*) as bekleyen_bakim FROM bakim WHERE durum != 'Tamamlandı'")
+            row_bakim = dict(cursor.fetchone())
+            
+            # 5. Kantar Sevkiyat ve Tonaj (Son 30 gün)
+            cursor.execute("""
+                SELECT COUNT(*) as toplam_sefer, 
+                       SUM(CASE WHEN birim IN ('Kg', 'kg', 'KG') THEN miktar / 1000.0 ELSE miktar END) as toplam_tonaj
+                FROM agirlik y
+                JOIN araclar a ON y.plaka = a.plaka
+                WHERE a.sahip='BİZİM' AND y.tarih >= date('now', '-30 days')
+            """)
+            row_agirlik = dict(cursor.fetchone())
+            
+            # 6. Hasar ve Cezalar (Son 30 gün)
+            cursor.execute("SELECT SUM(tutar) as toplam_hasar FROM hasarlar WHERE tarih >= date('now', '-30 days')")
+            row_hasar = dict(cursor.fetchone())
+            cursor.execute("SELECT SUM(tutar) as toplam_ceza FROM cezalar WHERE odeme_durumu != 'Ödendi' AND tarih >= date('now', '-30 days')")
+            row_ceza = dict(cursor.fetchone())
+            
+            # 7. En Yoğun / En Pasif Araçlar (Son 30 gün kantar kaydı)
+            cursor.execute("""
+                SELECT y.plaka, COUNT(*) as sefer_sayisi
+                FROM agirlik y
+                JOIN araclar a ON y.plaka = a.plaka
+                WHERE a.sahip='BİZİM' AND a.aktif=1
+                GROUP BY y.plaka
+                ORDER BY sefer_sayisi DESC
+                LIMIT 5
+            """)
+            top_active = [dict(r) for r in cursor.fetchall()]
+            
+            cursor.execute("""
+                SELECT a.plaka, COUNT(y.id) as sefer_sayisi
+                FROM araclar a
+                LEFT JOIN agirlik y ON a.plaka = y.plaka AND y.tarih >= date('now', '-30 days')
+                WHERE a.sahip='BİZİM' AND a.aktif=1
+                GROUP BY a.plaka
+                ORDER BY sefer_sayisi ASC
+                LIMIT 5
+            """)
+            least_active = [dict(r) for r in cursor.fetchall()]
+            
+            conn.close()
+            
+            # Özet veriyi hazırlayalım
+            summary_data = f"""
+            - Toplam Özmal Araç Sayısı: {row_araclar['toplam']} (Aktif: {row_araclar['aktif']})
+            - Son 30 Günlük Özmal Yakıt Gideri: {row_yakit['toplam_tutar'] or 0:,.2f} TL (Toplam {row_yakit['toplam_litre'] or 0:,.2f} Litre)
+            - Ortalama Yakıt Tüketimi: {row_tuketim['ortalama_tuketim'] or 0:.2f} Litre / 100 Km
+            - Bekleyen Bakım İşlemi Sayısı: {row_bakim['bekleyen_bakim']} adet
+            - Son 30 Günde Taşınan Yük: {row_agirlik['toplam_tonaj'] or 0:,.2f} Ton (Toplam {row_agirlik['toplam_sefer']} sefer/kantar tartımı)
+            - Son 30 Günlük Hasar Maliyeti: {row_hasar['toplam_hasar'] or 0:,.2f} TL
+            - Son 30 Günlük Ödenmemiş Trafik Cezası: {row_ceza['toplam_ceza'] or 0:,.2f} TL
+            - Son 30 Günün En Aktif 5 Aracı (Sefer Sayısı): {", ".join([f"{x['plaka']} ({x['sefer_sayisi']})" for x in top_active])}
+            - Son 30 Günün En Az Çalışan 5 Aracı (Sefer Sayısı): {", ".join([f"{x['plaka']} ({x['sefer_sayisi']})" for x in least_active])}
+            """
+            
+            crew_prompt = f'''Sen ANTI-GRAVITY Akıllı Filo Analiz Ekibisin. Türkçe, resmi ve son derece profesyonel bir dil kullanacaksın.
+            Aşağıdaki özet filo verilerini kullanarak, kullanıcı sorusuna/analiz talebine cevap olacak şekilde 4 Sanal Ajanlı bir rapor hazırla.
+            
+            Kullanıcı Analiz Talebi: {question}
+            
+            Özet Filo Verileri:
+            {summary_data}
+            
+            Lütfen HTML etiketlerini kullanarak (örn: <strong>kalın</strong>, <br> satır atlama, başlıklar için <h3> vb.) aşağıdaki 4 ajanın sırasıyla analiz raporunu yaz:
+            1. ⛽ **[Yakıt ve Maliyet Uzmanı Ajanı]**: Yakıt tüketim verilerini, 100 km'deki harcamayı ve maliyet anormalliklerini değerlendir.
+            2. 🔧 **[Kestirimci Bakım Uzmanı Ajanı]**: Bakım geçmişi, bekleyen bakımlar, hasarlar ve cezalar doğrultusunda araç sağlığı ve mekanik riskleri raporla.
+            3. 🚚 **[Operasyon ve Sevkiyat Uzmanı Ajanı]**: Kantar kayıtlarına dayanarak araçların taşıma sıklığını ve operasyonel verimliliğini (en aktif / en atıl araçlar) değerlendir.
+            4. 📋 **[Filo Direktörü - Yönetici Özeti]**: Tüm uzmanların bulgularını birleştirip filo yöneticisine (yani kullanıcıya) doğrudan eyleme geçirilebilir, 3-4 maddelik net bir aksiyon planı çıkar.
+            
+            Çıktıda asla teknik SQL detaylarından veya tablo yapılarından bahsetme. Doğrudan şık ve okunması kolay HTML raporu döndür.'''
+            
+            response = self.safe_generate_content(crew_prompt)
+            return {
+                'status': 'success',
+                'answer': "🤖 <strong>[ANTI-GRAVITY Sanal Ajan Analizi]</strong><br><br>" + response.text,
+                'sql_query': 'VIRTUAL_CREW_ANALYSIS'
+            }
+        except Exception as e:
+            print(f"Sanal Ajan Analizi Hatası: {e}")
+            return {
+                'status': 'error',
+                'message': f"Sanal ajan analizi yapılırken bir hata oluştu: {str(e)}"
+            }
+
+    def audit_and_learn(self):
+        """Son hatalı ve cevapsız sorguları denetleyerek kendi kendini iyileştirir/eğitir"""
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT id, question, response, status, sql_query, error_message 
+                FROM ai_query_logs 
+                WHERE status IN ('error', 'fallback')
+                ORDER BY id DESC 
+                LIMIT 10
+            """)
+            failed_logs = [dict(r) for r in cursor.fetchall()]
+            
+            if not failed_logs:
+                conn.close()
+                return {
+                    'status': 'success',
+                    'answer': "🔍 <strong>[Yapay Zeka Denetim Ajanı]</strong><br><br>"
+                              "Denetlenecek herhangi bir hatalı veya başarısız sorgu bulunamadı. Asistan şu an kararlı ve kusursuz çalışıyor! 🌟"
+                }
+            
+            schema = self.get_database_schema()
+            new_rules_learned = []
+            
+            for log in failed_logs:
+                # Daha önce bu log için bir kural yazılmış mı kontrol edelim
+                cursor.execute("SELECT id FROM ai_learned_rules WHERE pattern = ?", (log['question'],))
+                if cursor.fetchone():
+                    continue
+                
+                audit_prompt = f"""
+                Sen yapay zeka asistanı öğrenme denetçisisin.
+                Aşağıdaki kullanıcı sorusu veritabanı sorgulaması yaparken HATA aldı veya CEVAPLANAMADI (Sohbete düştü).
+                
+                Kullanıcı Sorusu: {log['question']}
+                Çalıştırılan SQL Sorgusu (Varsa): {log['sql_query'] or 'YOK'}
+                Hata Mesajı (Varsa): {log['error_message'] or 'YOK'}
+                
+                SQLite Veritabanı Şeması:
+                {schema}
+                
+                Lütfen bu hatayı veya başarısızlığı analiz et. Hataya sebep olan sütun veya tablo eşleme hatasını veya iş kuralı eksikliğini belirle.
+                Bu hatanın gelecekte tekrarlanmaması için asistana yönelik kısa ve son derece net bir kural/yönerge yaz.
+                
+                Önemli Kurallar:
+                1. Kural ifadesi "KURAL [X]: ..." formatında ve gelecekte asistanın okuduğunda anlayacağı şekilde olmalıdır.
+                   Örn: "KURAL: Eğer kullanıcı hız aşımı sorarsa, `araclar` tablosunda hız bilgisi olmadığı için `arac_takip` tablosundaki `maksimum_hiz` sütununu kullanmalısın."
+                2. Eğer soru zaten veritabanındaki bilgilerle doğrudan cevaplanamayacak bir soruysa (örn. genel sohbet, asistanın kişisel durum soruları vb.), çıktı olarak SADECE 'YOK' kelimesini yaz.
+                
+                Çıktın SADECE üretilen kural olmalı veya kural yoksa 'YOK' yazmalıdır. Başka hiçbir açıklama yazma.
+                """
+                
+                response = self.safe_generate_content(audit_prompt)
+                learned_rule = response.text.strip()
+                
+                if learned_rule and learned_rule.upper() != 'YOK' and 'YOK' not in learned_rule.upper():
+                    # Kuralı veritabanına kaydet
+                    cursor.execute("""
+                        INSERT INTO ai_learned_rules (pattern, correction) 
+                        VALUES (?, ?)
+                    """, (log['question'], learned_rule))
+                    conn.commit()
+                    new_rules_learned.append(learned_rule)
+            
+            conn.close()
+            
+            if new_rules_learned:
+                ans = "🧠 <strong>[Öğrenme Ajanı - Denetim Tamamlandı]</strong><br><br>" \
+                      "Son başarısız yazışmalar incelendi ve yapay zeka kendi hatalarından <strong>yeni dersler öğrendi</strong>:<br><br>"
+                for i, rule in enumerate(new_rules_learned, 1):
+                    ans += f"{i}. 💡 <em>{rule}</em><br>"
+                ans += "<br>Bu kurallar asistanın hafızasına başarıyla kaydedildi. Gelecek sorgularda bu hatalar tekrarlanmayacaktır."
+            else:
+                ans = "🔍 <strong>[Öğrenme Ajanı - Denetim Tamamlandı]</strong><br><br>" \
+                      "Son başarısız yazışmalar denetlendi ancak hafızaya eklenecek yeni bir iş kuralı/hata teşhisi bulunamadı (Tüm sorular veritabanı dışı veya zaten bilinen kurallar dahilinde)."
+            
+            return {
+                'status': 'success',
+                'answer': ans,
+                'sql_query': 'VIRTUAL_LEARNING_AUDIT'
+            }
+        except Exception as e:
+            print(f"Denetleme ve Öğrenme Hatası: {e}")
+            return {
+                'status': 'error',
+                'message': f"Denetim yapılıp yeni kurallar öğrenilirken bir hata oluştu: {str(e)}"
+            }
 
 # Dışa aktarılacak yardımcı fonksiyonlar
 assistant = GeminiAssistant()
