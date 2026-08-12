@@ -323,8 +323,9 @@ def check_local_queries(question, last_plate=None):
                 print(f"Kısmi plaka arama hatası: {e}")
         
         # Eğer hala bulunamadıysa ve last_plate varsa, ve soruda başka sayısal/plaka belirtilmediyse fallback yap
-        # AMA sadece müşteri/konum ismi geçmiyorsa veya özellikle araçla ilgili özellikler soruluyorsa fallback yap
-        if not plate and last_plate and not partial_matches:
+        # AMA genel/çoğul bir kıyaslama sorusu değilse ve müşteri/konum ismi geçmiyorsa fallback yap
+        is_general_query = any(w in q_lower for w in ["araçlarımız", "araçlar", "plakalar", "hangileri", "hangi araçlar", "araçların", "kıyasla", "karşılaştır"])
+        if not plate and last_plate and not partial_matches and not is_general_query:
             # Soru içindeki müşteri/konum adlarını kontrol edelim
             clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
             words = [clean_tr_suffixes(re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w))) for w in clean_q.split()]
@@ -336,7 +337,9 @@ def check_local_queries(question, last_plate=None):
         
     if plate:
         # A. Yük/Tonaj Sorgusu
-        if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
+        # "yüksek" kelimesinin "yük" ile çakışmasını engellemek için geçici temizlik yapalım
+        q_temp = q_lower.replace("yüksek", " ")
+        if any(w in q_temp for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
             try:
                 # Müşteri listesi talebi kontrolü: "hangi müşterilere", "nereye", "nerelere", "kime", "kimlere", "hangi firmalara"
                 is_list_query = any(w in q_lower for w in ["hangi müşteri", "nereye", "nerelere", "kime", "kimlere", "hangi firma", "müşteriler"])
@@ -565,7 +568,8 @@ def check_local_queries(question, last_plate=None):
 
     # 3. Dinamik Cari Ünvan / Adres / Konum Yük Sorguları (Kota limitini aşmamak için ücretsiz)
     # Eğer yük/ürün/sefer sorgulanıyorsa ve bir müşteri/konum adı geçiyorsa
-    if any(w in q_lower for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
+    q_temp = q_lower.replace("yüksek", " ")
+    if any(w in q_temp for w in ["yük", "ürün", "ton", "sefer", "gittik", "verdik", "götürdük", "teslim", "nakliye", "taş", "malzeme", "götür", "sevk"]):
         # Türkçe karakterleri destekleyecek şekilde kelimeleri temizleyip büyük harfe çevirelim
         clean_q = re.sub(r"'[a-zA-ZçğışöüÇĞİŞÖÜ0-9]*", " ", q_lower)
         words = [clean_tr_suffixes(re.sub(r'[^A-ZÇĞİÖŞÜ0-9]', '', tr_upper(w))) for w in clean_q.split()]
