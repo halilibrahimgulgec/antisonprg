@@ -626,6 +626,13 @@ def check_local_queries(question, last_plate=None):
             if any(keyword in q_lower for keyword in rule["keywords"]):
                 matched = True
                 
+        # Çakışma Önleme: Eğer soru araç listesi veya kıyaslama istiyorsa, toplam/genel tutar veren kuralları pas geçelim
+        if matched:
+            single_sum_formatters = [format_yakit_maliyet, format_yakit_litre, format_bakim_masrafi, format_ceza_tutari, format_hasar_tutari]
+            is_asking_for_vehicles = any(w in q_lower for w in ["hangileri", "hangisi", "araçlar", "araçlarımız", "plakalar", "hangi araç", "araçların", "şoförler"])
+            if is_asking_for_vehicles and rule["formatter"] in single_sum_formatters:
+                matched = False
+                
         if matched:
             try:
                 conn = get_db_connection()
