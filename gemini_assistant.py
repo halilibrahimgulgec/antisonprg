@@ -404,6 +404,18 @@ TÜRKÇE ve RESMİ cevap ver:"""
         question = re.sub(r'\b([0-9]{2})\s*([a-zA-ZçÇğĞıİöÖşŞüÜ]{1,3})\s*([0-9]{2,4})\b', format_plaka, question)
         question_lower = question.lower()
         
+        # Düzeltici / Hatalı Bildirim Tetikleyicisi
+        corrective_keywords = ['hatalı cevap', 'bu yanlış', 'bu sonuç hatalı', 'yanlış cevap', 'yanlış yaptın', 'sorgu hatalı', 'hatalı sonuç', 'bu doğru değil']
+        if any(w in question_lower for w in corrective_keywords):
+            try:
+                from flask import session
+                user_role = session.get('role', 'user')
+            except:
+                user_role = 'admin'
+            
+            if user_role == 'admin':
+                return self.learn_from_last_mistake()
+
         # Kendi Kendine Öğrenme Tetikleyicisi
         if any(w in question_lower for w in ['kendini eğit', 'hataları denetle', 'öğrenme modelini çalıştır']):
             try:
@@ -993,6 +1005,99 @@ TÜRKÇE ve RESMİ cevap ver:"""
             return {
                 'status': 'error',
                 'message': f"Denetim yapılıp yeni kurallar öğrenilirken bir hata oluştu: {str(e)}"
+            }
+
+    def learn_from_last_mistake(self):
+        """Kullanıcı 'hatalı cevap' dediğinde son sorguyu analiz eder ve kural oluşturur"""
+        try:
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            # Son sorguyu çekelim (kendini eğit sorguları veya boş sorguları hariç tutalım)
+            cursor.execute("""
+                SELECT id, question, response, status, sql_query, error_message 
+                FROM ai_query_logs 
+                WHERE question NOT LIKE '%hatalı%' 
+                  AND question NOT LIKE '%yanlış%' 
+                  AND question NOT LIKE '%eğit%' 
+                  AND question NOT LIKE '%denetle%'
+                ORDER BY id DESC 
+                LIMIT 1
+            """)
+            last_log = cursor.fetchone()
+            
+            if not last_log:
+                conn.close()
+                return {
+                    'status': 'success',
+                    'answer': "🧠 <strong>[Geri Bildirim Sistemi]</strong><br><br>"
+                              "Analiz edilecek önceki bir sorgu kaydı bulunamadı."
+                }
+            
+            log = dict(last_log)
+            
+            # Zaten öğrenilmiş mi kontrol et
+            cursor.execute("SELECT id FROM ai_learned_rules WHERE pattern = ?", (log['question'],))
+            if cursor.fetchone():
+                conn.close()
+                return {
+                    'status': 'success',
+                    'answer': "🧠 <strong>[Geri Bildirim Sistemi]</strong><br><br>"
+                              "Bu hata için zaten bir düzeltme kuralı öğrenmiş durumdayım."
+                }
+                
+            schema = self.get_database_schema()
+            
+            audit_prompt = f"""
+            Sen yapay zeka asistanı öğrenme denetçisisin.
+            Kullanıcı, bir önceki soruya verilen cevabın HATALI olduğunu bildirdi.
+            
+            Kullanıcı Sorusu: {log['question']}
+            Asistanın Yazdığı SQL (Varsa): {log['sql_query'] or 'YOK'}
+            Asistanın Verdiği Cevap: {log['response'] or 'YOK'}
+            Hata Mesajı (Varsa): {log['error_message'] or 'YOK'}
+            
+            SQLite Veritabanı Şeması:
+            {schema}
+            
+            Lütfen asistanın neden yanlış cevap verdiğini veya SQL hatası yaptığını analiz et. 
+            Bu hatanın gelecekte tekrarlanmaması için asistana yönelik kısa ve son derece net bir kural/yönerge yaz.
+            
+            Önemli Kurallar:
+            1. Kural ifadesi "KURAL [X]: ..." formatında ve gelecekte asistanın okuduğunda anlayacağı şekilde olmalıdır.
+               Örn: "KURAL: Eğer kullanıcı hız aşımı sorarsa, `araclar` tablosunda hız bilgisi olmadığı için `arac_takip` tablosundaki `maksimum_hiz` sütununu kullanmalısın."
+            2. Eğer soru zaten veritabanındaki bilgilerle doğrudan cevaplanamayacak bir soruysa (örn. genel sohbet, asistanın kişisel durum soruları vb.), çıktı olarak SADECE 'YOK' kelimesini yaz.
+            
+            Çıktın SADECE üretilen kural olmalı veya kural yoksa 'YOK' yazmalıdır. Başka hiçbir açıklama yazma.
+            """
+            
+            response = self.safe_generate_content(audit_prompt)
+            learned_rule = response.text.strip()
+            
+            if learned_rule and learned_rule.upper() != 'YOK' and 'YOK' not in learned_rule.upper():
+                cursor.execute("""
+                    INSERT INTO ai_learned_rules (pattern, correction) 
+                    VALUES (?, ?)
+                """, (log['question'], learned_rule))
+                conn.commit()
+                ans = f"🧠 <strong>[Geri Bildirim Sistemi - Kural Öğrenildi]</strong><br><br>" \
+                      f"Uyarınız için teşekkürler! Bir önceki sorgudaki hatamı analiz ettim ve yeni bir kural öğrendim:<br><br>" \
+                      f"💡 <em>{learned_rule}</em><br><br>" \
+                      f"Bu kural hafızama kaydedildi. Gelecekte benzer sorularda bu hatayı tekrarlamayacağım."
+            else:
+                ans = "🧠 <strong>[Geri Bildirim Sistemi]</strong><br><br>" \
+                      "Geri bildiriminiz için teşekkürler! Önceki sorguyu inceledim ancak veritabanı kuralı olarak kaydedilebilecek net bir hata/eksiklik tespit edemedim."
+            
+            conn.close()
+            return {
+                'status': 'success',
+                'answer': ans,
+                'sql_query': 'VIRTUAL_FEEDBACK_LEARNED'
+            }
+        except Exception as e:
+            print(f"Geri bildirim öğrenme hatası: {e}")
+            return {
+                'status': 'error',
+                'message': f"Geri bildirim işlenirken hata oluştu: {str(e)}"
             }
 
 # Dışa aktarılacak yardımcı fonksiyonlar
