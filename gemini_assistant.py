@@ -516,6 +516,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
           * NOT 1: agirlik tablosunda 'miktar' sütunu taşınan yük/malzeme miktarını gösterir (birim 'Kg' ise miktar/1000.0 tonajı verir).
           * NOT 2: agirlik tablosunda 'net_agirlik' sütunu aslında yükü değil aracın boş ağırlığını (dara) gösterir. Yük/tonaj hesaplarken net_agirlik'i SUM(net_agirlik) olarak KULLANMA, miktar'ı kullan.
           * NOT 3: agirlik tablosunda 'ana_malzeme' sütunu malzeme türünü gösterir (Örn: 'BETON', 'KUM', 'PARKE', 'BORDRO', 'PALET').
+          * NOT 5: "Çalışma", "sefer", "nakliye", "sevkiyat" veya "iş yapma" istatistikleri sorulduğunda `seferler` tablosunu KULLANMA (çünkü seferler tablosunda veri yoktur). Gerçek sevkiyat/sefer verileri `agirlik` tablosundadır. Her bir `agirlik` kaydı bir sevkiyat/sefer demektir. En çok çalışan/sefer yapan araçlar `agirlik` tablosunda en çok kaydı olan (COUNT(*)) araçlardır.
         """
         try:
             from flask import session
@@ -571,6 +572,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
             - KURAL 11 (Ödenmemiş Trafik Cezaları): "Ödenmemiş cezalar", "ceza borcu" veya "bekleyen cezalar" sorulduğunda, `cezalar` tablosunda `odeme_durumu != 'Ödendi'` (veya `odeme_durumu = 'Ödenmedi'`) filtresini kullan.
             - KURAL 12 (Şirketin Ödediği Hasarlar): "Cebimizden çıkan", "şirketin ödediği" veya "sigortanın karşılamadığı" hasarlar sorulursa, `hasarlar` tablosunda `sigorta_karsiladi_mi = 0` (veya `False`) filtresini ekle.
             - KURAL 13 (Bekleyen Araç Bakımları): "Bekleyen bakımlar", "yapılacak bakımlar" veya "zamanı gelen bakımlar" sorulduğunda, `bakim` tablosunda `durum != 'Tamamlandı'` filtresini uygula.
+            - KURAL 14 (En Çok Çalışan/Sefer Yapan Araçlar): "En çok çalışan", "en fazla çalışan", "en çok sefer yapan", "en fazla sefer yapan" veya "en aktif" araçlar sorulduğunda `seferler` tablosunu KULLANMA (çünkü bu tablo veri içermez). Bunun yerine en çok sevkiyat/sefer yapan araçlar `agirlik` tablosundaki kayıt sayısına göre (COUNT(*)) hesaplanır. `agirlik` tablosunda `plaka` bazında gruplama yapıp (`GROUP BY plaka`), en fazla kayda sahip olan araçları (`ORDER BY COUNT(*) DESC`) getir.
             
             Cevabın SADECE SQL kodu olmalı, hiçbir açıklama veya markdown backtick (```sql) GEREKMEZ, sadece saf SQL kodunu ver.
             Kullanıcının sorusu: {question}
