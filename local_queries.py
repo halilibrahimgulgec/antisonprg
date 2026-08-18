@@ -282,6 +282,11 @@ def check_local_queries(question, last_plate=None):
     Bulamazsa None döner (Böylece sistem Auto-SQL'e veya Gemini'ye düşer).
     """
     q_lower = question.lower()
+    
+    # ML Tahmin, Anomali ve Performans sorularının yerel sözlüğe takılmadan direkt model fonksiyonlarına gitmesi için pas geçelim
+    if any(w in q_lower for w in ['tahmin', 'gelecek ay', 'gelecekte', 'önümüzdeki ay', 'öngör', 'anomali', 'şüpheli', 'anormal', 'suistimal', 'usulsüz', 'verimlilik', 'verimsiz', 'performans', 'karşılaştır']):
+        return None
+        
     has_plate_word = any(w in q_lower for w in ["aracımız", "araç", "arac", "plakalı", "plaka", "plakallı", "plakalli"])
     has_exist_word = any(w in q_lower for w in ["var mı", "var mi", "kayıt", "kayit", "aracımı var"])
     

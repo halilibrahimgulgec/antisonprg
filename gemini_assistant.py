@@ -286,7 +286,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
                 'message': f'Hata: {str(e)}'
             }
 
-    def check_ml_queries(self, question):
+    def check_ml_queries(self, question, last_plate=None):
         """Kullanıcı sorusuna göre Python ML modellerini (ai_model.py) tetikler ve Gemini ile yorumlatır"""
         question_lower = question.lower()
         
@@ -342,9 +342,14 @@ TÜRKÇE ve RESMİ cevap ver:"""
             try:
                 # Plakayı bulmaya çalışalım (Örn: 34ABC123)
                 import re
+                plaka = None
                 plaka_match = re.search(r'\b\d{2}[a-zA-Z]{1,3}\d{2,4}\b', question.upper().replace(" ", ""))
                 if plaka_match:
                     plaka = plaka_match.group(0)
+                elif last_plate:
+                    plaka = last_plate
+                    
+                if plaka:
                     from ai_model import YakitTahminModeli
                     model = YakitTahminModeli()
                     res = model.gelecek_ay_tahmini(plaka)
@@ -459,7 +464,7 @@ TÜRKÇE ve RESMİ cevap ver:"""
 
         # 2. PYTHON ML MODELLERİ (AI Tahmin, Anomali, Verimlilik) - Meta sorgu değilse çalıştır
         if not is_meta_query:
-            ml_result = self.check_ml_queries(question)
+            ml_result = self.check_ml_queries(question, last_plate)
             if ml_result:
                 return ml_result
 
